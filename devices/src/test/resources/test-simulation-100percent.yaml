@@ -18,6 +18,7 @@ devices:
     dischargingEfficiency: 1.0     # 100% efficiency for test
     dailyStorageLoss: 0.0          # 0% storage loss for test
     startStorageLevel: 1.0         # 100% initial charge
+    forceChargingLimit: 0.01
 
   - type: ELECTRIC_CAR
     capacity:
@@ -34,6 +35,7 @@ devices:
     dischargingEfficiency: 1.0     # 100% efficiency for test
     dailyStorageLoss: 0.0          # 0% storage loss for test
     startStorageLevel: 1.0         # 100% initial charge
+    forceChargingLimit: 0.01
 
   - type: NOISY_USAGE
     consumption:
@@ -53,6 +55,3 @@ grid:
       amount: 0.08
       currency: EUR
 
-charging:
-  forceChargingLimit: 0.01
-  carChargingLimit: 0.01

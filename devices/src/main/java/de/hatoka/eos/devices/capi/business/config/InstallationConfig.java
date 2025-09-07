@@ -19,9 +19,6 @@ public class InstallationConfig
     @JsonPropertyDescription("Grid connection configuration including import/export pricing")
     private GridConfig grid;
     
-    @JsonProperty("charging")
-    @JsonPropertyDescription("Battery charging behavior configuration")
-    private ChargingConfig charging;
 
     public InstallationInfo getInstallation()
     {
@@ -53,13 +50,4 @@ public class InstallationConfig
         this.grid = grid;
     }
 
-    public ChargingConfig getCharging()
-    {
-        return charging;
-    }
-
-    public void setCharging(ChargingConfig charging)
-    {
-        this.charging = charging;
-    }
 }

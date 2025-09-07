@@ -2,6 +2,7 @@ package de.hatoka.eos.devices.internal.business.config;
 
 import de.hatoka.eos.devices.capi.business.config.DeviceConfig;
 import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
+import de.hatoka.eos.devices.capi.business.device.DeviceType;
 import de.hatoka.eos.devices.capi.units.Money;
 import org.junit.jupiter.api.Test;
 
@@ -58,11 +59,19 @@ public class ConfigurationLoaderTest
         assertEquals(Money.ofEur(0.39), config.getGrid().flatPriceConfig().importPrice());
         assertEquals(Money.ofEur(0.08), config.getGrid().flatPriceConfig().exportPrice());
 
-        // Test charging config
-        assertNotNull(config.getCharging());
-        assertNotNull(config.getCharging().getForceChargingLimit());
-        assertEquals(10, config.getCharging().getForceChargingLimit().toPercentage());
-        assertNotNull(config.getCharging().getCarChargingLimit());
-        assertEquals(80, config.getCharging().getCarChargingLimit().toPercentage());
+        // Test device-specific charging limits
+        DeviceConfig batteryConfig = config.getDevices().stream()
+            .filter(device -> device.getType() == DeviceType.BATTERY)
+            .findFirst().orElse(null);
+        assertNotNull(batteryConfig);
+        assertNotNull(batteryConfig.getForceChargingLimit());
+        assertEquals(10, batteryConfig.getForceChargingLimit().toPercentage());
+        
+        DeviceConfig carConfig = config.getDevices().stream()
+            .filter(device -> device.getType() == DeviceType.ELECTRIC_CAR)
+            .findFirst().orElse(null);
+        assertNotNull(carConfig);
+        assertNotNull(carConfig.getForceChargingLimit());
+        assertEquals(80, carConfig.getForceChargingLimit().toPercentage());
     }
 }

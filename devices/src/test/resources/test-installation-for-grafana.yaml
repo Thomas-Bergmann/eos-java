@@ -31,6 +31,7 @@ devices:
     chargingEfficiency: 0.85
     dischargingEfficiency: 0.85
     dailyStorageLoss: 0.01
+    forceChargingLimit: 0.1
 
   - type: ELECTRIC_CAR
     count: 1
@@ -46,6 +47,7 @@ devices:
     chargingEfficiency: 0.90
     dischargingEfficiency: 0.90
     dailyStorageLoss: 0.01
+    forceChargingLimit: 0.1
     usageProfile:
       days: [TUESDAY, WEDNESDAY]
       startUsage: "08:00"
@@ -85,6 +87,3 @@ grid:
     resource:
       - stockprices_DE_LU_week_32-33.csv
 
-charging:
-  forceChargingLimit: 0.1
-  carChargingLimit: 0.1

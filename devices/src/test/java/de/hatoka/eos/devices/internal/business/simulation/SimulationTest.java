@@ -1,6 +1,5 @@
 package de.hatoka.eos.devices.internal.business.simulation;
 
-import de.hatoka.eos.devices.capi.business.config.ChargingConfig;
 import de.hatoka.eos.devices.capi.business.config.DeviceConfig;
 import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
 import de.hatoka.eos.devices.capi.business.device.Device;
@@ -110,7 +109,7 @@ public class SimulationTest
         Map<DeviceRef, DeviceState> initialState = new HashMap<>();
         initialState.put(batteryRef, createStandardDeviceState(new Percentage(0.5))); // 50% charged
 
-        SimulationRequest request = new SimulationRequest("test-sim", MID_NIGHT_START, MID_NIGHT_END, Duration.ofHours(1), devices, initialState, ChargingConfig.ONLY_PRODUCED_ENERGY,
+        SimulationRequest request = new SimulationRequest("test-sim", MID_NIGHT_START, MID_NIGHT_END, Duration.ofHours(1), devices, initialState,
                         Forecasts.STANDARD);
         SimulationResult result = simulator.simulate(request);
 
@@ -135,7 +134,7 @@ public class SimulationTest
         devices.put(solarRef, solarPanel);
         devices.put(gridRef, grid);
 
-        SimulationRequest request = new SimulationRequest("test-sim", MID_NIGHT_START, MID_NIGHT_END, Duration.ofHours(1), devices, Collections.emptyMap(), ChargingConfig.ONLY_PRODUCED_ENERGY, Forecasts.STANDARD);
+        SimulationRequest request = new SimulationRequest("test-sim", MID_NIGHT_START, MID_NIGHT_END, Duration.ofHours(1), devices, Collections.emptyMap(), Forecasts.STANDARD);
         SimulationResult result = simulator.simulate(request);
 
         // Assert - Solar produces 2 kWh, Grid should export it (system has 2 kWh excess)
@@ -173,7 +172,7 @@ public class SimulationTest
         Map<DeviceRef, DeviceState> initialState = new HashMap<>();
         initialState.put(batteryRef, createStandardDeviceState(new Percentage(0.5))); // 50% charged
 
-        SimulationRequest request = new SimulationRequest("comprehensive-sim", MID_SUN_START, MID_SUN_END, Duration.ofHours(1), devices, initialState, ChargingConfig.ONLY_PRODUCED_ENERGY, Forecasts.STANDARD);
+        SimulationRequest request = new SimulationRequest("comprehensive-sim", MID_SUN_START, MID_SUN_END, Duration.ofHours(1), devices, initialState, Forecasts.STANDARD);
         SimulationResult result = simulator.simulate(request);
 
         // Assert
@@ -219,7 +218,7 @@ public class SimulationTest
         devices.put(solarRef, solarPanel);
         devices.put(gridRef, grid);
 
-        SimulationRequest request = new SimulationRequest("export-sim", MID_SUN_START, MID_SUN_END, Duration.ofHours(1), devices, Collections.emptyMap(), ChargingConfig.ONLY_PRODUCED_ENERGY, Forecasts.STANDARD);
+        SimulationRequest request = new SimulationRequest("export-sim", MID_SUN_START, MID_SUN_END, Duration.ofHours(1), devices, Collections.emptyMap(), Forecasts.STANDARD);
         SimulationResult result = simulator.simulate(request);
 
         // Assert
@@ -254,7 +253,7 @@ public class SimulationTest
         devices.put(usageRef, noisyUsage);
         devices.put(gridRef, grid);
 
-        SimulationRequest request = new SimulationRequest("mixed-sim", MID_SUN_START, MID_SUN_END, Duration.ofHours(1), devices, Collections.emptyMap(), ChargingConfig.ONLY_PRODUCED_ENERGY, Forecasts.STANDARD);
+        SimulationRequest request = new SimulationRequest("mixed-sim", MID_SUN_START, MID_SUN_END, Duration.ofHours(1), devices, Collections.emptyMap(), Forecasts.STANDARD);
         SimulationResult result = simulator.simulate(request);
 
         // Assert
@@ -284,7 +283,7 @@ public class SimulationTest
         ZonedDateTime endDate = startDate.plusDays(1);
         Duration stepDuration = Duration.ofHours(1);
         
-        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, configurationDeviceBuilder.getDevices(installationConfig), Collections.emptyMap(), installationConfig.getCharging(), Forecasts.STANDARD);
+        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, configurationDeviceBuilder.getDevices(installationConfig), Collections.emptyMap(), Forecasts.STANDARD);
         SimulationResult result = simulator.simulate(request);
         
         // Assert - Focus only on grid costs/revenues for the full day
@@ -317,7 +316,7 @@ public class SimulationTest
         ZonedDateTime endDate = startDate.plusDays(1);
         Duration stepDuration = Duration.ofHours(1);
 
-        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, configurationDeviceBuilder.getDevices(installationConfig), Collections.emptyMap(), installationConfig.getCharging(), Forecasts.STANDARD);
+        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, configurationDeviceBuilder.getDevices(installationConfig), Collections.emptyMap(), Forecasts.STANDARD);
         SimulationResult result = simulator.simulate(request);
 
         // Assert - Focus only on grid costs/revenues for the full day
@@ -354,7 +353,6 @@ public class SimulationTest
             Duration.ofHours(1), 
             configurationDeviceBuilder.getDevices(config), 
             Collections.emptyMap(),
-            config.getCharging(), 
             Forecasts.STANDARD
         );
         

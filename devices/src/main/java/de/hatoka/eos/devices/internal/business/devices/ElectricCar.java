@@ -34,12 +34,6 @@ public class ElectricCar extends Battery implements Device
     }
 
     @Override
-    protected Percentage getChargingLimit(SimulationStep step)
-    {
-        return step.chargingConfig().getCarChargingLimit();
-    }
-
-    @Override
     public SimulationStepResult simulate(SimulationStep step, EnergySystem system, DeviceState deviceState)
     {
         CarUsageProfile usageProfile = config.getUsageProfile();

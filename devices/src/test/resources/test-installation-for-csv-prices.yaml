@@ -31,6 +31,7 @@ devices:
     chargingEfficiency: 0.85
     dischargingEfficiency: 0.85
     dailyStorageLoss: 0.05
+    forceChargingLimit: 0.1
 
   - type: ELECTRIC_CAR
     capacity:
@@ -43,6 +44,7 @@ devices:
       amount: 10.0
       unit: "K_W"
     count: 1
+    forceChargingLimit: 0.8
     
   - type: GRID
     count: 1
@@ -68,6 +70,3 @@ grid:
     resource:
       - stockprices_DE_LU_week_32-33.csv
 
-charging:
-  forceChargingLimit: 0.1
-  carChargingLimit: 0.8
