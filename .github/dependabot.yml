@@ -6,7 +6,7 @@
 version: 2
 updates:
   - package-ecosystem: "gradle" # See documentation for possible values
-    target-branch: "main"
+    target-branch: "dependabot-integration"
     open-pull-requests-limit: 3 # Allow up globally to 2 simultaneously open pull requests for dependencies
     directory: "/" # Location of package manifests
     commit-message:
