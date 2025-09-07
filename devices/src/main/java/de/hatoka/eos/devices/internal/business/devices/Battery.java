@@ -148,10 +148,11 @@ public class Battery implements Device
 
     /**
      * Returns the charging limit for this device type.
-     * Battery uses forceChargingLimit, ElectricCar can override to use carChargingLimit.
+     * Battery uses forceChargingLimit from DeviceConfig with default of 0% (no force charging).
+     * @param step time of charge (may it's different percentage)
      */
     protected Percentage getChargingLimit(SimulationStep step)
     {
-        return step.chargingConfig().getForceChargingLimit();
+        return config.getForceChargingLimit();
     }
 }

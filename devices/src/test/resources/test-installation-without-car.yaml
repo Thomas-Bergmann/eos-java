@@ -45,5 +45,3 @@ grid:
       amount: 0.08
       currency: EUR
 
-charging:
-  forceChargingLimit: 0.0

@@ -8,7 +8,6 @@ import de.hatoka.eos.devices.capi.business.simulation.EnergySystem;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationStep;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationStepResult;
 import de.hatoka.eos.devices.capi.units.Energy;
-import de.hatoka.eos.devices.capi.units.Percentage;
 
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
@@ -21,22 +20,10 @@ public class ElectricCar extends Battery implements Device
     }
 
     @Override
-    protected boolean shouldChargeFromGrid(ZonedDateTime time, Percentage chargingLimit, DeviceState deviceState)
-    {
-        return chargingLimit.value() > deviceState.percentage().value() && time.getHour() >= 11 && time.getHour() <= 16; // Example: charge during the day
-    }
-
-    @Override
     protected boolean shouldDischarge(Energy currentEnergy)
     {
         // Electric car should not discharge to the system, yet
         return false;
-    }
-
-    @Override
-    protected Percentage getChargingLimit(SimulationStep step)
-    {
-        return step.chargingConfig().getCarChargingLimit();
     }
 
     @Override

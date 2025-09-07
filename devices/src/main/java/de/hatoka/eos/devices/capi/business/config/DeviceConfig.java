@@ -89,6 +89,12 @@ public class DeviceConfig
     @JsonDeserialize(using = PercentageJsonConverter.Deserializer.class)
     private Percentage startStorageLevel = Percentage.ZERO; // Default to 0% charge
 
+    @JsonProperty("forceChargingLimit")
+    @JsonPropertyDescription("Charge level threshold (in percentage); above this level charging from grid is disabled; default: 0% for batteries, 100% for electric cars")
+    @JsonSerialize(using = PercentageJsonConverter.Serializer.class)
+    @JsonDeserialize(using = PercentageJsonConverter.Deserializer.class)
+    private Percentage forceChargingLimit = Percentage.ZERO; // Default to 0% - devices can override based on type
+
     public DeviceType getType()
     {
         return type;
@@ -237,6 +243,16 @@ public class DeviceConfig
     public void setStartStorageLevel(Percentage startStorageLevel)
     {
         this.startStorageLevel = startStorageLevel;
+    }
+
+    public Percentage getForceChargingLimit()
+    {
+        return forceChargingLimit;
+    }
+
+    public void setForceChargingLimit(Percentage forceChargingLimit)
+    {
+        this.forceChargingLimit = forceChargingLimit;
     }
 
     @JsonIgnore

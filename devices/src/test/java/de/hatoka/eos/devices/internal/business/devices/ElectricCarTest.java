@@ -1,7 +1,6 @@
 package de.hatoka.eos.devices.internal.business.devices;
 
 import de.hatoka.eos.devices.capi.business.config.CarUsageProfile;
-import de.hatoka.eos.devices.capi.business.config.ChargingConfig;
 import de.hatoka.eos.devices.capi.business.config.DeviceConfig;
 import de.hatoka.eos.devices.capi.business.device.DeviceState;
 import de.hatoka.eos.devices.capi.business.simulation.EnergySystem;
@@ -51,11 +50,11 @@ public class ElectricCarTest
     public void testUsesCarChargingLimitNotForceChargingLimit()
     {
         ElectricCar car = createStandardElectricCar();
-        SimulationStep step = SimulationStep.valueOf(startDate, Duration.ofHours(1), ChargingConfig.GOOD);
+        SimulationStep step = SimulationStep.valueOf(startDate, Duration.ofHours(1));
 
-        // Electric car should use carChargingLimit (90%), not forceChargingLimit (10%)
+        // Electric car should use default forceChargingLimit (0%) - only charge from solar/excess energy
         Percentage chargingLimit = car.getChargingLimit(step);
-        assertEquals(0.9, chargingLimit.value(), ALLOWED_DELTA);
+        assertEquals(0.0, chargingLimit.value(), ALLOWED_DELTA);
     }
 
     private ElectricCar createElectricCarWithUsageProfile()
@@ -87,7 +86,7 @@ public class ElectricCarTest
      * 
      * Expected behavior:
      * - Car is available for charging (weekend not in usage profile)
-     * - No grid charging at 10 AM (outside 11-16 grid charging window)
+     * - No grid charging at 10 AM (chargingLimit is 0% by default)
      * - Charges from excess energy only: 5 kWh → 4.5 kWh stored (90% efficiency)
      * - Storage loss: ~0.0625 kWh (5% daily loss over 1 hour)
      * - Final energy: 30 - 0.0625 + 4.5 = 34.4375 kWh
@@ -100,7 +99,7 @@ public class ElectricCarTest
         // Saturday at 10:00 AM - car should be available
         ZonedDateTime saturdayMorning = DateTooling.createBerlinDate("2023/06/10").withHour(10); // Saturday
         DeviceState initialState = new DeviceState(Energy.ofKwh(50.0), new Percentage(0.6)); // 60% charged
-        SimulationStep step = SimulationStep.valueOf(saturdayMorning, Duration.ofHours(1), ChargingConfig.GOOD);
+        SimulationStep step = SimulationStep.valueOf(saturdayMorning, Duration.ofHours(1));
         EnergySystem system = EnergySystem.INIT.produce(Energy.ofKwh(5.0)); // Excess energy available
 
         SimulationStepResult result = car.simulate(step, system, initialState);
@@ -134,7 +133,7 @@ public class ElectricCarTest
         // Friday at 10:00 AM - car should be away (within work hours)
         ZonedDateTime fridayMorning = DateTooling.createBerlinDate("2023/06/09").withHour(10); // Friday
         DeviceState initialState = new DeviceState(Energy.ofKwh(50.0), new Percentage(0.6)); // 60% charged
-        SimulationStep step = SimulationStep.valueOf(fridayMorning, Duration.ofHours(1), ChargingConfig.GOOD);
+        SimulationStep step = SimulationStep.valueOf(fridayMorning, Duration.ofHours(1));
         EnergySystem system = EnergySystem.INIT.produce(Energy.ofKwh(5.0)); // Excess energy available
 
         SimulationStepResult result = car.simulate(step, system, initialState);
@@ -155,7 +154,7 @@ public class ElectricCarTest
      * 
      * Expected behavior:
      * - Car is available for charging (before 8:00 AM work start)
-     * - No grid charging at 7 AM (outside 11-16 grid charging window)
+     * - No grid charging at 7 AM (chargingLimit is 0% by default)
      * - Charges from excess energy only: 5 kWh → 4.5 kWh stored (90% efficiency)
      * - Storage loss: ~0.0625 kWh (5% daily loss over 1 hour)
      * - Final energy: 30 - 0.0625 + 4.5 = 34.4375 kWh
@@ -168,7 +167,7 @@ public class ElectricCarTest
         // Friday at 7:00 AM - car should be available (before 8:00 AM)
         ZonedDateTime fridayMorning = DateTooling.createBerlinDate("2023/06/09").withHour(7); // Friday
         DeviceState initialState = new DeviceState(Energy.ofKwh(50.0), new Percentage(0.6)); // 60% charged
-        SimulationStep step = SimulationStep.valueOf(fridayMorning, Duration.ofHours(1), ChargingConfig.GOOD);
+        SimulationStep step = SimulationStep.valueOf(fridayMorning, Duration.ofHours(1));
         EnergySystem system = EnergySystem.INIT.produce(Energy.ofKwh(5.0)); // Excess energy available
 
         SimulationStepResult result = car.simulate(step, system, initialState);
@@ -190,7 +189,7 @@ public class ElectricCarTest
      * 
      * Expected behavior:
      * - Car is available for charging (outside work hours)
-     * - No grid charging at 6 PM (outside 11-16 grid charging window)
+     * - No grid charging at 6 PM (chargingLimit is 0% by default)
      * - Charges from excess energy only: 5 kWh → 4.5 kWh stored (90% efficiency)
      * - Storage loss: ~0.0625 kWh (5% daily loss over 1 hour)
      * - Final energy: 30 - 0.0625 + 4.5 = 34.4375 kWh
@@ -203,7 +202,7 @@ public class ElectricCarTest
         // Friday at 6:00 PM - car should be available (after 5:00 PM)
         ZonedDateTime fridayEvening = DateTooling.createBerlinDate("2023/06/09").withHour(18); // Friday
         DeviceState initialState = new DeviceState(Energy.ofKwh(50.0), new Percentage(0.6)); // 60% charged
-        SimulationStep step = SimulationStep.valueOf(fridayEvening, Duration.ofHours(1), ChargingConfig.GOOD);
+        SimulationStep step = SimulationStep.valueOf(fridayEvening, Duration.ofHours(1));
         EnergySystem system = EnergySystem.INIT.produce(Energy.ofKwh(5.0)); // Excess energy available
 
         SimulationStepResult result = car.simulate(step, system, initialState);
@@ -226,7 +225,7 @@ public class ElectricCarTest
      * - Car was away previous hour (4:00-5:00 PM) and is now available (5:00 PM)
      * - Energy consumption applied: 15 kWh used during work day
      * - Storage loss: ~0.0833 kWh (5% daily loss over 1 hour on 40 kWh)
-     * - No charging occurs (no excess energy, outside grid charging window)
+     * - No charging occurs (no excess energy, chargingLimit is 0% by default)
      * - Final energy: 40 - 0.0833 - 15 ≈ 24.948 kWh
      */
     @Test
@@ -237,7 +236,7 @@ public class ElectricCarTest
         // Friday at 5:00 PM - car returns from work and should consume 15 kWh
         ZonedDateTime fridayEvening = DateTooling.createBerlinDate("2023/06/09").withHour(17); // Friday at 5 PM
         DeviceState initialState = new DeviceState(Energy.ofKwh(50.0), new Percentage(0.8)); // 80% charged
-        SimulationStep step = SimulationStep.valueOf(fridayEvening, Duration.ofHours(1), ChargingConfig.GOOD);
+        SimulationStep step = SimulationStep.valueOf(fridayEvening, Duration.ofHours(1));
         EnergySystem system = EnergySystem.INIT;
 
         SimulationStepResult result = car.simulate(step, system, initialState);
@@ -257,7 +256,7 @@ public class ElectricCarTest
      * 
      * Expected behavior:
      * - Car is always available for charging (no usage restrictions)
-     * - No grid charging at 10 AM (outside 11-16 grid charging window)
+     * - No grid charging at 10 AM (chargingLimit is 0% by default)
      * - Charges from excess energy only: 5 kWh → 4.5 kWh stored (90% efficiency)
      * - Storage loss: ~0.0625 kWh (5% daily loss over 1 hour)
      * - Final energy: 30 - 0.0625 + 4.5 = 34.4375 kWh
@@ -270,7 +269,7 @@ public class ElectricCarTest
         // Friday at 10:00 AM
         ZonedDateTime fridayMorning = DateTooling.createBerlinDate("2023/06/09").withHour(10);
         DeviceState initialState = new DeviceState(Energy.ofKwh(50.0), new Percentage(0.6));
-        SimulationStep step = SimulationStep.valueOf(fridayMorning, Duration.ofHours(1), ChargingConfig.GOOD);
+        SimulationStep step = SimulationStep.valueOf(fridayMorning, Duration.ofHours(1));
         EnergySystem system = EnergySystem.INIT.produce(Energy.ofKwh(5.0));
 
         SimulationStepResult result = car.simulate(step, system, initialState);
@@ -292,7 +291,7 @@ public class ElectricCarTest
         // Saturday at 10:00 AM - car should be available
         ZonedDateTime testTime = DateTooling.createBerlinDate("2023/06/10").withHour(10);
         DeviceState initialState = new DeviceState(Energy.ofKwh(50.0), new Percentage(0.6)); // 30 kWh stored
-        SimulationStep step = SimulationStep.valueOf(testTime, Duration.ofHours(1), ChargingConfig.GOOD);
+        SimulationStep step = SimulationStep.valueOf(testTime, Duration.ofHours(1));
         
         // Create system with NEGATIVE energy (deficit) - simulates what NOISY_USAGE does
         EnergySystem systemWithDeficit = EnergySystem.INIT.consume(Energy.ofKwh(5.0)); // -5 kWh deficit
@@ -326,7 +325,7 @@ public class ElectricCarTest
         // Same scenario as ElectricCar test
         ZonedDateTime testTime = DateTooling.createBerlinDate("2023/06/10").withHour(10);
         DeviceState initialState = new DeviceState(Energy.ofKwh(50.0), new Percentage(0.6)); // 30 kWh stored
-        SimulationStep step = SimulationStep.valueOf(testTime, Duration.ofHours(1), ChargingConfig.GOOD);
+        SimulationStep step = SimulationStep.valueOf(testTime, Duration.ofHours(1));
         
         // Create system with NEGATIVE energy (deficit) - simulates what NOISY_USAGE does
         EnergySystem systemWithDeficit = EnergySystem.INIT.consume(Energy.ofKwh(5.0)); // -5 kWh deficit

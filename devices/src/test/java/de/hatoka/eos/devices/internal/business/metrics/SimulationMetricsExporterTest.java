@@ -57,7 +57,7 @@ public class SimulationMetricsExporterTest
         LOGGER.info("🌅 Starting simulation from: {} to: {}", startDate, endDate);
 
         SimulationRequest request = new SimulationRequest("today-energy-simulation", startDate, endDate, stepDuration,
-                        configurationDeviceBuilder.getDevices(config), Collections.emptyMap(), config.getCharging(),
+                        configurationDeviceBuilder.getDevices(config), Collections.emptyMap(),
                         new Forecasts(FlatWeatherService.FULL_FROM_7_to_18, config.getGrid().getEnergyPriceProvider()));
 
         // Act - Run simulation step by step for 5-minute interval data

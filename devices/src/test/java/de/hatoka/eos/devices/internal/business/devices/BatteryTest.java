@@ -1,6 +1,5 @@
 package de.hatoka.eos.devices.internal.business.devices;
 
-import de.hatoka.eos.devices.capi.business.config.ChargingConfig;
 import de.hatoka.eos.devices.capi.business.config.DeviceConfig;
 import de.hatoka.eos.devices.capi.business.device.DeviceState;
 import de.hatoka.eos.devices.capi.business.simulation.EnergySystem;
@@ -41,14 +40,21 @@ public class BatteryTest
         return new Battery(getStandardBatteryConfig());
     }
 
+    private Battery createStandardBattery(Percentage forceCharging)
+    {
+        DeviceConfig config = getStandardBatteryConfig();
+        config.setForceChargingLimit(forceCharging);
+        return new Battery(config);
+    }
+
     private static DeviceState createStandardDeviceState(Percentage percentage)
     {
         return new DeviceState(Energy.ofKwh(10.0), percentage); // 10 kWh capacity
     }
 
-    private SimulationStep createSimulationStep(Duration duration, ChargingConfig chargingConfig)
+    private SimulationStep createSimulationStep(Duration duration)
     {
-        return SimulationStep.valueOf(startDate, duration, chargingConfig);
+        return SimulationStep.valueOf(startDate, duration);
     }
 
     @Test
@@ -218,9 +224,9 @@ public class BatteryTest
     public void testSimulateForcedChargingIgnoresSystemEnergy()
     {
         // Arrange - System has no energy but forced charging is enabled
-        Battery battery = createStandardBattery();
+        Battery battery = createStandardBattery(Percentage.ONE_HUNDRED);
 
-        SimulationStep step = createSimulationStep(Duration.ofHours(1), ChargingConfig.FORCE_TO_FULL); // Forced charging enabled
+        SimulationStep step = createSimulationStep(Duration.ofHours(1)); // Forced charging enabled
         DeviceState deviceState = createStandardDeviceState(new Percentage(0.3)); // 30% charged
         EnergySystem system = EnergySystem.INIT; // No system energy
 
@@ -238,9 +244,9 @@ public class BatteryTest
     public void testSimulateForcedChargingLimitedByCapacity()
     {
         // Arrange - Forced charging near full capacity
-        Battery battery = createStandardBattery();
+        Battery battery = createStandardBattery(Percentage.ONE_HUNDRED);
 
-        SimulationStep step = createSimulationStep(Duration.ofHours(1), ChargingConfig.FORCE_TO_FULL); // Forced charging enabled
+        SimulationStep step = createSimulationStep(Duration.ofHours(1)); // Forced charging enabled
         DeviceState deviceState = createStandardDeviceState(new Percentage(0.9)); // 90% charged (1 kWh space left)
         EnergySystem system = EnergySystem.INIT; // No system energy
 
@@ -258,9 +264,9 @@ public class BatteryTest
     public void testSimulateForcedChargingWithNegativeSystemEnergy()
     {
         // Arrange - System needs energy but forced charging is enabled (should still charge)
-        Battery battery = createStandardBattery();
+        Battery battery = createStandardBattery(Percentage.ONE_HUNDRED);
 
-        SimulationStep step = createSimulationStep(Duration.ofHours(1), ChargingConfig.FORCE_TO_FULL); // System deficit + forced charging
+        SimulationStep step = createSimulationStep(Duration.ofHours(1)); // System deficit + forced charging
         DeviceState deviceState = createStandardDeviceState(new Percentage(0.2)); // 20% charged
         EnergySystem system = EnergySystem.INIT.consume(Energy.ofKwh(3.0)); // System needs energy
 
@@ -278,9 +284,9 @@ public class BatteryTest
     public void testSimulateForcedChargingWithExcessSystemEnergy()
     {
         // Arrange - System has excess energy and forced charging is enabled
-        Battery battery = createStandardBattery();
+        Battery battery = createStandardBattery(Percentage.ONE_HUNDRED);
 
-        SimulationStep step = createSimulationStep(Duration.ofHours(1), ChargingConfig.FORCE_TO_FULL); // System excess + forced charging
+        SimulationStep step = createSimulationStep(Duration.ofHours(1)); // System excess + forced charging
         DeviceState deviceState = createStandardDeviceState(new Percentage(0.4)); // 40% charged
         EnergySystem system = EnergySystem.INIT.produce(Energy.ofKwh(3.0)); // System has excess energy
 
@@ -298,9 +304,9 @@ public class BatteryTest
     public void testSimulateForceChargingUpToPercentageLimit()
     {
         // Arrange - Force charging up to 60%
-        Battery battery = createStandardBattery();
+        Battery battery = createStandardBattery(new Percentage(0.6));
 
-        SimulationStep step = createSimulationStep(Duration.ofHours(1), ChargingConfig.forceUpTo(0.6));
+        SimulationStep step = createSimulationStep(Duration.ofHours(1));
         DeviceState deviceState = createStandardDeviceState(new Percentage(0.3)); // 30% charged
         EnergySystem system = EnergySystem.INIT; // No system energy
 
@@ -320,7 +326,7 @@ public class BatteryTest
         // Arrange - Force charging up to 60%, but battery already at 70%
         Battery battery = createStandardBattery();
 
-        SimulationStep step = createSimulationStep(Duration.ofHours(1), ChargingConfig.forceUpTo(0.6));
+        SimulationStep step = createSimulationStep(Duration.ofHours(1));
         DeviceState deviceState = createStandardDeviceState(new Percentage(0.7)); // 70% charged (above limit)
         EnergySystem system = EnergySystem.INIT; // No system energy
 
@@ -338,9 +344,9 @@ public class BatteryTest
     public void testSimulateForceChargingLimitedByBothPercentageAndCapacity()
     {
         // Arrange - Force charging up to 70%, battery at 65%
-        Battery battery = createStandardBattery();
+        Battery battery = createStandardBattery(new Percentage(0.7));
 
-        SimulationStep step = createSimulationStep(Duration.ofHours(1), ChargingConfig.forceUpTo(0.7));
+        SimulationStep step = createSimulationStep(Duration.ofHours(1));
         DeviceState deviceState = createStandardDeviceState(new Percentage(0.65)); // 65% charged
         EnergySystem system = EnergySystem.INIT; // No system energy
 
@@ -360,7 +366,7 @@ public class BatteryTest
         // Arrange - Normal charging config with system energy available
         Battery battery = createStandardBattery();
 
-        SimulationStep step = createSimulationStep(Duration.ofHours(1), ChargingConfig.ONLY_PRODUCED_ENERGY);
+        SimulationStep step = createSimulationStep(Duration.ofHours(1));
         DeviceState deviceState = createStandardDeviceState(new Percentage(0.4)); // 40% charged
         EnergySystem system = EnergySystem.INIT.produce(Energy.ofKwh(3.0)); // System has excess energy
 
@@ -377,11 +383,35 @@ public class BatteryTest
     @Test
     public void testUsesForceChargingLimitNotCarChargingLimit()
     {
-        Battery battery = createStandardBattery();
-        SimulationStep step = SimulationStep.valueOf(startDate, Duration.ofHours(1), ChargingConfig.GOOD);
+        Battery battery = createStandardBattery(new Percentage(0.1));
+        SimulationStep step = SimulationStep.valueOf(startDate, Duration.ofHours(1));
         
         // Battery should use forceChargingLimit (10%), not carChargingLimit (90%)
         Percentage chargingLimit = battery.getChargingLimit(step);
         assertEquals(0.1, chargingLimit.value(), ALLOWED_DELTA);
+    }
+
+    @Test
+    public void testDeviceSpecificChargingLimit()
+    {
+        // Arrange - Battery with device-specific charging limit
+        DeviceConfig config = getStandardBatteryConfig();
+        config.setForceChargingLimit(new Percentage(0.6)); // 60% charging limit in device config
+        Battery battery = new Battery(config);
+        
+        SimulationStep step = createSimulationStep(Duration.ofHours(1)); // Step config has no force charging
+        DeviceState deviceState = createStandardDeviceState(new Percentage(0.3)); // 30% charged
+        EnergySystem system = EnergySystem.INIT; // No system energy
+
+        // Act
+        SimulationStepResult result = battery.simulate(step, system, deviceState);
+
+        // Assert
+        assertNotNull(result);
+
+        // Expected: Battery charges from grid up to device-specific limit (60%), charging 3 kWh (30% to 60%)
+        assertEquals(-3.0, result.system().getCurrentEnergy().amount(), ALLOWED_DELTA); // System consumed 3 kWh from grid
+        assertEquals(0.6, result.deviceState().percentage().value(), ALLOWED_DELTA); // Charged to 60%
+        assertEquals(6.0, result.deviceState().storedEnergy().amount(), ALLOWED_DELTA); // 3 kWh + 3 kWh = 6 kWh
     }
 }
