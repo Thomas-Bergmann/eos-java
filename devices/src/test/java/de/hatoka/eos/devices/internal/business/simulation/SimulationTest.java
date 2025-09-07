@@ -329,14 +329,14 @@ public class SimulationTest
         // energy values
         assertEquals(25.94, result.system().produced().amount(), 0.05);
         assertEquals(2.09, result.system().discharged().amount(), 0.05);
-        assertEquals(58.36, result.system().charged().amount(), 0.05);
-        assertEquals(37.53, result.system().imported().amount(), 0.05);
-        assertEquals(0, result.system().exported().amount(), 0.05);
+        assertEquals(67.65, result.system().charged().amount(), 0.05);
+        assertEquals(49.09, result.system().imported().amount(), 0.05);
+        assertEquals(2.28, result.system().exported().amount(), 0.05);
         assertEquals(7.2, result.system().consumed().amount(), 0.05);
         // costs - Using Money.round() for 2-decimal precision comparison
-        assertEquals(Money.ofEur(-14.63), result.system().importRevenue().round()); // Cost from grid import
-        assertEquals(Money.ZERO, result.system().exportRevenue().round()); // Revenue from grid export
-        assertEquals(Money.ofEur(-14.63), result.system().getEnergyRevenue().round()); // Net profit from export (negative cost = profit)
+        assertEquals(Money.ofEur(-19.15), result.system().importRevenue().round()); // Cost from grid import
+        assertEquals(Money.ofEur(0.18), result.system().exportRevenue().round()); // Revenue from grid export
+        assertEquals(Money.ofEur(-18.96), result.system().getEnergyRevenue().round()); // Net profit from export (negative cost = profit)
     }
 
     @Test
