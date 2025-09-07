@@ -1,0 +1,62 @@
+installation:
+  location: "Europe/Germany/Thuringia/Jena"
+  timezone: "Europe/Berlin"
+
+devices:
+  - type: SOLAR_PANEL
+    production:
+      amount: 0.45
+      unit: "K_W"
+    statisticsResource: "curved"
+    panelEfficiency: .92 # 92% efficiency
+    count: 13
+
+  - type: NOISY_USAGE
+    consumption:
+      amount: 0.3
+      unit: "K_W"
+    count: 1
+
+  - type: BATTERY
+    capacity:
+      amount: 3.0
+      unit: "K_WH"
+    chargeRate:
+      amount: 2.2
+      unit: "K_W"
+    dischargeRate:
+      amount: 2.1
+      unit: "K_W"
+    count: 3
+    chargingEfficiency: 0.85
+    dischargingEfficiency: 0.85
+    dailyStorageLoss: 0.05
+
+  - type: ELECTRIC_CAR
+    capacity:
+      amount: 50.0
+      unit: "K_WH"
+    chargeRate:
+      amount: 11.0
+      unit: "K_W"
+    dischargeRate:
+      amount: 10.0
+      unit: "K_W"
+    count: 1
+    
+  - type: GRID
+    count: 1
+
+grid:
+  type: "FLAT"
+  flatPriceProvider:
+    importPrice:
+      amount: 0.39
+      currency: EUR
+    exportPrice:
+      amount: 0.08
+      currency: EUR
+
+charging:
+  forceChargingLimit: 0.1
+  carChargingLimit: 0.8

@@ -1,0 +1,58 @@
+installation:
+  location: "Europe/Germany/Thuringia/Jena"
+  timezone: "Europe/Berlin"
+
+devices:
+  - type: BATTERY
+    capacity:
+      amount: 10.0
+      unit: "K_WH"
+    chargeRate:
+      amount: 5.0
+      unit: "K_W"
+    dischargeRate:
+      amount: 4.0
+      unit: "K_W"
+    count: 1
+    chargingEfficiency: 1.0        # 100% efficiency for test
+    dischargingEfficiency: 1.0     # 100% efficiency for test
+    dailyStorageLoss: 0.0          # 0% storage loss for test
+    startStorageLevel: 1.0         # 100% initial charge
+
+  - type: ELECTRIC_CAR
+    capacity:
+      amount: 50.0
+      unit: "K_WH"
+    chargeRate:
+      amount: 11.0
+      unit: "K_W"
+    dischargeRate:
+      amount: 10.0
+      unit: "K_W"
+    count: 1
+    chargingEfficiency: 1.0        # 100% efficiency for test
+    dischargingEfficiency: 1.0     # 100% efficiency for test
+    dailyStorageLoss: 0.0          # 0% storage loss for test
+    startStorageLevel: 1.0         # 100% initial charge
+
+  - type: NOISY_USAGE
+    consumption:
+      amount: 1.0
+      unit: "K_W"
+    count: 1
+
+  - type: GRID
+    count: 1
+
+grid:
+  flatPriceProvider:
+    importPrice:
+      amount: 0.39
+      currency: EUR
+    exportPrice:
+      amount: 0.08
+      currency: EUR
+
+charging:
+  forceChargingLimit: 0.01
+  carChargingLimit: 0.01

@@ -1,0 +1,15 @@
+.idea
+.project
+.classpath
+.envrc
+.settings/**
+.gradle/**
+.vscode/**
+target/**
+**/build/**
+**/bin/**
+/.gradle/
+
+# Aider files
+.aider*
+aider

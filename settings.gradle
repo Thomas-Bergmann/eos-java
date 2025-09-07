@@ -1,0 +1,17 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        mavenLocal()
+    }
+    plugins {
+        id('io.quarkus') version '3.25.2'
+    }
+}
+
+rootProject.name = 'eos'
+
+include 'versions'
+include 'versions-test'
+include 'devices'
+// include 'service-eos'

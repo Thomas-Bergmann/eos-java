@@ -1,0 +1,23 @@
+hourly_efficiency:
+  - hour: 8
+    efficiency: 0.6
+  - hour: 9
+    efficiency: 0.8
+  - hour: 10
+    efficiency: 0.9
+  - hour: 11
+    efficiency: 0.95
+  - hour: 12
+    efficiency: 1.0
+  - hour: 13
+    efficiency: 0.95
+  - hour: 14
+    efficiency: 0.9
+  - hour: 15
+    efficiency: 0.1
+  - hour: 16
+    efficiency: 0.05
+  - hour: 17
+    efficiency: 0.6
+  - hour: 18
+    efficiency: 0.4

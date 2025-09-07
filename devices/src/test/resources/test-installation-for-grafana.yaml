@@ -1,0 +1,90 @@
+installation:
+  location: "Europe/Germany/Thuringia/Jena"
+  timezone: "Europe/Berlin"
+
+devices:
+  - type: SOLAR_PANEL
+    production:
+      amount: 0.45
+      unit: "K_W"
+    statisticsResource: "curved"
+    panelEfficiency: .92 # 92% efficiency
+    count: 13
+
+  - type: NOISY_USAGE
+    consumption:
+      amount: 0.3
+      unit: "K_W"
+    count: 1
+
+  - type: BATTERY
+    capacity:
+      amount: 3.0
+      unit: "K_WH"
+    chargeRate:
+      amount: 2.2
+      unit: "K_W"
+    dischargeRate:
+      amount: 2.1
+      unit: "K_W"
+    count: 3
+    chargingEfficiency: 0.85
+    dischargingEfficiency: 0.85
+    dailyStorageLoss: 0.01
+
+  - type: ELECTRIC_CAR
+    count: 1
+    capacity:
+      amount: 50.0
+      unit: "K_WH"
+    chargeRate:
+      amount: 11.0
+      unit: "K_W"
+    dischargeRate:
+      amount: 10.0
+      unit: "K_W"
+    chargingEfficiency: 0.90
+    dischargingEfficiency: 0.90
+    dailyStorageLoss: 0.01
+    usageProfile:
+      days: [TUESDAY, WEDNESDAY]
+      startUsage: "08:00"
+      endUsage: "17:00"
+      energyConsumption:
+        amount: 15.0
+        unit: "K_WH"
+    
+  - type: GRID
+    count: 1
+
+grid:
+  type: "CSV"
+  flatPriceProvider:
+    importPrice:
+      amount: 0.39
+      currency: EUR
+    exportPrice:
+      amount: 0.08
+      currency: EUR
+  csvPriceProvider:
+    currency: EUR
+    exportCharge:
+      price:
+        amount: 0.00
+        currency: EUR
+      energy:
+        amount: 1
+        unit: "K_WH"
+    importCharge:
+      price:
+        amount: 0.08
+        currency: EUR
+      energy:
+        amount: 1
+        unit: "K_WH"
+    resource:
+      - stockprices_DE_LU_week_32-33.csv
+
+charging:
+  forceChargingLimit: 0.1
+  carChargingLimit: 0.1

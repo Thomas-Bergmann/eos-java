@@ -1,0 +1,33 @@
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Publish dependencies
+
+on:
+  push:
+    branches:
+      - 'depsub/*'
+      - 'main'
+    tags:
+      - '*'
+
+jobs:
+  build:
+    environment: CIRelease
+    runs-on: ubuntu-latest
+    permissions: # The Dependency Submission API requires write permission
+      contents: write
+    steps:
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - uses: actions/checkout@v3
+      - name: Gradle Dependency Submission
+        uses: mikepenz/gradle-dependency-submission@v1
+        with:
+          gradle-build-module: |-
+            :
+          gradle-build-configuration: |-
+            compileClasspath

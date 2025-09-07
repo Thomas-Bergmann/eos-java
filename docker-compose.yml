@@ -1,0 +1,46 @@
+services:
+  influxdb:
+    image: influxdb:2.7-alpine
+    container_name: eos-influxdb
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=password123
+      - DOCKER_INFLUXDB_INIT_ORG=eos
+      - DOCKER_INFLUXDB_INIT_BUCKET=energy_simulation
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=eos-token-12345678901234567890
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+      - influxdb-config:/etc/influxdb2
+    networks:
+      - eos-monitoring
+
+  grafana:
+    image: grafana/grafana:10.2.2
+    container_name: eos-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_INSTALL_PLUGINS=
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - eos-monitoring
+    depends_on:
+      - influxdb
+
+volumes:
+  influxdb-data:
+  influxdb-config:
+  grafana-data:
+
+networks:
+  eos-monitoring:
+    driver: bridge
