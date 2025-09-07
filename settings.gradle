@@ -9,7 +9,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'eos'
+rootProject.name = 'eos-java'
 
 include 'versions'
 include 'versions-test'
