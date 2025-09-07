@@ -26,7 +26,7 @@ dependencies {
     implementation("io.quarkus:quarkus-micrometer-registry-prometheus")
     
     // InfluxDB client for Grafana visualization
-    implementation("com.influxdb:influxdb-client-java:6.10.0")
+    implementation("com.influxdb:influxdb-client-java:7.3.0")
 
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("io.rest-assured:rest-assured")
