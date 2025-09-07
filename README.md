@@ -1,8 +1,7 @@
 # Energy System Simulation
 
-* ![Build & Test](https://github.com/Thomas-Bergmann/EOS/actions/workflows/build.yml/badge.svg)
-* ![Dependencies](https://github.com/Thomas-Bergmann/EOS/actions/workflows/depsubmission.yml/badge.svg)
-* ![Publish](https://github.com/Thomas-Bergmann/EOS/actions/workflows/release.yml/badge.svg)
+* ![Build & Test](https://github.com/Thomas-Bergmann/eos-java/actions/workflows/build.yml/badge.svg)
+* ![Dependencies](https://github.com/Thomas-Bergmann/eos-java/actions/workflows/depsubmission.yml/badge.svg)
 
 This project is a re-implementation [Akkudoctor/EOS](https://github.com/Akkudoktor-EOS/EOS) in Java.
 
@@ -21,7 +20,10 @@ This section describes how a working copy of this project can be set up on your 
 - [Java JDK 21](https://adoptium.net/temurin/releases/) needs to be installed and JAVA_HOME must be set
 
 ### Build and Testing
+The test requires a InfluxDB, the docker-compose.yml creates that instance.
+
 ```
+docker compose up
 ./gradlew test
 ```
 Runs all JUnit-Tests specified in this project.
