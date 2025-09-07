@@ -16,6 +16,24 @@ jobs:
     environment: CIRelease
     runs-on: ubuntu-latest
 
+    services:
+      influxdb:
+        image: influxdb:2.7-alpine
+        ports:
+          - 8086:8086
+        env:
+          DOCKER_INFLUXDB_INIT_MODE: setup
+          DOCKER_INFLUXDB_INIT_USERNAME: admin
+          DOCKER_INFLUXDB_INIT_PASSWORD: password123
+          DOCKER_INFLUXDB_INIT_ORG: eos
+          DOCKER_INFLUXDB_INIT_BUCKET: energy_simulation
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: eos-token-12345678901234567890
+        options: >-
+          --health-cmd "curl -f http://localhost:8086/ping || exit 1"
+          --health-interval 30s
+          --health-timeout 10s
+          --health-retries 5
+
     steps:
       - name: Set up JDK 21
         uses: actions/setup-java@v3
@@ -23,6 +41,13 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
       - uses: actions/checkout@v3
+
+      - name: Wait for InfluxDB to be ready
+        run: |
+          echo "Waiting for InfluxDB to be ready..."
+          timeout 60 bash -c 'until curl -f http://localhost:8086/ping; do sleep 2; done'
+          echo "InfluxDB is ready!"
+
       - name: Run gradle release
         env:
           JAVA_OPTS: "-Xmx1024M"
