@@ -4,7 +4,7 @@ plugins {
 
 // Define dependency versions for dependency groups
 val junitVersion = "5.13.3"
-val junitPlatformVersion = "1.13.3"
+val junitPlatformVersion = "1.13.4"
 
 dependencies {
     constraints {

@@ -3,7 +3,7 @@ plugins {
 }
 
 // Define dependency versions for dependency groups
-val fasterXMLVersion = "2.19.1"
+val fasterXMLVersion = "2.20"
 
 javaPlatform.allowDependencies()
 
