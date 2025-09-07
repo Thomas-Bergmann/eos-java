@@ -28,6 +28,6 @@ jobs:
         uses: mikepenz/gradle-dependency-submission@v1
         with:
           gradle-build-module: |-
-            :
+            :devices
           gradle-build-configuration: |-
             compileClasspath
