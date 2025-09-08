@@ -3,7 +3,6 @@ name: Create PR to dependabot-integration from main
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
 
 jobs:
   create-pr-to-dependabot:
@@ -41,7 +40,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: dependabot-integration
-          head: main
+          branch: main
           title: "Sync main branch changes to dependabot-integration"
           body: |
             ## Main Branch Sync
