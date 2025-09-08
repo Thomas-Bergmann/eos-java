@@ -21,7 +21,7 @@ dependencies {
         api("com.fasterxml.jackson.core:jackson-annotations:${fasterXMLVersion}")
 
         api("com.microsoft.azure:msal4j:1.21.0")
-        api("com.azure:azure-identity:1.16.2")
+        api("com.azure:azure-identity:1.17.0")
         api("com.azure:azure-storage-blob:12.30.1")
         api("com.azure:azure-data-tables:12.5.4")
         api("com.azure:azure-storage-file-share:12.26.1")
