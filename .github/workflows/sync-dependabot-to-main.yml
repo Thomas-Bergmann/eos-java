@@ -1,8 +1,8 @@
 name: Create PR to main from dependabot-integration
 
 on:
-  push:
-    branches: [ dependabot-integration ]
+  schedule:
+    - cron: '0 8 * * 1'  # Weekly on Mondays at 8:00 AM UTC
   workflow_dispatch:
 
 jobs:
@@ -41,7 +41,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: main
-          head: dependabot-integration
+          branch: dependabot-integration
           title: "Sync dependency updates from dependabot-integration to main"
           body: |
             ## Dependency Updates Sync
