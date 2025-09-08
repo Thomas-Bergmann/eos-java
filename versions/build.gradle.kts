@@ -24,7 +24,7 @@ dependencies {
         api("com.azure:azure-identity:1.16.2")
         api("com.azure:azure-storage-blob:12.30.1")
         api("com.azure:azure-data-tables:12.5.4")
-        api("com.azure:azure-storage-file-share:12.26.1")
+        api("com.azure:azure-storage-file-share:12.27.2")
 
         // Prometheus metrics
         api("io.micrometer:micrometer-registry-prometheus:1.14.3")
