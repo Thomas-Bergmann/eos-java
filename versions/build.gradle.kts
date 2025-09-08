@@ -13,7 +13,7 @@ dependencies {
     constraints {
 
         // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
-        api("org.apache.commons:commons-lang3:3.17.0")
+        api("org.apache.commons:commons-lang3:3.18.0")
         api("org.apache.commons:commons-csv:1.14.1")
 
         api("com.fasterxml.jackson.core:jackson-core:${fasterXMLVersion}")
