@@ -27,7 +27,7 @@ dependencies {
         api("com.azure:azure-storage-file-share:12.26.1")
 
         // Prometheus metrics
-        api("io.micrometer:micrometer-registry-prometheus:1.14.3")
+        api("io.micrometer:micrometer-registry-prometheus:1.15.4")
     }
 }
 
