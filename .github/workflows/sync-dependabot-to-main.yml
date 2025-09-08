@@ -8,6 +8,9 @@ on:
 jobs:
   create-pr-to-main:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout dependabot-integration
         uses: actions/checkout@v4
