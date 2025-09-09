@@ -4,9 +4,11 @@ import de.hatoka.eos.devices.capi.business.config.DeviceConfig;
 import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
 import de.hatoka.eos.devices.capi.business.device.DeviceType;
 import de.hatoka.eos.devices.capi.units.Money;
+import de.hatoka.eos.devices.internal.business.DateTooling;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,9 +25,8 @@ public class ConfigurationLoaderTest
 
         // Assert
         assertNotNull(config);
-        assertNotNull(config.getInstallation());
-        assertEquals("Europe/Germany/Thuringia/Jena", config.getInstallation().getLocation());
-        assertEquals("Europe/Berlin", config.getInstallation().getTimezone());
+        assertEquals(ZoneId.of("Europe/Berlin"), config.getSimulation().getTimezone());
+        assertEquals(DateTooling.createBerlinDate("2025/08/04"), config.getSimulation().getZonedStartTime());
 
         // Test devices
         assertNotNull(config.getDevices());

@@ -29,7 +29,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -276,14 +275,14 @@ public class SimulationTest
     public void testFullDaySimulationWithTestInstallationConfig() throws IOException
     {
         // Arrange - Load actual test-installation.yaml configuration
-        InstallationConfig installationConfig = configurationLoader.load("test-installation-without-car.yaml");
+        InstallationConfig config = configurationLoader.load("test-installation-without-car.yaml");
 
         // Simulate one full day (24 hours) with 1-hour steps
-        ZonedDateTime startDate = ZonedDateTime.of(2024, 6, 21, 0, 0, 0, 0, ZoneId.of("Europe/Berlin")); // Summer solstice
+        ZonedDateTime startDate = ZonedDateTime.of(2024, 6, 21, 0, 0, 0, 0, config.getSimulation().getTimezone()); // Summer solstice
         ZonedDateTime endDate = startDate.plusDays(1);
         Duration stepDuration = Duration.ofHours(1);
         
-        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, configurationDeviceBuilder.getDevices(installationConfig), Collections.emptyMap(), Forecasts.STANDARD);
+        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, configurationDeviceBuilder.getDevices(config), Collections.emptyMap(), Forecasts.STANDARD);
         SimulationResult result = simulator.simulate(request);
         
         // Assert - Focus only on grid costs/revenues for the full day
@@ -309,14 +308,14 @@ public class SimulationTest
     public void testWithCar() throws IOException
     {
         // Arrange - Load actual test-installation.yaml configuration
-        InstallationConfig installationConfig = configurationLoader.load("test-installation-with-car.yaml");
+        InstallationConfig config = configurationLoader.load("test-installation-with-car.yaml");
 
         // Simulate one full day (24 hours) with 1-hour steps
-        ZonedDateTime startDate = ZonedDateTime.of(2024, 6, 21, 0, 0, 0, 0, ZoneId.of("Europe/Berlin")); // Summer solstice
+        ZonedDateTime startDate = ZonedDateTime.of(2024, 6, 21, 0, 0, 0, 0, config.getSimulation().getTimezone()); // Summer solstice
         ZonedDateTime endDate = startDate.plusDays(1);
         Duration stepDuration = Duration.ofHours(1);
 
-        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, configurationDeviceBuilder.getDevices(installationConfig), Collections.emptyMap(), Forecasts.STANDARD);
+        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, configurationDeviceBuilder.getDevices(config), Collections.emptyMap(), Forecasts.STANDARD);
         SimulationResult result = simulator.simulate(request);
 
         // Assert - Focus only on grid costs/revenues for the full day

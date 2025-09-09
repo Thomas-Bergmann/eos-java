@@ -1,14 +1,13 @@
 package de.hatoka.eos.devices.internal.business.metrics;
 
 import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
+import de.hatoka.eos.devices.capi.business.forecast.Forecasts;
 import de.hatoka.eos.devices.capi.business.metrics.SimulationMetricsExporter;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationRequest;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationResult;
-import de.hatoka.eos.devices.capi.business.forecast.Forecasts;
-import de.hatoka.eos.devices.internal.business.DateTooling;
+import de.hatoka.eos.devices.capi.business.simulation.Simulator;
 import de.hatoka.eos.devices.internal.business.config.ConfigurationDeviceBuilder;
 import de.hatoka.eos.devices.internal.business.config.ConfigurationLoader;
-import de.hatoka.eos.devices.capi.business.simulation.Simulator;
 import de.hatoka.eos.devices.internal.business.forecast.FlatWeatherService;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -18,18 +17,15 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 public class SimulationMetricsExporterTest
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(SimulationMetricsExporterTest.class);
-    public static final ZoneId ZONE_ID = ZoneId.of("Europe/Berlin");
 
     @Inject
     private ConfigurationDeviceBuilder configurationDeviceBuilder;
@@ -50,9 +46,9 @@ public class SimulationMetricsExporterTest
         InstallationConfig config = configurationLoader.load("test-installation-for-grafana.yaml");
 
         // Simulate from today midnight with 5-minute intervals for smooth curves
-        ZonedDateTime startDate = DateTooling.createBerlinDate("2025/08/04");
-        ZonedDateTime endDate = DateTooling.createBerlinDate("2025/08/17");
-        Duration stepDuration = Duration.ofMinutes(15);
+        ZonedDateTime startDate = config.getSimulation().getZonedStartTime();
+        ZonedDateTime endDate = config.getSimulation().getZonedEndTime();
+        Duration stepDuration = config.getSimulation().getStepDuration();
 
         LOGGER.info("🌅 Starting simulation from: {} to: {}", startDate, endDate);
 

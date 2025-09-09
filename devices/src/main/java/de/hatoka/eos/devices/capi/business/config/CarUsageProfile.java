@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.hatoka.eos.devices.capi.units.Energy;
+import de.hatoka.eos.devices.capi.units.LocalTimeJsonConverter;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;

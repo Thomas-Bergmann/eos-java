@@ -7,9 +7,9 @@ import java.util.List;
 
 public class InstallationConfig
 {
-    @JsonProperty("installation")
-    @JsonPropertyDescription("General installation information including location and timezone")
-    private InstallationInfo installation;
+    @JsonProperty("simulation")
+    @JsonPropertyDescription("information about simulation")
+    private SimulationConfig simulation;
 
     @JsonProperty("devices")
     @JsonPropertyDescription("List of energy devices in the installation (solar panels, batteries, etc.)")
@@ -18,17 +18,6 @@ public class InstallationConfig
     @JsonProperty("grid")
     @JsonPropertyDescription("Grid connection configuration including import/export pricing")
     private GridConfig grid;
-    
-
-    public InstallationInfo getInstallation()
-    {
-        return installation;
-    }
-
-    public void setInstallation(InstallationInfo installation)
-    {
-        this.installation = installation;
-    }
 
     public List<DeviceConfig> getDevices()
     {
@@ -50,4 +39,13 @@ public class InstallationConfig
         this.grid = grid;
     }
 
+    public SimulationConfig getSimulation()
+    {
+        return simulation;
+    }
+
+    public void setSimulation(SimulationConfig simulation)
+    {
+        this.simulation = simulation;
+    }
 }

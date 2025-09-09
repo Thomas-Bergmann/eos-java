@@ -1,6 +1,7 @@
-installation:
-  location: "Europe/Germany/Thuringia/Jena"
+simulation:
   timezone: "Europe/Berlin"
+  start: "2025/08/04-00:00"
+  end: "2025/08/17-00:00"
 
 devices:
   - type: BATTERY

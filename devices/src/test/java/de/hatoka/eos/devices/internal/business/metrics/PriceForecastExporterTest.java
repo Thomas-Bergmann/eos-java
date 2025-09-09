@@ -13,14 +13,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @QuarkusTest
 public class PriceForecastExporterTest
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(PriceForecastExporterTest.class);
-    public static final ZoneId ZONE_ID = ZoneId.of("Europe/Berlin");
 
     @Inject
     private ConfigurationLoader configurationLoader;
@@ -34,7 +32,7 @@ public class PriceForecastExporterTest
         // Arrange - Load test configuration without electric car for cleaner curves
         InstallationConfig installationConfig = configurationLoader.load("test-installation-for-grafana.yaml");
         EnergyPriceForecast priceProvider = installationConfig.getGrid().getEnergyPriceProvider();
-        // Simulate from today midnight with 5-minute intervals for smooth curves
+        // Simulate from August, because of retrieved daily prices (15min interval)
         ZonedDateTime startDate = DateTooling.createBerlinDate("2025/08/09");
         ZonedDateTime endDate = startDate.plusDays(3);
         Duration stepDuration = Duration.ofMinutes(15);
