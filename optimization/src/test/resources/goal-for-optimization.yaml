@@ -1,0 +1,7 @@
+carCharging:
+  percentage: 0.9
+  penalty:
+    percentage: 0.1
+    price:
+      amount: 5
+      currency: "EUR"

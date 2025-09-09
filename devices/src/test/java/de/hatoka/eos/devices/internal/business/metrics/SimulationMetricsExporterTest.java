@@ -1,12 +1,12 @@
 package de.hatoka.eos.devices.internal.business.metrics;
 
 import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
+import de.hatoka.eos.devices.capi.business.device.DeviceFactory;
 import de.hatoka.eos.devices.capi.business.forecast.Forecasts;
 import de.hatoka.eos.devices.capi.business.metrics.SimulationMetricsExporter;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationRequest;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationResult;
 import de.hatoka.eos.devices.capi.business.simulation.Simulator;
-import de.hatoka.eos.devices.internal.business.config.ConfigurationDeviceBuilder;
 import de.hatoka.eos.devices.internal.business.config.ConfigurationLoader;
 import de.hatoka.eos.devices.internal.business.forecast.FlatWeatherService;
 import io.quarkus.test.junit.QuarkusTest;
@@ -28,7 +28,7 @@ public class SimulationMetricsExporterTest
     private static final Logger LOGGER = LoggerFactory.getLogger(SimulationMetricsExporterTest.class);
 
     @Inject
-    private ConfigurationDeviceBuilder configurationDeviceBuilder;
+    private DeviceFactory deviceFactory;
 
     @Inject
     private ConfigurationLoader configurationLoader;
@@ -53,7 +53,7 @@ public class SimulationMetricsExporterTest
         LOGGER.info("🌅 Starting simulation from: {} to: {}", startDate, endDate);
 
         SimulationRequest request = new SimulationRequest("today-energy-simulation", startDate, endDate, stepDuration,
-                        configurationDeviceBuilder.getDevices(config), Collections.emptyMap(),
+                        deviceFactory.createDevices(config.getDevices()), Collections.emptyMap(),
                         new Forecasts(FlatWeatherService.FULL_FROM_7_to_18, config.getGrid().getEnergyPriceProvider()));
 
         // Act - Run simulation step by step for 5-minute interval data

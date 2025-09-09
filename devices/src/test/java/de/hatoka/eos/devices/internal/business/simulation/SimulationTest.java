@@ -2,10 +2,7 @@ package de.hatoka.eos.devices.internal.business.simulation;
 
 import de.hatoka.eos.devices.capi.business.config.DeviceConfig;
 import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
-import de.hatoka.eos.devices.capi.business.device.Device;
-import de.hatoka.eos.devices.capi.business.device.DeviceRef;
-import de.hatoka.eos.devices.capi.business.device.DeviceState;
-import de.hatoka.eos.devices.capi.business.device.DeviceType;
+import de.hatoka.eos.devices.capi.business.device.*;
 import de.hatoka.eos.devices.capi.business.forecast.Forecasts;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationRequest;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationResult;
@@ -15,7 +12,6 @@ import de.hatoka.eos.devices.capi.units.Money;
 import de.hatoka.eos.devices.capi.units.Percentage;
 import de.hatoka.eos.devices.capi.units.Power;
 import de.hatoka.eos.devices.internal.business.DateTooling;
-import de.hatoka.eos.devices.internal.business.config.ConfigurationDeviceBuilder;
 import de.hatoka.eos.devices.internal.business.config.ConfigurationLoader;
 import de.hatoka.eos.devices.internal.business.devices.Battery;
 import de.hatoka.eos.devices.internal.business.devices.Grid;
@@ -41,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class SimulationTest
 {
     @Inject
-    private ConfigurationDeviceBuilder configurationDeviceBuilder;
+    private DeviceFactory deviceFactory;
     @Inject
     private ConfigurationLoader configurationLoader;
     @Inject
@@ -282,7 +278,7 @@ public class SimulationTest
         ZonedDateTime endDate = startDate.plusDays(1);
         Duration stepDuration = Duration.ofHours(1);
         
-        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, configurationDeviceBuilder.getDevices(config), Collections.emptyMap(), Forecasts.STANDARD);
+        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, deviceFactory.createDevices(config.getDevices()), Collections.emptyMap(), Forecasts.STANDARD);
         SimulationResult result = simulator.simulate(request);
         
         // Assert - Focus only on grid costs/revenues for the full day
@@ -315,7 +311,7 @@ public class SimulationTest
         ZonedDateTime endDate = startDate.plusDays(1);
         Duration stepDuration = Duration.ofHours(1);
 
-        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, configurationDeviceBuilder.getDevices(config), Collections.emptyMap(), Forecasts.STANDARD);
+        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, deviceFactory.createDevices(config.getDevices()), Collections.emptyMap(), Forecasts.STANDARD);
         SimulationResult result = simulator.simulate(request);
 
         // Assert - Focus only on grid costs/revenues for the full day
@@ -349,8 +345,8 @@ public class SimulationTest
             "today-energy-simulation",
                         ZonedDateTime.now().minus(Duration.ofHours(24)),
                         ZonedDateTime.now().minus(Duration.ofHours(23)), // two points (incl. outer)
-            Duration.ofHours(1), 
-            configurationDeviceBuilder.getDevices(config), 
+            Duration.ofHours(1),
+            deviceFactory.createDevices(config.getDevices()),
             Collections.emptyMap(),
             Forecasts.STANDARD
         );
