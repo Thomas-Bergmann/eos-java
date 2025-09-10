@@ -7,10 +7,6 @@ import java.util.List;
 
 public class InstallationConfig
 {
-    @JsonProperty("simulation")
-    @JsonPropertyDescription("information about simulation")
-    private SimulationConfig simulation;
-
     @JsonProperty("devices")
     @JsonPropertyDescription("List of energy devices in the installation (solar panels, batteries, etc.)")
     private List<DeviceConfig> devices;
@@ -37,15 +33,5 @@ public class InstallationConfig
     public void setGrid(GridConfig grid)
     {
         this.grid = grid;
-    }
-
-    public SimulationConfig getSimulation()
-    {
-        return simulation;
-    }
-
-    public void setSimulation(SimulationConfig simulation)
-    {
-        this.simulation = simulation;
     }
 }

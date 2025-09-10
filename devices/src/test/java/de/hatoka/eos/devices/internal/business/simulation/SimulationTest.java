@@ -2,6 +2,7 @@ package de.hatoka.eos.devices.internal.business.simulation;
 
 import de.hatoka.eos.devices.capi.business.config.DeviceConfig;
 import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
+import de.hatoka.eos.devices.capi.business.config.SimulationConfig;
 import de.hatoka.eos.devices.capi.business.device.*;
 import de.hatoka.eos.devices.capi.business.forecast.Forecasts;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationRequest;
@@ -270,11 +271,11 @@ public class SimulationTest
     @Test
     public void testFullDaySimulationWithTestInstallationConfig() throws IOException
     {
-        // Arrange - Load actual test-installation.yaml configuration
-        InstallationConfig config = configurationLoader.load("test-installation-without-car.yaml");
+        InstallationConfig config = configurationLoader.loadInstallation("test-installation-without-car.yaml");
+        SimulationConfig simConfig = configurationLoader.loadSimulation("test-simulation-summer.yaml");
 
         // Simulate one full day (24 hours) with 1-hour steps
-        ZonedDateTime startDate = ZonedDateTime.of(2024, 6, 21, 0, 0, 0, 0, config.getSimulation().getTimezone()); // Summer solstice
+        ZonedDateTime startDate = simConfig.getTimeSettings().getZonedStartTime();
         ZonedDateTime endDate = startDate.plusDays(1);
         Duration stepDuration = Duration.ofHours(1);
         
@@ -304,10 +305,11 @@ public class SimulationTest
     public void testWithCar() throws IOException
     {
         // Arrange - Load actual test-installation.yaml configuration
-        InstallationConfig config = configurationLoader.load("test-installation-with-car.yaml");
+        InstallationConfig config = configurationLoader.loadInstallation("test-installation-with-car.yaml");
+        SimulationConfig simConfig = configurationLoader.loadSimulation("test-simulation-summer.yaml");
 
         // Simulate one full day (24 hours) with 1-hour steps
-        ZonedDateTime startDate = ZonedDateTime.of(2024, 6, 21, 0, 0, 0, 0, config.getSimulation().getTimezone()); // Summer solstice
+        ZonedDateTime startDate = simConfig.getTimeSettings().getZonedStartTime();
         ZonedDateTime endDate = startDate.plusDays(1);
         Duration stepDuration = Duration.ofHours(1);
 
@@ -338,7 +340,7 @@ public class SimulationTest
     public void testSimulationWithBatteryCarAndUsageFrom100Percent() throws IOException
     {
         // Load configuration with battery, electric car, and noisy usage - all starting at 100%
-        InstallationConfig config = configurationLoader.load("test-simulation-100percent.yaml");
+        InstallationConfig config = configurationLoader.loadInstallation("test-installation-100percent.yaml");
         
         // Simulate for 1 hour at night (no solar production)
         SimulationRequest request = new SimulationRequest(

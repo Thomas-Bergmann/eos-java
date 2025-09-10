@@ -1,6 +1,7 @@
 package de.hatoka.eos.devices.internal.business.metrics;
 
 import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
+import de.hatoka.eos.devices.capi.business.config.SimulationConfig;
 import de.hatoka.eos.devices.capi.business.device.DeviceFactory;
 import de.hatoka.eos.devices.capi.business.forecast.Forecasts;
 import de.hatoka.eos.devices.capi.business.metrics.SimulationMetricsExporter;
@@ -44,11 +45,12 @@ public class SimulationMetricsExporterTest
     {
         // Arrange - Load test configuration without electric car for cleaner curves
         InstallationConfig config = configurationLoader.load("test-installation-for-grafana.yaml");
+        SimulationConfig simConfig = configurationLoader.loadSimulation("test-simulation-with-csv-prices.yaml");
 
         // Simulate from today midnight with 5-minute intervals for smooth curves
-        ZonedDateTime startDate = config.getSimulation().getZonedStartTime();
-        ZonedDateTime endDate = config.getSimulation().getZonedEndTime();
-        Duration stepDuration = config.getSimulation().getStepDuration();
+        ZonedDateTime startDate = simConfig.getTimeSettings().getZonedStartTime();
+        ZonedDateTime endDate = simConfig.getTimeSettings().getZonedEndTime();
+        Duration stepDuration = simConfig.getTimeSettings().getStepDuration();
 
         LOGGER.info("🌅 Starting simulation from: {} to: {}", startDate, endDate);
 

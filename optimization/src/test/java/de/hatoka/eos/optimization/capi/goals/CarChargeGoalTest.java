@@ -8,7 +8,6 @@ import de.hatoka.eos.devices.capi.business.simulation.SimulationResult;
 import de.hatoka.eos.devices.capi.units.Energy;
 import de.hatoka.eos.devices.capi.units.Money;
 import de.hatoka.eos.devices.capi.units.Percentage;
-import de.hatoka.eos.devices.internal.business.config.ConfigurationLoader;
 import de.hatoka.eos.optimization.internal.business.config.OptimizationConfigurationLoader;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -23,12 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CarChargeGoalTest
 {
     @Inject
-    private OptimizationConfigurationLoader optimizationConfigurationLoader;
+    private OptimizationConfigurationLoader loader;
 
     @Test
     public void testPenaltyCalculationWhenBatteryIs60Percent() throws IOException
     {
-        OptimizationGoals goals = optimizationConfigurationLoader.load("goal-for-optimization.yaml");
+        OptimizationGoals goals = loader.loadGoals("goal-for-optimization.yaml");
         DeviceRef carRef = new DeviceRef(DeviceType.ELECTRIC_CAR, "car1");
         DeviceState carState = new DeviceState(
                         Energy.ofKwh(50.0),    // 50 kWh max capacity

@@ -27,7 +27,7 @@ public class OptimizationGoalsTest
     @Test
     public void testPenaltyCalculationWhenBatteryIs60Percent() throws IOException
     {
-        OptimizationGoals goals = optimizationConfigurationLoader.load("goal-for-optimization.yaml");
+        OptimizationGoals goals = optimizationConfigurationLoader.loadGoals("goal-for-optimization.yaml");
         DeviceRef carRef = new DeviceRef(DeviceType.ELECTRIC_CAR, "car1");
         DeviceState carState = new DeviceState(Energy.ofKwh(50.0),    // 50 kWh max capacity
                         new Percentage(0.6)     // 60% charged

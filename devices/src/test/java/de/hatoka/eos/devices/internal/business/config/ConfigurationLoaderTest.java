@@ -2,31 +2,27 @@ package de.hatoka.eos.devices.internal.business.config;
 
 import de.hatoka.eos.devices.capi.business.config.DeviceConfig;
 import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
+import de.hatoka.eos.devices.capi.business.config.SimulationConfig;
 import de.hatoka.eos.devices.capi.business.device.DeviceType;
 import de.hatoka.eos.devices.capi.units.Money;
 import de.hatoka.eos.devices.internal.business.DateTooling;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfigurationLoaderTest
 {
+    private final ConfigurationLoader loader = new ConfigurationLoader();
+
     @Test
-    public void testLoadFromResource() throws IOException
+    public void testInstallationConfigFromResource() throws IOException
     {
-        // Arrange
-        ConfigurationLoader loader = new ConfigurationLoader();
-
         // Act
-        InstallationConfig config = loader.load("test-installation-with-car.yaml");
-
-        // Assert
-        assertNotNull(config);
-        assertEquals(ZoneId.of("Europe/Berlin"), config.getSimulation().getTimezone());
-        assertEquals(DateTooling.createBerlinDate("2025/08/04"), config.getSimulation().getZonedStartTime());
+        InstallationConfig config = loader.loadInstallation("test-installation-with-car.yaml");
 
         // Test devices
         assertNotNull(config.getDevices());
@@ -61,18 +57,27 @@ public class ConfigurationLoaderTest
         assertEquals(Money.ofEur(0.08), config.getGrid().flatPriceConfig().exportPrice());
 
         // Test device-specific charging limits
-        DeviceConfig batteryConfig = config.getDevices().stream()
-            .filter(device -> device.getType() == DeviceType.BATTERY)
-            .findFirst().orElse(null);
+        DeviceConfig batteryConfig = config.getDevices().stream().filter(device -> device.getType() == DeviceType.BATTERY).findFirst().orElse(null);
         assertNotNull(batteryConfig);
         assertNotNull(batteryConfig.getForceChargingLimit());
         assertEquals(10, batteryConfig.getForceChargingLimit().toPercentage());
-        
-        DeviceConfig carConfig = config.getDevices().stream()
-            .filter(device -> device.getType() == DeviceType.ELECTRIC_CAR)
-            .findFirst().orElse(null);
+
+        DeviceConfig carConfig = config.getDevices().stream().filter(device -> device.getType() == DeviceType.ELECTRIC_CAR).findFirst().orElse(null);
         assertNotNull(carConfig);
         assertNotNull(carConfig.getForceChargingLimit());
         assertEquals(80, carConfig.getForceChargingLimit().toPercentage());
+    }
+
+    @Test
+    public void testSimConfig() throws IOException
+    {
+        SimulationConfig simConfig = loader.loadSimulation("test-simulation-with-csv-prices.yaml");
+
+        assertNotNull(simConfig);
+        assertEquals(ZoneId.of("Europe/Berlin"), simConfig.getTimeSettings().getTimezone());
+        assertEquals(DateTooling.createBerlinDate("2025/08/04"), simConfig.getTimeSettings().getZonedStartTime());
+        assertEquals(Duration.ofHours(1), simConfig.getTimeSettings().getStepDuration());
+
+        assertEquals(Duration.ofMinutes(15), loader.loadSimulation("test-simulation-summer.yaml").getTimeSettings().getStepDuration());
     }
 }

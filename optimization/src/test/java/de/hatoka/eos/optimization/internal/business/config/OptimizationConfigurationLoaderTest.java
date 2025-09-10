@@ -2,19 +2,24 @@ package de.hatoka.eos.optimization.internal.business.config;
 
 import de.hatoka.eos.devices.capi.units.Money;
 import de.hatoka.eos.optimization.capi.goals.OptimizationGoals;
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@QuarkusTest
 public class OptimizationConfigurationLoaderTest
 {
+    @Inject
+    private OptimizationConfigurationLoader loader;
+
     @Test
     public void testLoadOptimizationGoal() throws IOException
     {
-        OptimizationConfigurationLoader loader = new OptimizationConfigurationLoader();
-        OptimizationGoals goal = loader.load("goal-for-optimization.yaml");
+        OptimizationGoals goal = loader.loadGoals("goal-for-optimization.yaml");
         
         assertNotNull(goal);
         assertNotNull(goal.getCarCharging());

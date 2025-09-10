@@ -28,8 +28,8 @@ public class OptimizerTest
     @Test
     public void testDoNothing() throws IOException
     {
-        InstallationConfig config = configurationLoader.load("test-installation-for-optimization.yaml");
-        OptimizationGoals goals = optimizationConfigurationLoader.load("goal-for-optimization.yaml");
+        InstallationConfig config = configurationLoader.loadInstallation("test-installation-for-optimization.yaml");
+        OptimizationGoals goals = optimizationConfigurationLoader.loadGoals("goal-for-optimization.yaml");
         OptimizationResult result = optimizer.optimize(config, goals);
         // starts at 80% goal is 90% makes 10% difference, 5 EUR
         assertEquals(Money.ofEur(5), result.getPenalty());
