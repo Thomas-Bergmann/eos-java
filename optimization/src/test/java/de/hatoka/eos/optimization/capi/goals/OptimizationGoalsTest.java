@@ -18,6 +18,9 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Test the accumulation over all optimization goals, simply without doing an optimization.
+ */
 @QuarkusTest
 public class OptimizationGoalsTest
 {

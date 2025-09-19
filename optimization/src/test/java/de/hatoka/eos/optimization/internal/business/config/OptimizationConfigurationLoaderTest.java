@@ -10,6 +10,9 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test loading yaml configuration of optimization goals.
+ */
 @QuarkusTest
 public class OptimizationConfigurationLoaderTest
 {

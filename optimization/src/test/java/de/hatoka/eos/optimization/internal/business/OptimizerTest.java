@@ -15,6 +15,9 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Test that Optimizer find a proper "execution plan".
+ */
 @QuarkusTest
 public class OptimizerTest
 {
@@ -25,6 +28,9 @@ public class OptimizerTest
     @Inject
     private Optimizer optimizer;
 
+    /**
+     * Test starting point, no simulation at all.
+     */
     @Test
     public void testDoNothing() throws IOException
     {

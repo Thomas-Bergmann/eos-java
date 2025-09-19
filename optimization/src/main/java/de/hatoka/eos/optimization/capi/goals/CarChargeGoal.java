@@ -11,6 +11,12 @@ import de.hatoka.eos.optimization.capi.business.OptimizationGoal;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A CarChargeGoal represents the goal to have a fully charged cars. The penalty is applied fluently, means that also "sub blocks" of the percentage
+ * penalty are applied.
+ * <li>The "percentage" is the charge of the battery to reach the goal. E.g. 80%</li>
+ * <li>The "penalty" contains the penalty for each missed percent. E.g. 1EUR for every missed percent</li>
+ */
 public class CarChargeGoal implements OptimizationGoal
 {
     @JsonProperty("percentage")
@@ -34,6 +40,11 @@ public class CarChargeGoal implements OptimizationGoal
     {
         return percentage;
     }
+
+    /**
+     * @param simulationResult result of simulation
+     * @return accumulated penalty for all electric cars in the simulation
+     */
     @Override
     public Money getPenalty(SimulationResult simulationResult)
     {

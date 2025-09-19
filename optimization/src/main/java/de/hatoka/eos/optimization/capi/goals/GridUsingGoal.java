@@ -5,6 +5,10 @@ import de.hatoka.eos.devices.capi.business.simulation.SimulationResult;
 import de.hatoka.eos.devices.capi.units.Money;
 import de.hatoka.eos.optimization.capi.business.OptimizationGoal;
 
+/**
+ * The GridUsingGoal is the spend amount of money with the grid. This goal is activated by default, but can be deactivated.
+ * <li>active - used or not (default true)</li>
+ */
 public class GridUsingGoal implements OptimizationGoal
 {
     @JsonProperty("active")
@@ -13,6 +17,6 @@ public class GridUsingGoal implements OptimizationGoal
     @Override
     public Money getPenalty(SimulationResult simulationResult)
     {
-        return simulationResult.system().getEnergyRevenue().negate();
+        return isActivated ? simulationResult.system().getEnergyRevenue().negate() : Money.ZERO;
     }
 }

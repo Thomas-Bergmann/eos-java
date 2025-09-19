@@ -10,10 +10,16 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Test calculation of grid usage
+ */
 public class GridUsingGoalTest
 {
     private final GridUsingGoal goal = new GridUsingGoal();
 
+    /**
+     * Test simply uses the grid by importing energy (costs 2.40) and exporting energy (yield 1.40)
+     */
     @Test
     public void testPenaltyWithPositiveEnergyRevenue()
     {

@@ -10,6 +10,9 @@ import de.hatoka.eos.optimization.capi.goals.OptimizationGoals;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
+/**
+ * Implementation of an Optimizer
+ */
 @Singleton
 public class OptimizerImpl implements Optimizer
 {

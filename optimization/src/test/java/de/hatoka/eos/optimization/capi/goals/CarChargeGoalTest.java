@@ -18,6 +18,9 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+/**
+ * Test calculation of car goals.
+ */
 @QuarkusTest
 public class CarChargeGoalTest
 {
