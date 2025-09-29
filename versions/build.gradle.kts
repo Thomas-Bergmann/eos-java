@@ -8,7 +8,7 @@ val fasterXMLVersion = "2.20.0"
 javaPlatform.allowDependencies()
 
 dependencies {
-    api(enforcedPlatform("io.quarkus.platform:quarkus-bom:3.26.3"))
+    api(enforcedPlatform("io.quarkus.platform:quarkus-bom:3.26.4"))
 
     constraints {
 
