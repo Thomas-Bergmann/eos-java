@@ -11,6 +11,13 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
 
+/**
+ * The CarUsageProfile defines, how often, how long the car is used, and what is the energy consumption if used
+ * @param days week days the car is used
+ * @param startUsage start time usage (car can't be loaded afterward)
+ * @param endUsage end time usage (car is available for loading and energy consumption, is "reduced" from car battery)
+ * @param energyConsumption energy consumption per usage
+ */
 public record CarUsageProfile(
     @JsonProperty("days")
     @JsonPropertyDescription("Days of the week when the car is used (e.g., [MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY])")

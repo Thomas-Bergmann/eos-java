@@ -17,6 +17,11 @@ import de.hatoka.eos.devices.internal.business.statistics.SolarPanelStatisticsLo
 
 import java.io.IOException;
 
+/**
+ * The DeviceConfig provides the configuration for all devices. The device itself uses a sub set of configuration values.
+ * The "implementation" is more a map with "named" and typed keys as a specific device configuration. May that needs to be improved if this configuration
+ * is a mess.
+ */
 public class DeviceConfig
 {
     @JsonProperty("type")
@@ -255,6 +260,9 @@ public class DeviceConfig
         this.forceChargingLimit = forceChargingLimit;
     }
 
+    /**
+     * @return the solar panel statistic of that devices. If solar panels have different statistics, these must be declared separately.
+     */
     @JsonIgnore
     public SolarPanelStatistics getSolarPanelStatistics()
     {
