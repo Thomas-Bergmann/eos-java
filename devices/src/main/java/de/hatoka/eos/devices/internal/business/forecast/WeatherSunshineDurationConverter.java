@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
@@ -35,11 +37,19 @@ public class WeatherSunshineDurationConverter
     static final Color YELLOW = new Color(249, 220, 32);
     static final Color GRAY = new Color(220, 220, 220);
     static final Color BLACK = Color.BLACK;
+
+    // Extended window to include full 24-hour forecast day (hour 2 of day 1 through hour 1 of day 2)
+    record SunHourRegion(int minX, int maxX, int minY, int maxY) {
+        SunHourRegion nextDay()
+        {
+            return new SunHourRegion(maxX,maxX + (maxX - minX), minY, maxY);
+        }
+    }
+    // picked up region from png image
     static final SunHourRegion WINDOW_DAY1 = new SunHourRegion(180, 342, 373, 408);
 
     // Bar positioning constants (from Excel analysis)
-    private static final double START_X = 183; // Middle between 2h and 3h markers
-    private static final double PIXELS_PER_HOUR = 6.75;
+    private static final double PIXELS_PER_HOUR =  ((double)(WINDOW_DAY1.maxX - WINDOW_DAY1.minX)) / 24;
     private static final int DAY_START_HOUR = 2; // Days start at 2h, not 0h
 
     /**
@@ -56,29 +66,31 @@ public class WeatherSunshineDurationConverter
      * @param hour the hour (0-23)
      * @return the X coordinate in pixels
      */
-    int calculateHourXPosition(int hour)
+    int calculateHourXPosition(SunHourRegion region, int hour)
     {
         if (hour < DAY_START_HOUR)
         {
             throw new IllegalArgumentException("Hour " + hour + " is before day start at " + DAY_START_HOUR + "h");
         }
-        double x = START_X + (hour - DAY_START_HOUR) * PIXELS_PER_HOUR;
+        double x = region.minX + PIXELS_PER_HOUR/2 + (hour - DAY_START_HOUR) * PIXELS_PER_HOUR;
         return (int) Math.round(x);
     }
 
     /**
      * Exports sunshine duration data from PNG image to CSV format.
+     * Each row represents a date with hourly sunshine values as columns.
      *
      * @param startDate the start date of the forecast
      * @param pngResourceName the name of the PNG resource file
-     * @return CSV string with format: date,hour0,hour1,...,hour23
+     * @return CSV string with format: date,hour_values...
+     *         Example: 2025/10/24,0,0,2,26,26,4,9,11,... (date + values for hours present in that date)
      * @throws IOException if reading the image fails
      */
     public String exportToCSV(LocalDate startDate, String pngResourceName) throws IOException
     {
         BufferedImage image = loadImage(pngResourceName);
-        Map<LocalDate, List<Integer>> sunshineDurationPerDay = extractSunshineDuration(image, startDate);
-        return exportToCSV(sunshineDurationPerDay);
+        Map<LocalDateTime, Integer> sunshineDurationPerHour = extractSunshineDuration(image, startDate);
+        return exportToCSV(sunshineDurationPerHour);
     }
 
     BufferedImage loadImage(String resourceName) throws IOException
@@ -96,61 +108,60 @@ public class WeatherSunshineDurationConverter
     /**
      * Extracts sunshine duration data from the weather forecast image.
      * The image contains hourly sunshine duration bars in yellow color.
+     * Each forecast "day" runs from hour 2 of one day through hour 1 of the next day (24 hours).
      *
      * @param image the weather forecast image
-     * @param startDate the start date of the forecast
-     * @return map of dates to hourly sunshine duration values in minutes (0-60)
+     * @param startDate the start date of the forecast (the date when hour 2 begins)
+     * @return map of datetime (hour precision) to sunshine minutes for that hour
      */
-    Map<LocalDate, List<Integer>> extractSunshineDuration(BufferedImage image, LocalDate startDate)
+    Map<LocalDateTime, Integer> extractSunshineDuration(BufferedImage image, LocalDate startDate)
     {
-        int width = image.getWidth();
-        int height = image.getHeight();
+        Map<LocalDateTime, Integer> result = new HashMap<>();
+        result.putAll(extractSunshineDuration(image, startDate, WINDOW_DAY1));
+        result.putAll(extractSunshineDuration(image, startDate.plusDays(1), WINDOW_DAY1.nextDay()));
+        return result;
+    }
 
-        LoggerFactory.getLogger(getClass()).info("Extracting sunshine duration from image: {}x{}", width, height);
-
+    /**
+     * Extracts sunshine duration data from the weather forecast image using a specific region.
+     * The image contains hourly sunshine duration bars in yellow color.
+     * Each forecast "day" runs from hour 2 of one day through hour 1 of the next day (24 hours).
+     *
+     * @param image the weather forecast image
+     * @param startDate the start date of the forecast (the date when hour 2 begins)
+     * @param region the region to extract from
+     * @return map of datetime (hour precision) to sunshine minutes for that hour
+     */
+    Map<LocalDateTime, Integer> extractSunshineDuration(BufferedImage image, LocalDate startDate, SunHourRegion region)
+    {
         // Find the actual yellow bar region
-        // first day
-        LoggerFactory.getLogger(getClass()).info("Yellow region found: Y={} to {}, X={} to {}",
-                        WINDOW_DAY1.minY, WINDOW_DAY1.maxY, WINDOW_DAY1.minX, WINDOW_DAY1.maxX);
+        LoggerFactory.getLogger(getClass()).info("Find sun hours in region: Y={} to {}, X={} to {}", region.minY, region.maxY, region.minX, region.maxX);
 
         // Extract hourly values from the yellow bars using the markers
-        List<Integer> hourlyValues = extractHourlyValues(image, WINDOW_DAY1);
+        // Returns 24 values: hours 2-23 of startDate, then hours 0-1 of startDate+1
+        List<Integer> hourlyValues = extractHourlyValues(image, region);
+        LoggerFactory.getLogger(getClass()).info("Day {} hourly values {}.", startDate, hourlyValues);
 
-        // Group hourly values by day
-        // Note: Days start at 2h, not 0h! First day has 22 hours (2h-23h), subsequent days have 24 hours
-        Map<LocalDate, List<Integer>> result = new HashMap<>();
-
+        // Map hourly values to their datetime
+        // Forecast day: hour 2 of startDate through hour 1 of startDate+1
+        Map<LocalDateTime, Integer> result = new HashMap<>();
         if (hourlyValues.isEmpty())
         {
             return result;
         }
 
-        // First day: starts at 2h, so we need to prepend two 0 values for hours 0 and 1
-        List<Integer> firstDayValues = new ArrayList<>();
-        firstDayValues.add(0); // Hour 0
-        firstDayValues.add(0); // Hour 1
-        int valuesInFirstDay = Math.min(22, hourlyValues.size()); // 2h-23h = 22 hours
-        firstDayValues.addAll(hourlyValues.subList(0, valuesInFirstDay));
-        result.put(startDate, firstDayValues);
+        // Start at hour 2 of the first day
+        LocalDateTime currentDateTime = LocalDateTime.of(startDate, LocalTime.of(DAY_START_HOUR, 0));
 
-        // Subsequent full days (24 hours each)
-        int index = 22; // Start after first day's 22 hours
-        int dayOffset = 1;
-        while (index < hourlyValues.size())
+        // Map each hourly value to its datetime (automatically wraps to next day at midnight)
+        for (Integer sunMinutes : hourlyValues)
         {
-            LocalDate date = startDate.plusDays(dayOffset);
-            int endIndex = Math.min(index + 24, hourlyValues.size());
-            List<Integer> dayValues = new ArrayList<>(hourlyValues.subList(index, endIndex));
-            result.put(date, dayValues);
-
-            index += 24;
-            dayOffset++;
+            result.put(currentDateTime, sunMinutes);
+            currentDateTime = currentDateTime.plusHours(1);
         }
 
         return result;
     }
-
-    private record SunHourRegion(int minX, int maxX, int minY, int maxY) {}
 
     /**
      * Extracts hourly sunshine duration values from bars.
@@ -161,46 +172,34 @@ public class WeatherSunshineDurationConverter
      * - Start at X=183 (middle between 2h and 3h markers)
      * - For hour N (starting at 2h): X = 183 + (N-2) * 6.75
      * - Bar height measured from Y=407 (bottom) up to colored pixels
+     * - Extracts full 24-hour forecast day: hour 2 of day 1 through hour 1 of day 2
      *
      * @param image the weather forecast image
      * @param region the region containing the sunshine bars
-     * @return list of sunshine minutes (0-60) for each hour
+     * @return list of sunshine minutes (0-60) for each hour in sequence
      */
     private List<Integer> extractHourlyValues(BufferedImage image, SunHourRegion region)
     {
         List<Integer> values = new ArrayList<>();
 
-        // Extract values for hours 2-23 (day starts at 2h)
-        // Determine the last hour we can extract based on image width
-        int maxHour = 23; // Try up to 23h
-        while (maxHour > DAY_START_HOUR)
+        // Extract full 24-hour forecast day: hours 2-23 of day 1, then hours 0-1 of day 2
+        // In the image, hours continue linearly, so we extract up to position for "hour 25"
+        int maxLinearHour = DAY_START_HOUR + 23; // Hour 2 + 23 hours = "hour 25" (which is hour 1 of next day)
+
+        for (int linearHour = DAY_START_HOUR; linearHour <= maxLinearHour; linearHour++)
         {
-            int x = calculateHourXPosition(maxHour);
-            if (x < region.maxX)
+            // Get X position for this linear hour position
+            int hourX = calculateHourXPosition(region, linearHour);
+
+            if (hourX >= image.getWidth() || hourX >= region.maxX)
             {
-                break; // This hour is within bounds
-            }
-            maxHour--;
-        }
-
-        LoggerFactory.getLogger(getClass()).info("Extracting hours {} to {}", DAY_START_HOUR, maxHour);
-
-        for (int hour = DAY_START_HOUR; hour <= maxHour; hour++)
-        {
-            // Get X position for this hour
-            int hourX = calculateHourXPosition(hour);
-
-            if (hourX >= image.getWidth())
-            {
-                break; // Reached image boundary
+                break; // Reached image or region boundary
             }
 
             // Calculate sunshine minutes for this hour using the refactored calcSunMinutes method
             int sunMinutes = calcSunMinutes(image, hourX, region);
             values.add(sunMinutes);
         }
-
-        LoggerFactory.getLogger(getClass()).info("Extracted {} hourly values", values.size());
         return values;
     }
 
@@ -253,50 +252,31 @@ public class WeatherSunshineDurationConverter
         return YELLOW.equals(color);
     }
 
-    /**
-     * Checks if a pixel color is in the yellow range (sunshine bar color).
-     */
-    private boolean isYellow(int rgb)
-    {
-        return isYellowPixel(new Color(rgb));
-    }
-
-    String exportToCSV(Map<LocalDate, List<Integer>> sunshineDurationPerDay) throws IOException
+    String exportToCSV(Map<LocalDateTime, Integer> sunshineDurationPerHour) throws IOException
     {
         StringWriter sw = new StringWriter();
         CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setDelimiter(",").setSkipHeaderRecord(true).build();
 
-        try (final CSVPrinter printer = new CSVPrinter(sw, csvFormat))
-        {
-            sunshineDurationPerDay.entrySet().stream()
+        // Group by date
+        Map<LocalDate, List<Integer>> byDate = new java.util.TreeMap<>();
+        sunshineDurationPerHour.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .forEach(entry -> {
-                    try
-                    {
-                        List<Object> data = new ArrayList<>();
-                        data.add(formatDate(entry.getKey()));
-                        data.addAll(entry.getValue().stream()
-                            .map(this::formatInteger)
-                            .toList());
-                        printer.printRecord(data);
-                    }
-                    catch(IOException e)
-                    {
-                        throw new RuntimeException("Can't write csv data.", e);
-                    }
+                    LocalDate date = entry.getKey().toLocalDate();
+                    byDate.computeIfAbsent(date, k -> new ArrayList<>()).add(entry.getValue());
                 });
+
+        try (final CSVPrinter printer = new CSVPrinter(sw, csvFormat))
+        {
+            for (Map.Entry<LocalDate, List<Integer>> entry : byDate.entrySet())
+            {
+                List<Object> row = new ArrayList<>();
+                row.add(DATE_FORMATTER.format(entry.getKey()));
+                row.addAll(entry.getValue());
+                printer.printRecord(row);
+            }
         }
 
         return sw.toString().trim();
-    }
-
-    private String formatDate(LocalDate date)
-    {
-        return DATE_FORMATTER.format(date);
-    }
-
-    private String formatInteger(Integer value)
-    {
-        return value.toString();
     }
 }

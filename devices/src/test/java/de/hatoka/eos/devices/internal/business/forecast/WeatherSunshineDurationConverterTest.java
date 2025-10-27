@@ -3,14 +3,12 @@ package de.hatoka.eos.devices.internal.business.forecast;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,23 +17,24 @@ import static org.junit.jupiter.api.Assertions.*;
 class WeatherSunshineDurationConverterTest
 {
     private static final String TEST_IMAGE = "weather_20251024.png";
-
+    private static final LocalDate START_DATE = LocalDate.of(2025, 10, 24);
     private final WeatherSunshineDurationConverter converter = new WeatherSunshineDurationConverter();
+    private final WeatherSunshineDurationConverter.SunHourRegion region = WeatherSunshineDurationConverter.WINDOW_DAY1;
 
     @Test
     void testCalculateHourXPosition()
     {
         // Hour 2: X = 183 + (2-2) * 6.75 = 183
-        assertEquals(183, converter.calculateHourXPosition(2), "marker between 189 und 187");
-        assertEquals(190, converter.calculateHourXPosition(3));
-        assertEquals(230, converter.calculateHourXPosition(9));
-        assertEquals(237, converter.calculateHourXPosition(10));
+        assertEquals(183, converter.calculateHourXPosition(region,2), "marker between 189 und 187");
+        assertEquals(190, converter.calculateHourXPosition(region,3));
+        assertEquals(231, converter.calculateHourXPosition(region,9));
+        assertEquals(237, converter.calculateHourXPosition(region,10));
 
         // Test all hours 2-23
         System.out.println("\nAll hour positions:");
         for (int hour = 2; hour <= 23; hour++)
         {
-            int x = converter.calculateHourXPosition(hour);
+            int x = converter.calculateHourXPosition(region, hour);
             System.out.printf("Hour %2d: X=%d%n", hour, x);
         }
     }
@@ -45,129 +44,137 @@ class WeatherSunshineDurationConverterTest
     {
         BufferedImage image = converter.loadImage(TEST_IMAGE);
         // position 407 is one pixel above the zero line
-        assertEquals(WeatherSunshineDurationConverter.GRAY, new Color(image.getRGB(converter.calculateHourXPosition(2), 407)));
-        assertEquals(WeatherSunshineDurationConverter.BLACK, new Color(image.getRGB(converter.calculateHourXPosition(9), 407)));
-        assertEquals(WeatherSunshineDurationConverter.YELLOW, new Color(image.getRGB(converter.calculateHourXPosition(10), 407)));
+        assertEquals(WeatherSunshineDurationConverter.GRAY, new Color(image.getRGB(converter.calculateHourXPosition(region,2), 407)));
+        assertEquals(WeatherSunshineDurationConverter.BLACK, new Color(image.getRGB(converter.calculateHourXPosition(region,9), 407)));
+        assertEquals(WeatherSunshineDurationConverter.YELLOW, new Color(image.getRGB(converter.calculateHourXPosition(region,10), 407)));
     }
 
     @Test
     void testMeasureBarHeights() throws IOException
     {
         BufferedImage image = converter.loadImage(TEST_IMAGE);
-
-        assertEquals(0, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(2), converter.WINDOW_DAY1));
-        assertEquals(1, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(9), converter.WINDOW_DAY1));
-        assertEquals(15, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(10), converter.WINDOW_DAY1));
-        assertEquals(5, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(13), converter.WINDOW_DAY1));
+        assertEquals(0, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(region,2), region));
+        assertEquals(1, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(region,9), region));
+        assertEquals(15, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(region,10), region));
+        assertEquals(5, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(region,13), region));
     }
 
     @Test
     void testSunMinutes() throws IOException
     {
         BufferedImage image = converter.loadImage(TEST_IMAGE);
-        assertEquals(0, converter.calcSunMinutes(image, converter.calculateHourXPosition(2), converter.WINDOW_DAY1));
-        assertEquals(2, converter.calcSunMinutes(image, converter.calculateHourXPosition(9), converter.WINDOW_DAY1));
-        assertEquals(26, converter.calcSunMinutes(image, converter.calculateHourXPosition(10), converter.WINDOW_DAY1));
-        assertEquals(26, converter.calcSunMinutes(image, converter.calculateHourXPosition(11), converter.WINDOW_DAY1));
-        assertEquals(4, converter.calcSunMinutes(image, converter.calculateHourXPosition(12), converter.WINDOW_DAY1));
-        assertEquals(9, converter.calcSunMinutes(image, converter.calculateHourXPosition(13), converter.WINDOW_DAY1));
-        assertEquals(11, converter.calcSunMinutes(image, converter.calculateHourXPosition(14), converter.WINDOW_DAY1));
+        assertEquals(0, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,2), region));
+        assertEquals(2, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,9), region));
+        assertEquals(26, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,10), region));
+        assertEquals(26, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,11), region));
+        assertEquals(4, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,12), region));
+        assertEquals(9, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,13), region));
+        assertEquals(11, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,14), region));
     }
 
     @Test
     void testExtractSunshineDuration() throws IOException
     {
         BufferedImage image = converter.loadImage(TEST_IMAGE);
-        LocalDate startDate = LocalDate.of(2025, 10, 24);
+        LocalDate nextDay = START_DATE.plusDays(1);
 
-        Map<LocalDate, List<Integer>> result = converter.extractSunshineDuration(image, startDate);
+        Map<LocalDateTime, Integer> result = converter.extractSunshineDuration(image, START_DATE);
 
-        // Verify result contains data for the start date
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertTrue(result.containsKey(startDate));
+        assertEquals(48, result.size());
 
-        // Verify first day has 24 values (hours 0-23)
-        List<Integer> firstDay = result.get(startDate);
-        assertEquals(24, firstDay.size(), "First day should have 24 hourly values");
+        // Verify specific hourly values from testSunMinutes (hours 2-23 of day 1)
+        assertEquals(0, result.get(LocalDateTime.of(START_DATE, LocalTime.of(2, 0))));
+        assertEquals(2, result.get(LocalDateTime.of(START_DATE, LocalTime.of(9, 0))));
+        assertEquals(26, result.get(LocalDateTime.of(START_DATE, LocalTime.of(10, 0))));
+        assertEquals(26, result.get(LocalDateTime.of(START_DATE, LocalTime.of(11, 0))));
+        assertEquals(4, result.get(LocalDateTime.of(START_DATE, LocalTime.of(12, 0))));
+        assertEquals(9, result.get(LocalDateTime.of(START_DATE, LocalTime.of(13, 0))));
+        assertEquals(11, result.get(LocalDateTime.of(START_DATE, LocalTime.of(14, 0))));
 
-        // Verify hours 0 and 1 are 0 (prepended values)
-        assertEquals(0, firstDay.get(0), "Hour 0 should be 0");
-        assertEquals(0, firstDay.get(1), "Hour 1 should be 0");
-
-        // Verify all values are in valid range (0-60 minutes)
-        for (int hour = 0; hour < firstDay.size(); hour++)
-        {
-            Integer minutes = firstDay.get(hour);
-            assertNotNull(minutes, "Hour " + hour + " should not be null");
-            assertTrue(minutes >= 0 && minutes <= 60,
-                "Hour " + hour + " should be in range 0-60, but was: " + minutes);
-        }
-
-        // Verify known values from the test
-        assertEquals(0, firstDay.get(2), "Hour 2 should have 0 sun minutes");
-        assertEquals(2, firstDay.get(9), "Hour 9 should have 2 sun minutes");
-        assertEquals(26, firstDay.get(10), "Hour 10 should have 26 sun minutes");
-        assertEquals(26, firstDay.get(11), "Hour 11 should have 26 sun minutes");
+        // Verify hours 0 and 1 of next day are included
+        assertTrue(result.containsKey(LocalDateTime.of(nextDay, LocalTime.of(0, 0))));
+        assertTrue(result.containsKey(LocalDateTime.of(nextDay, LocalTime.of(1, 0))));
     }
 
     @Test
     void testExportToCSV() throws IOException
     {
-        LocalDate startDate = LocalDate.of(2025, 10, 24);
-
-        String csv = converter.exportToCSV(startDate, TEST_IMAGE);
-
+        String csv = converter.exportToCSV(START_DATE, TEST_IMAGE);
         assertNotNull(csv);
-        assertFalse(csv.isEmpty());
+        assertFalse(csv.contains("."));
 
-        // Verify CSV format: date,hour0,hour1,...,hour23
         String[] lines = csv.split("\n");
-        assertTrue(lines.length >= 1, "CSV should have at least one line");
+        assertEquals(3, lines.length);
 
-        // Verify first line
-        String firstLine = lines[0];
-        assertTrue(firstLine.startsWith("2025/10/24,"), "First line should start with date");
+        // First line: date 10/24 with hours 2-23 (22 values)
+        String[] values1 = lines[0].split(",");
+        assertEquals(23, values1.length); // date + 22 hour values
+        assertEquals("2025/10/25", values1[0]);
 
-        // Verify it contains integer values (not decimal)
-        String[] values = firstLine.split(",");
-        assertEquals(25, values.length, "Should have date + 24 hour values");
+        // Verify specific values from testSunMinutes (hours 2,9,10,11,12,13,14 are at indices 1,8,9,10,11,12,13)
+        assertEquals("0", values1[1]);  // hour 2
+        assertEquals("2", values1[8]);  // hour 9
+        assertEquals("26", values1[9]); // hour 10
+        assertEquals("26", values1[10]); // hour 11
+        assertEquals("4", values1[11]); // hour 12
+        assertEquals("9", values1[12]); // hour 13
+        assertEquals("11", values1[13]); // hour 14
 
-        // Verify date format
-        assertEquals("2025/10/24", values[0]);
+        // Second line: date 10/25 full (24 hours)
+        String[] values2 = lines[1].split(",");
+        assertEquals(25, values2.length); // date + 24 hour values
+        assertEquals("2025/10/25", values2[0]);
 
-        // Verify hour values are integers (no decimal points)
-        for (int i = 1; i < values.length; i++)
-        {
-            String value = values[i];
-            assertFalse(value.contains("."), "Value should be integer, not decimal: " + value);
-            int intValue = Integer.parseInt(value);
-            assertTrue(intValue >= 0 && intValue <= 60,
-                "Hour value should be in range 0-60: " + intValue);
-        }
-
-        System.out.println("CSV Output:");
-        System.out.println(csv);
+        // Third line: date 10/26 with hours 0-1 (2 values)
+        String[] values3 = lines[2].split(",");
+        assertEquals(3, values3.length); // date + 2 hour values
+        assertEquals("2025/10/26", values3[0]);
     }
 
     @Test
-    void testAllHoursHaveValidValues() throws IOException
+    void testTotalSunshineHours() throws IOException
     {
         BufferedImage image = converter.loadImage(TEST_IMAGE);
-        LocalDate startDate = LocalDate.of(2025, 10, 24);
+        Map<LocalDateTime, Integer> result = converter.extractSunshineDuration(image, START_DATE);
+        LocalDate day2 = START_DATE.plusDays(1);
 
-        Map<LocalDate, List<Integer>> result = converter.extractSunshineDuration(image, startDate);
-        List<Integer> firstDay = result.get(startDate);
+        assertEquals(1.6 * 60, getTotalMinutes(result, START_DATE), 6);
+        assertEquals(1.2 * 60, getTotalMinutes(result, day2), 6);
+    }
 
-        System.out.println("\nSunshine minutes for each hour on " + startDate + ":");
-        for (int hour = 0; hour < firstDay.size(); hour++)
-        {
-            Integer minutes = firstDay.get(hour);
-            System.out.printf("Hour %2d: %2d minutes%n", hour, minutes);
-        }
+    private static int getTotalMinutes(Map<LocalDateTime, Integer> result, LocalDate day)
+    {
+        return result.entrySet()
+                                 .stream()
+                                 .filter(e -> e.getKey().getDayOfMonth() == day.getDayOfMonth())
+                                 .map(Map.Entry::getValue)
+                                 .mapToInt(Integer::intValue)
+                                 .sum();
+    }
 
-        // Verify that we have some sunshine hours (not all zeros)
-        long sunshineHours = firstDay.stream().filter(m -> m > 0).count();
-        assertTrue(sunshineHours > 0, "Should have at least some sunshine hours");
+    @Test
+    void testSecondDay() throws IOException
+    {
+        BufferedImage image = converter.loadImage(TEST_IMAGE);
+        LocalDate day2 = START_DATE.plusDays(1);
+        LocalDate day3 = START_DATE.plusDays(2);
+
+        Map<LocalDateTime, Integer> result = converter.extractSunshineDuration(image, START_DATE);
+        assertEquals(48, result.size()); // startDate and 2 now
+        assertTrue(result.containsKey(LocalDateTime.of(START_DATE, LocalTime.of(2, 0))), "day1 first hour");
+        assertTrue(result.containsKey(LocalDateTime.of(day2, LocalTime.of(2, 0))), "day2 first hour");
+        assertTrue(result.containsKey(LocalDateTime.of(day3, LocalTime.of(1, 0))), "day2 last hour on day3");
+
+        // Verify specific hourly values from testSunMinutes (hours 2-23 of day 1)
+        assertEquals(0, result.get(LocalDateTime.of(day2, LocalTime.of(2, 0))));
+        assertEquals(9, result.get(LocalDateTime.of(day2, LocalTime.of(9, 0))));
+        assertEquals(14, result.get(LocalDateTime.of(day2, LocalTime.of(10, 0))));
+        assertEquals(18, result.get(LocalDateTime.of(day2, LocalTime.of(11, 0))));
+        assertEquals(14, result.get(LocalDateTime.of(day2, LocalTime.of(12, 0))));
+        assertEquals(14, result.get(LocalDateTime.of(day2, LocalTime.of(13, 0))));
+        assertEquals(7, result.get(LocalDateTime.of(day2, LocalTime.of(14, 0))));
+        assertEquals(0, result.get(LocalDateTime.of(day2, LocalTime.of(15, 0))));
     }
 }
