@@ -5,17 +5,19 @@ import org.apache.commons.csv.CSVPrinter;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Converts weather forecast PNG images to CSV format by extracting sunshine duration data.
@@ -50,29 +52,24 @@ public class WeatherSunshineDurationConverter
 
     // Bar positioning constants (from Excel analysis)
     private static final double PIXELS_PER_HOUR =  ((double)(WINDOW_DAY1.maxX - WINDOW_DAY1.minX)) / 24;
-    private static final int DAY_START_HOUR = 2; // Days start at 2h, not 0h
 
     /**
-     * Calculates the X coordinate for a given hour in the weather image.
+     * Calculates the X coordinate for a given index in the weather image.
      *
-     * Formula: X = 183 + (hour - 2) * 6.75
-     * where hour is 0-23 (0h, 1h, ..., 23h)
+     * Formula: X = 183 + (index - 2) * 6.75
+     * where index is 0-23 (0h, 1h, ..., 23h)
      *
      * Examples:
      * - Hour 2: X = 183 + (2-2) * 6.75 = 183
      * - Hour 9: X = 183 + (9-2) * 6.75 = 183 + 47.25 = 230.25 → 230
      * - Hour 10: X = 183 + (10-2) * 6.75 = 183 + 54 = 237
      *
-     * @param hour the hour (0-23)
+     * @param index the index (0-23) of UTC
      * @return the X coordinate in pixels
      */
-    int calculateHourXPosition(SunHourRegion region, int hour)
+    int calculateHourXPosition(SunHourRegion region, int index)
     {
-        if (hour < DAY_START_HOUR)
-        {
-            throw new IllegalArgumentException("Hour " + hour + " is before day start at " + DAY_START_HOUR + "h");
-        }
-        double x = region.minX + PIXELS_PER_HOUR/2 + (hour - DAY_START_HOUR) * PIXELS_PER_HOUR;
+        double x = region.minX + PIXELS_PER_HOUR/2 + index * PIXELS_PER_HOUR;
         return (int) Math.round(x);
     }
 
@@ -80,17 +77,17 @@ public class WeatherSunshineDurationConverter
      * Exports sunshine duration data from PNG image to CSV format.
      * Each row represents a date with hourly sunshine values as columns.
      *
-     * @param startDate the start date of the forecast
+     * @param startDate the start date of the image
      * @param pngResourceName the name of the PNG resource file
      * @return CSV string with format: date,hour_values...
      *         Example: 2025/10/24,0,0,2,26,26,4,9,11,... (date + values for hours present in that date)
      * @throws IOException if reading the image fails
      */
-    public String exportToCSV(LocalDate startDate, String pngResourceName) throws IOException
+    public String exportToCSV(ZonedDateTime startDate, String pngResourceName) throws IOException
     {
         BufferedImage image = loadImage(pngResourceName);
-        Map<LocalDateTime, Integer> sunshineDurationPerHour = extractSunshineDuration(image, startDate);
-        return exportToCSV(sunshineDurationPerHour);
+        Map<ZonedDateTime, Integer> sunshineDurationPerHour = extractSunshineDuration(image, startDate);
+        return exportToCSV(sunshineDurationPerHour, startDate.getZone());
     }
 
     BufferedImage loadImage(String resourceName) throws IOException
@@ -112,11 +109,11 @@ public class WeatherSunshineDurationConverter
      *
      * @param image the weather forecast image
      * @param startDate the start date of the forecast (the date when hour 2 begins)
-     * @return map of datetime (hour precision) to sunshine minutes for that hour
+     * @return map of datetime (hour precision in UTC) to sunshine minutes for that hour
      */
-    Map<LocalDateTime, Integer> extractSunshineDuration(BufferedImage image, LocalDate startDate)
+    Map<ZonedDateTime, Integer> extractSunshineDuration(BufferedImage image, ZonedDateTime startDate)
     {
-        Map<LocalDateTime, Integer> result = new HashMap<>();
+        Map<ZonedDateTime, Integer> result = new HashMap<>();
         result.putAll(extractSunshineDuration(image, startDate, WINDOW_DAY1));
         result.putAll(extractSunshineDuration(image, startDate.plusDays(1), WINDOW_DAY1.nextDay()));
         return result;
@@ -130,12 +127,12 @@ public class WeatherSunshineDurationConverter
      * @param image the weather forecast image
      * @param startDate the start date of the forecast (the date when hour 2 begins)
      * @param region the region to extract from
-     * @return map of datetime (hour precision) to sunshine minutes for that hour
+     * @return map of datetime (hour precision in UTC) to sunshine minutes for that hour
      */
-    Map<LocalDateTime, Integer> extractSunshineDuration(BufferedImage image, LocalDate startDate, SunHourRegion region)
+    Map<ZonedDateTime, Integer> extractSunshineDuration(BufferedImage image, ZonedDateTime startDate, SunHourRegion region)
     {
         // Find the actual yellow bar region
-        LoggerFactory.getLogger(getClass()).info("Find sun hours in region: Y={} to {}, X={} to {}", region.minY, region.maxY, region.minX, region.maxX);
+        LoggerFactory.getLogger(getClass()).debug("Find sun hours in region: Y={} to {}, X={} to {}", region.minY, region.maxY, region.minX, region.maxX);
 
         // Extract hourly values from the yellow bars using the markers
         // Returns 24 values: hours 2-23 of startDate, then hours 0-1 of startDate+1
@@ -144,16 +141,14 @@ public class WeatherSunshineDurationConverter
 
         // Map hourly values to their datetime
         // Forecast day: hour 2 of startDate through hour 1 of startDate+1
-        Map<LocalDateTime, Integer> result = new HashMap<>();
+        Map<ZonedDateTime, Integer> result = new HashMap<>();
         if (hourlyValues.isEmpty())
         {
             return result;
         }
 
-        // Start at hour 2 of the first day
-        LocalDateTime currentDateTime = LocalDateTime.of(startDate, LocalTime.of(DAY_START_HOUR, 0));
-
         // Map each hourly value to its datetime (automatically wraps to next day at midnight)
+        ZonedDateTime currentDateTime = startDate;
         for (Integer sunMinutes : hourlyValues)
         {
             result.put(currentDateTime, sunMinutes);
@@ -182,14 +177,10 @@ public class WeatherSunshineDurationConverter
     {
         List<Integer> values = new ArrayList<>();
 
-        // Extract full 24-hour forecast day: hours 2-23 of day 1, then hours 0-1 of day 2
-        // In the image, hours continue linearly, so we extract up to position for "hour 25"
-        int maxLinearHour = DAY_START_HOUR + 23; // Hour 2 + 23 hours = "hour 25" (which is hour 1 of next day)
-
-        for (int linearHour = DAY_START_HOUR; linearHour <= maxLinearHour; linearHour++)
+        for (int index = 0; index < 24; index++)
         {
             // Get X position for this linear hour position
-            int hourX = calculateHourXPosition(region, linearHour);
+            int hourX = calculateHourXPosition(region, index);
 
             if (hourX >= image.getWidth() || hourX >= region.maxX)
             {
@@ -252,17 +243,24 @@ public class WeatherSunshineDurationConverter
         return YELLOW.equals(color);
     }
 
-    String exportToCSV(Map<LocalDateTime, Integer> sunshineDurationPerHour) throws IOException
+    /**
+     * Converts the given map(datetime, number) to a csv string (comma separated). Each line a new date at given timezone.
+     * @param sunshineDurationPerHour time-based numbers
+     * @param timeZone timezone to group times by date
+     * @return comma csv file first column date followed by hours 0-23
+     * @throws IOException if the string be written
+     */
+    String exportToCSV(Map<ZonedDateTime, Integer> sunshineDurationPerHour, ZoneId timeZone) throws IOException
     {
         StringWriter sw = new StringWriter();
-        CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setDelimiter(",").setSkipHeaderRecord(true).build();
+        CSVFormat csvFormat = CSVFormat.DEFAULT.builder().setDelimiter(",").setSkipHeaderRecord(true).get();
 
         // Group by date
         Map<LocalDate, List<Integer>> byDate = new java.util.TreeMap<>();
         sunshineDurationPerHour.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .forEach(entry -> {
-                    LocalDate date = entry.getKey().toLocalDate();
+                    LocalDate date = entry.getKey().withZoneSameInstant(timeZone).toLocalDate();
                     byDate.computeIfAbsent(date, k -> new ArrayList<>()).add(entry.getValue());
                 });
 
