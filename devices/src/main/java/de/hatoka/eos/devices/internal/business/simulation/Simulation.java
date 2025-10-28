@@ -78,10 +78,14 @@ public class Simulation
     /**
      * Creates the priorities of each device
      *
-     * @return list of devices ordered by priority
+     * @return list of devices ordered by priority (first by type, then by id for consistent ordering)
      */
     private List<DeviceRef> orderDevices()
     {
-        return request.devices().keySet().stream().sorted(Comparator.comparingInt(a -> a.type().ordinal())).toList();
+        return request.devices()
+                      .keySet()
+                      .stream()
+                      .sorted(Comparator.comparingInt((DeviceRef a) -> a.type().ordinal()).thenComparing(DeviceRef::id))
+                      .toList();
     }
 }

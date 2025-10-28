@@ -5,12 +5,12 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.List;
 
+/**
+ * The InstallationConfig is the container of all configuration of an installation. It can contain a list of devices (panels, batteries, cars) and how
+ * the grid revenue is calculated.
+ */
 public class InstallationConfig
 {
-    @JsonProperty("installation")
-    @JsonPropertyDescription("General installation information including location and timezone")
-    private InstallationInfo installation;
-
     @JsonProperty("devices")
     @JsonPropertyDescription("List of energy devices in the installation (solar panels, batteries, etc.)")
     private List<DeviceConfig> devices;
@@ -18,17 +18,6 @@ public class InstallationConfig
     @JsonProperty("grid")
     @JsonPropertyDescription("Grid connection configuration including import/export pricing")
     private GridConfig grid;
-    
-
-    public InstallationInfo getInstallation()
-    {
-        return installation;
-    }
-
-    public void setInstallation(InstallationInfo installation)
-    {
-        this.installation = installation;
-    }
 
     public List<DeviceConfig> getDevices()
     {
@@ -49,5 +38,4 @@ public class InstallationConfig
     {
         this.grid = grid;
     }
-
 }

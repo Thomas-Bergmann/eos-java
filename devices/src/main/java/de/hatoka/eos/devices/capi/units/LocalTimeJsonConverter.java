@@ -1,4 +1,4 @@
-package de.hatoka.eos.devices.capi.business.config;
+package de.hatoka.eos.devices.capi.units;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;

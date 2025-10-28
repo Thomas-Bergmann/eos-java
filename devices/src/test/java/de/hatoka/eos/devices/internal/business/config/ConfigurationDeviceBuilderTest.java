@@ -1,6 +1,7 @@
 package de.hatoka.eos.devices.internal.business.config;
 
 import de.hatoka.eos.devices.capi.business.device.Device;
+import de.hatoka.eos.devices.capi.business.device.DeviceFactory;
 import de.hatoka.eos.devices.capi.business.device.DeviceRef;
 import de.hatoka.eos.devices.capi.business.device.DeviceType;
 import io.quarkus.test.junit.QuarkusTest;
@@ -17,14 +18,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class ConfigurationDeviceBuilderTest
 {
     @Inject
-    private ConfigurationDeviceBuilder configurationDeviceBuilder;
+    private DeviceFactory deviceFactory;
     @Inject
     private ConfigurationLoader configurationLoader;
 
     @Test
     public void testLoadFromResource() throws IOException
     {
-        Map<DeviceRef, Device> devices = configurationDeviceBuilder.getDevices(configurationLoader.load("test-installation-with-car.yaml"));
+        Map<DeviceRef, Device> devices = deviceFactory.createDevices(configurationLoader.load("test-installation-with-car.yaml").getDevices());
 
         // Test devices
         assertEquals(19, devices.size());

@@ -1,14 +1,14 @@
 package de.hatoka.eos.devices.internal.business.metrics;
 
 import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
+import de.hatoka.eos.devices.capi.business.config.SimulationConfig;
+import de.hatoka.eos.devices.capi.business.device.DeviceFactory;
+import de.hatoka.eos.devices.capi.business.forecast.Forecasts;
 import de.hatoka.eos.devices.capi.business.metrics.SimulationMetricsExporter;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationRequest;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationResult;
-import de.hatoka.eos.devices.capi.business.forecast.Forecasts;
-import de.hatoka.eos.devices.internal.business.DateTooling;
-import de.hatoka.eos.devices.internal.business.config.ConfigurationDeviceBuilder;
-import de.hatoka.eos.devices.internal.business.config.ConfigurationLoader;
 import de.hatoka.eos.devices.capi.business.simulation.Simulator;
+import de.hatoka.eos.devices.internal.business.config.ConfigurationLoader;
 import de.hatoka.eos.devices.internal.business.forecast.FlatWeatherService;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -18,21 +18,18 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 public class SimulationMetricsExporterTest
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(SimulationMetricsExporterTest.class);
-    public static final ZoneId ZONE_ID = ZoneId.of("Europe/Berlin");
 
     @Inject
-    private ConfigurationDeviceBuilder configurationDeviceBuilder;
+    private DeviceFactory deviceFactory;
 
     @Inject
     private ConfigurationLoader configurationLoader;
@@ -48,16 +45,17 @@ public class SimulationMetricsExporterTest
     {
         // Arrange - Load test configuration without electric car for cleaner curves
         InstallationConfig config = configurationLoader.load("test-installation-for-grafana.yaml");
+        SimulationConfig simConfig = configurationLoader.loadSimulation("test-simulation-with-csv-prices.yaml");
 
         // Simulate from today midnight with 5-minute intervals for smooth curves
-        ZonedDateTime startDate = DateTooling.createBerlinDate("2025/08/04");
-        ZonedDateTime endDate = DateTooling.createBerlinDate("2025/08/17");
-        Duration stepDuration = Duration.ofMinutes(15);
+        ZonedDateTime startDate = simConfig.getTimeSettings().getZonedStartTime();
+        ZonedDateTime endDate = simConfig.getTimeSettings().getZonedEndTime();
+        Duration stepDuration = simConfig.getTimeSettings().getStepDuration();
 
         LOGGER.info("🌅 Starting simulation from: {} to: {}", startDate, endDate);
 
         SimulationRequest request = new SimulationRequest("today-energy-simulation", startDate, endDate, stepDuration,
-                        configurationDeviceBuilder.getDevices(config), Collections.emptyMap(),
+                        deviceFactory.createDevices(config.getDevices()), Collections.emptyMap(),
                         new Forecasts(FlatWeatherService.FULL_FROM_7_to_18, config.getGrid().getEnergyPriceProvider()));
 
         // Act - Run simulation step by step for 5-minute interval data

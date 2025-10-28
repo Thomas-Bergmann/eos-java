@@ -91,4 +91,9 @@ public record Money(BigDecimal amount, String currencyMnemonic)
     {
         return String.format("%s %s", round().amount, currencyMnemonic);
     }
+
+    public Money negate()
+    {
+        return new Money(amount.negate(), currencyMnemonic);
+    }
 }

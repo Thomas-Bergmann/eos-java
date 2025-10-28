@@ -54,4 +54,13 @@ public record Percentage(double value)
     {
         return new Percentage(value * factor);
     }
+
+    /**
+     * @param percentage percentage to compare
+     * @return true if the current percentage smaller than the given
+     */
+    public boolean lessThan(Percentage percentage)
+    {
+        return this.value < percentage.value;
+    }
 }

@@ -5,6 +5,11 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import de.hatoka.eos.devices.capi.units.Energy;
 import de.hatoka.eos.devices.capi.units.Money;
 
+/**
+ * The ImportExportChargeConfig defines additional charge or fee for import and export of energy, depending on the energy provider.
+ * @param price costs
+ * @param energy price is related to delivered or consumed energy
+ */
 public record ImportExportChargeConfig (
     @JsonProperty("price") @JsonPropertyDescription("Price amount with currency") Money price,
     @JsonProperty("energy") @JsonPropertyDescription("Energy amount with unit") Energy energy

@@ -1,7 +1,3 @@
-installation:
-  location: "Europe/Germany/Thuringia/Jena"
-  timezone: "Europe/Berlin"
-
 devices:
   - type: SOLAR_PANEL
     production:

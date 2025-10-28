@@ -2,10 +2,8 @@ package de.hatoka.eos.devices.internal.business.simulation;
 
 import de.hatoka.eos.devices.capi.business.config.DeviceConfig;
 import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
-import de.hatoka.eos.devices.capi.business.device.Device;
-import de.hatoka.eos.devices.capi.business.device.DeviceRef;
-import de.hatoka.eos.devices.capi.business.device.DeviceState;
-import de.hatoka.eos.devices.capi.business.device.DeviceType;
+import de.hatoka.eos.devices.capi.business.config.SimulationConfig;
+import de.hatoka.eos.devices.capi.business.device.*;
 import de.hatoka.eos.devices.capi.business.forecast.Forecasts;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationRequest;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationResult;
@@ -15,7 +13,6 @@ import de.hatoka.eos.devices.capi.units.Money;
 import de.hatoka.eos.devices.capi.units.Percentage;
 import de.hatoka.eos.devices.capi.units.Power;
 import de.hatoka.eos.devices.internal.business.DateTooling;
-import de.hatoka.eos.devices.internal.business.config.ConfigurationDeviceBuilder;
 import de.hatoka.eos.devices.internal.business.config.ConfigurationLoader;
 import de.hatoka.eos.devices.internal.business.devices.Battery;
 import de.hatoka.eos.devices.internal.business.devices.Grid;
@@ -29,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class SimulationTest
 {
     @Inject
-    private ConfigurationDeviceBuilder configurationDeviceBuilder;
+    private DeviceFactory deviceFactory;
     @Inject
     private ConfigurationLoader configurationLoader;
     @Inject
@@ -275,15 +271,15 @@ public class SimulationTest
     @Test
     public void testFullDaySimulationWithTestInstallationConfig() throws IOException
     {
-        // Arrange - Load actual test-installation.yaml configuration
-        InstallationConfig installationConfig = configurationLoader.load("test-installation-without-car.yaml");
+        InstallationConfig config = configurationLoader.loadInstallation("test-installation-without-car.yaml");
+        SimulationConfig simConfig = configurationLoader.loadSimulation("test-simulation-summer.yaml");
 
         // Simulate one full day (24 hours) with 1-hour steps
-        ZonedDateTime startDate = ZonedDateTime.of(2024, 6, 21, 0, 0, 0, 0, ZoneId.of("Europe/Berlin")); // Summer solstice
+        ZonedDateTime startDate = simConfig.getTimeSettings().getZonedStartTime();
         ZonedDateTime endDate = startDate.plusDays(1);
         Duration stepDuration = Duration.ofHours(1);
         
-        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, configurationDeviceBuilder.getDevices(installationConfig), Collections.emptyMap(), Forecasts.STANDARD);
+        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, deviceFactory.createDevices(config.getDevices()), Collections.emptyMap(), Forecasts.STANDARD);
         SimulationResult result = simulator.simulate(request);
         
         // Assert - Focus only on grid costs/revenues for the full day
@@ -309,14 +305,15 @@ public class SimulationTest
     public void testWithCar() throws IOException
     {
         // Arrange - Load actual test-installation.yaml configuration
-        InstallationConfig installationConfig = configurationLoader.load("test-installation-with-car.yaml");
+        InstallationConfig config = configurationLoader.loadInstallation("test-installation-with-car.yaml");
+        SimulationConfig simConfig = configurationLoader.loadSimulation("test-simulation-summer.yaml");
 
         // Simulate one full day (24 hours) with 1-hour steps
-        ZonedDateTime startDate = ZonedDateTime.of(2024, 6, 21, 0, 0, 0, 0, ZoneId.of("Europe/Berlin")); // Summer solstice
+        ZonedDateTime startDate = simConfig.getTimeSettings().getZonedStartTime();
         ZonedDateTime endDate = startDate.plusDays(1);
         Duration stepDuration = Duration.ofHours(1);
 
-        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, configurationDeviceBuilder.getDevices(installationConfig), Collections.emptyMap(), Forecasts.STANDARD);
+        SimulationRequest request = new SimulationRequest("full-day-test", startDate, endDate, stepDuration, deviceFactory.createDevices(config.getDevices()), Collections.emptyMap(), Forecasts.STANDARD);
         SimulationResult result = simulator.simulate(request);
 
         // Assert - Focus only on grid costs/revenues for the full day
@@ -343,15 +340,15 @@ public class SimulationTest
     public void testSimulationWithBatteryCarAndUsageFrom100Percent() throws IOException
     {
         // Load configuration with battery, electric car, and noisy usage - all starting at 100%
-        InstallationConfig config = configurationLoader.load("test-simulation-100percent.yaml");
+        InstallationConfig config = configurationLoader.loadInstallation("test-installation-100percent.yaml");
         
         // Simulate for 1 hour at night (no solar production)
         SimulationRequest request = new SimulationRequest(
             "today-energy-simulation",
                         ZonedDateTime.now().minus(Duration.ofHours(24)),
                         ZonedDateTime.now().minus(Duration.ofHours(23)), // two points (incl. outer)
-            Duration.ofHours(1), 
-            configurationDeviceBuilder.getDevices(config), 
+            Duration.ofHours(1),
+            deviceFactory.createDevices(config.getDevices()),
             Collections.emptyMap(),
             Forecasts.STANDARD
         );

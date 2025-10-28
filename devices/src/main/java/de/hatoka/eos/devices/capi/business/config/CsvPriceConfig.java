@@ -5,6 +5,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
 import java.util.List;
 
+/**
+ * The CsvPriceConfig declares, how stock prices are provided via CSV files
+ * @param currency currency of stock price
+ * @param exportCharge additional charge for exporting energy to the grid
+ * @param importCharge additional charge for importing energy from grid
+ * @param resource list of CSV resources
+ */
 public record CsvPriceConfig(
     @JsonProperty("currency")
     @JsonPropertyDescription("Currency code for CSV price data (e.g., EUR, USD)")
@@ -20,8 +27,5 @@ public record CsvPriceConfig(
 
     @JsonProperty("resource")
     @JsonPropertyDescription("List of CSV resource files containing price data")
-    List<String> resource,
-    @JsonProperty("gridConfig")
-    @JsonPropertyDescription("Grid configuration with fallback pricing")
-    GridConfig gridConfig
+    List<String> resource
 ) { }

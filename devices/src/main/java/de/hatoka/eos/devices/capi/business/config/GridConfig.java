@@ -7,6 +7,12 @@ import de.hatoka.eos.devices.capi.business.forecast.EnergyPriceForecast;
 import de.hatoka.eos.devices.internal.business.forecast.FlatPriceService;
 import de.hatoka.eos.devices.internal.business.forecast.CsvStockEnergyPriceProvider;
 
+/**
+ * The GridConfig is the container for grid pricing configuration. The type can be CSV or FLAT and selects the related configuration.
+ * @param type CSV or FLAT
+ * @param csvPriceProvider stock price configuration
+ * @param flatPriceConfig flat price configuration
+ */
 public record GridConfig (
     @JsonProperty("type")
     @JsonPropertyDescription("select csvPriceProvider or flatPriceProvider")
@@ -21,6 +27,9 @@ public record GridConfig (
     FlatPriceConfig flatPriceConfig
 )
 {
+    /**
+     * @return the configured price forecast
+     */
     @JsonIgnore
     public EnergyPriceForecast getEnergyPriceProvider()
     {
