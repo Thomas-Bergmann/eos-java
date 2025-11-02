@@ -1,6 +1,7 @@
-package de.hatoka.eos.devices.internal.business.forecast;
+package de.hatoka.eos.forecast;
 
 import io.quarkus.test.junit.QuarkusTest;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
@@ -12,7 +13,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
-class WeatherSunshineDurationConverterTest
+class MeteoMediaWeatherSunshineDurationConverterTest
 {
     private static final String TEST_IMAGE_CEST = "weather_20251024.png";
     private static final String TEST_IMAGE_CET = "weather_20251027.png";
@@ -20,8 +21,8 @@ class WeatherSunshineDurationConverterTest
     private static final LocalDate START_DATE_CET = LocalDate.of(2025, 10, 27);
     private static final ZoneId BERLIN = ZoneId.of("Europe/Berlin");
     private static final ZoneId UTC = ZoneId.of("UTC");
-    private final WeatherSunshineDurationConverter converter = new WeatherSunshineDurationConverter();
-    private final WeatherSunshineDurationConverter.SunHourRegion region = WeatherSunshineDurationConverter.WINDOW_DAY1;
+    private final MeteoMediaWeatherSunshineDurationConverter converter = new MeteoMediaWeatherSunshineDurationConverter();
+    private final MeteoMediaWeatherSunshineDurationConverter.SunHourRegion region = MeteoMediaWeatherSunshineDurationConverter.WINDOW_DAY1;
 
     @Test
     void testCalculateHourXPosition()
@@ -33,10 +34,10 @@ class WeatherSunshineDurationConverterTest
             int x = converter.calculateHourXPosition(region, position);
             System.out.printf("Hour(UTC) %2d: X=%d%n", position, x);
         }
-        assertEquals(183, converter.calculateHourXPosition(region,0), "marker between 180 und 187");
-        assertEquals(190, converter.calculateHourXPosition(region,1));
-        assertEquals(231, converter.calculateHourXPosition(region,7));
-        assertEquals(237, converter.calculateHourXPosition(region,8));
+        Assertions.assertEquals(183, converter.calculateHourXPosition(region,0), "marker between 180 und 187");
+        Assertions.assertEquals(190, converter.calculateHourXPosition(region,1));
+        Assertions.assertEquals(231, converter.calculateHourXPosition(region,7));
+        Assertions.assertEquals(237, converter.calculateHourXPosition(region,8));
 
     }
 
@@ -45,32 +46,35 @@ class WeatherSunshineDurationConverterTest
     {
         BufferedImage image = converter.loadImage(TEST_IMAGE_CEST);
         // position 407 is one pixel above the zero line
-        assertEquals(WeatherSunshineDurationConverter.GRAY, new Color(image.getRGB(converter.calculateHourXPosition(region,0), 407)));
-        assertEquals(WeatherSunshineDurationConverter.BLACK, new Color(image.getRGB(converter.calculateHourXPosition(region,7), 407)));
-        assertEquals(WeatherSunshineDurationConverter.YELLOW, new Color(image.getRGB(converter.calculateHourXPosition(region,8), 407)));
+        Assertions.assertEquals(
+                        MeteoMediaWeatherSunshineDurationConverter.GRAY, new Color(image.getRGB(converter.calculateHourXPosition(region,0), 407)));
+        Assertions.assertEquals(
+                        MeteoMediaWeatherSunshineDurationConverter.BLACK, new Color(image.getRGB(converter.calculateHourXPosition(region,7), 407)));
+        Assertions.assertEquals(
+                        MeteoMediaWeatherSunshineDurationConverter.YELLOW, new Color(image.getRGB(converter.calculateHourXPosition(region,8), 407)));
     }
 
     @Test
     void testMeasureBarHeights() throws IOException
     {
         BufferedImage image = converter.loadImage(TEST_IMAGE_CEST);
-        assertEquals(0, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(region,0), region));
-        assertEquals(1, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(region,7), region));
-        assertEquals(15, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(region,8), region));
-        assertEquals(5, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(region,11), region));
+        Assertions.assertEquals(0, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(region,0), region));
+        Assertions.assertEquals(1, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(region,7), region));
+        Assertions.assertEquals(15, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(region,8), region));
+        Assertions.assertEquals(5, converter.measureBarHeightToBlackLine(image, converter.calculateHourXPosition(region,11), region));
     }
 
     @Test
     void testSunMinutes() throws IOException
     {
         BufferedImage image = converter.loadImage(TEST_IMAGE_CEST);
-        assertEquals(0, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,0), region));
-        assertEquals(2, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,7), region));
-        assertEquals(26, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,8), region));
-        assertEquals(26, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,9), region));
-        assertEquals(4, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,10), region));
-        assertEquals(9, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,11), region));
-        assertEquals(11, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,12), region));
+        Assertions.assertEquals(0, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,0), region));
+        Assertions.assertEquals(2, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,7), region));
+        Assertions.assertEquals(26, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,8), region));
+        Assertions.assertEquals(26, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,9), region));
+        Assertions.assertEquals(4, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,10), region));
+        Assertions.assertEquals(9, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,11), region));
+        Assertions.assertEquals(11, converter.calcSunMinutes(image, converter.calculateHourXPosition(region,12), region));
     }
 
     @Test

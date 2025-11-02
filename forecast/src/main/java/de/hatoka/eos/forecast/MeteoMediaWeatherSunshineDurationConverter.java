@@ -1,5 +1,6 @@
-package de.hatoka.eos.devices.internal.business.forecast;
+package de.hatoka.eos.forecast;
 
+import jakarta.inject.Singleton;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.slf4j.LoggerFactory;
@@ -7,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -32,7 +34,8 @@ import java.util.Map;
  * 6. Sunshine duration per hour (yellow bars) - THIS IS WHAT WE EXTRACT
  * 7. Precipitation 6h
  */
-public class WeatherSunshineDurationConverter
+@Singleton
+public class MeteoMediaWeatherSunshineDurationConverter
 {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
@@ -100,6 +103,18 @@ public class WeatherSunshineDurationConverter
             }
             return ImageIO.read(is);
         }
+    }
+
+    /**
+     * Loads an image from a file path.
+     *
+     * @param file the image file
+     * @return the loaded BufferedImage
+     * @throws IOException if the file cannot be read
+     */
+    BufferedImage loadImageFromFile(File file) throws IOException
+    {
+        return ImageIO.read(file);
     }
 
     /**
