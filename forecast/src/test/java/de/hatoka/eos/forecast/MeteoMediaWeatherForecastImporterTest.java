@@ -1,5 +1,6 @@
 package de.hatoka.eos.forecast;
 
+import de.hatoka.eos.persistence.capi.MeteoMediaStation;
 import de.hatoka.eos.persistence.capi.WeatherForcastDAO;
 import de.hatoka.eos.persistence.capi.WeatherForecastPO;
 import io.quarkus.test.junit.QuarkusTest;
@@ -7,9 +8,7 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.net.URI;
 import java.time.ZonedDateTime;
-import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,5 +34,6 @@ class MeteoMediaWeatherForecastImporterTest
         WeatherForecastPO retrieved = weatherDao.get(testDate.plusHours(1));
         assertNotNull(retrieved);
         assertNotNull(retrieved.getSunProbability());
+        importer.importWeatherForecast(MeteoMediaStation.LEIPZIG_STADTWERKE);
     }
 }

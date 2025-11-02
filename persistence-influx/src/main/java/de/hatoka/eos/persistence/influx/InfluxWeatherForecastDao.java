@@ -55,6 +55,7 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
         {
             Point point = Point.measurement(WEATHER_MEASUREMENT)
                                .time(time.toInstant(), WritePrecision.S)
+                            .addTag(WeatherForecastPO.COLUMN_STATION, data.getStation().name())
                                .addField(WeatherForecastPO.COLUMN_SUN_PROBABILITY, data.getSunProbability().value());
 
             writeApi.writePoint(point);

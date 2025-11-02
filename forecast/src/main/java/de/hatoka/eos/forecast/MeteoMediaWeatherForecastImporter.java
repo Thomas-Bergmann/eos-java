@@ -1,5 +1,6 @@
 package de.hatoka.eos.forecast;
 
+import de.hatoka.eos.persistence.capi.MeteoMediaStation;
 import de.hatoka.eos.persistence.capi.WeatherForcastDAO;
 import de.hatoka.eos.persistence.capi.WeatherForecastPO;
 import de.hatoka.eos.units.capi.Percentage;
@@ -39,20 +40,11 @@ public class MeteoMediaWeatherForecastImporter
 
     public ZonedDateTime importWeatherForecast(MeteoMediaStation station) throws IOException, InterruptedException
     {
-        ZonedDateTime todayStartOfDayUTC = ZonedDateTime.now().toLocalDate().atStartOfDay(ZoneId.of("UTC"));
-        importWeatherForecast(URI.create(URI_FORMAT.formatted(station.getStationNumber())), todayStartOfDayUTC);
-        return todayStartOfDayUTC;
-    }
-
-    /**
-     * Downloads and processes a weather forecast PNG from the specified URL.
-     */
-    private void importWeatherForecast(URI imageUrl, ZonedDateTime startDate) throws IOException, InterruptedException
-    {
-        logger.info("Starting weather forecast import from URL: {}", imageUrl);
+        ZonedDateTime startDate = ZonedDateTime.now().toLocalDate().atStartOfDay(ZoneId.of("UTC"));
+        logger.info("Starting weather forecast import for station: {}", station.name());
 
         // Download the PNG image
-        byte[] imageData = downloadImage(imageUrl);
+        byte[] imageData = downloadImage(URI.create(URI_FORMAT.formatted(station.getStationNumber())));
         logger.debug("Downloaded {} bytes of image data", imageData.length);
 
         // Save to temporary file for processing
@@ -67,7 +59,7 @@ public class MeteoMediaWeatherForecastImporter
             logger.info("Extracted sunshine data for {} hours", sunshineDurationPerHour.size());
 
             // Store the data in the database
-            storeSunshineData(sunshineDurationPerHour);
+            storeSunshineData(sunshineDurationPerHour, station);
 
             logger.info("Successfully imported weather forecast data for {}", startDate);
         }
@@ -76,6 +68,7 @@ public class MeteoMediaWeatherForecastImporter
             // Clean up temporary file
             Files.deleteIfExists(tempFile);
         }
+        return startDate;
     }
 
     private byte[] downloadImage(URI imageUrl) throws IOException, InterruptedException
@@ -116,7 +109,7 @@ public class MeteoMediaWeatherForecastImporter
         return tempFile;
     }
 
-    private void storeSunshineData(Map<ZonedDateTime, Integer> sunshineDurationPerHour)
+    private void storeSunshineData(Map<ZonedDateTime, Integer> sunshineDurationPerHour, MeteoMediaStation station)
     {
         for (Map.Entry<ZonedDateTime, Integer> entry : sunshineDurationPerHour.entrySet())
         {
@@ -127,6 +120,7 @@ public class MeteoMediaWeatherForecastImporter
             double sunProbability = Math.min(1.0, sunshineMinutes / 60.0);
 
             WeatherForecastPO forecast = new WeatherForecastPO();
+            forecast.setStation(station);
             forecast.setSunProbability(new Percentage(sunProbability));
 
             try
