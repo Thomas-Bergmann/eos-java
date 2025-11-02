@@ -6,9 +6,9 @@ import de.hatoka.eos.devices.capi.business.device.DeviceState;
 import de.hatoka.eos.devices.capi.business.simulation.EnergySystem;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationStep;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationStepResult;
-import de.hatoka.eos.devices.capi.units.Energy;
-import de.hatoka.eos.devices.capi.units.Percentage;
-import de.hatoka.eos.devices.capi.units.Power;
+import de.hatoka.eos.units.capi.Energy;
+import de.hatoka.eos.units.capi.Percentage;
+import de.hatoka.eos.units.capi.Power;
 import de.hatoka.eos.devices.internal.business.DateTooling;
 import org.junit.jupiter.api.Test;
 

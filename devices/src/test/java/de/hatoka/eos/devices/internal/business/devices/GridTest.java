@@ -4,8 +4,8 @@ import de.hatoka.eos.devices.capi.business.device.DeviceState;
 import de.hatoka.eos.devices.capi.business.simulation.EnergySystem;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationStep;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationStepResult;
-import de.hatoka.eos.devices.capi.units.Energy;
-import de.hatoka.eos.devices.capi.units.Money;
+import de.hatoka.eos.units.capi.Energy;
+import de.hatoka.eos.units.capi.Money;
 import de.hatoka.eos.devices.internal.business.DateTooling;
 import org.junit.jupiter.api.Test;
 

@@ -46,7 +46,8 @@ subprojects {
             }
             withType<Test> {
                 useJUnitPlatform()
-                // environment "API_KEY", System.properties['API_KEY']
+                environment("INFLUX_URI", System.getenv("INFLUX_URI") ?: "http://localhost:8086")
+                environment("INFLUX_TOKEN", System.getenv("INFLUX_TOKEN") ?: "eos-token-invalid")
             }
 
             withType<JacocoReport> {

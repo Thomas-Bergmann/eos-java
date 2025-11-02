@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.hatoka.eos.devices.capi.units.Energy;
-import de.hatoka.eos.devices.capi.units.LocalTimeJsonConverter;
+import de.hatoka.eos.units.capi.Energy;
+import de.hatoka.eos.units.capi.LocalTimeJsonConverter;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;

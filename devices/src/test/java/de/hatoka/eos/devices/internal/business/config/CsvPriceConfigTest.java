@@ -3,7 +3,7 @@ package de.hatoka.eos.devices.internal.business.config;
 import de.hatoka.eos.devices.capi.business.config.CsvPriceConfig;
 import de.hatoka.eos.devices.capi.business.config.GridConfig;
 import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
-import de.hatoka.eos.devices.capi.units.Money;
+import de.hatoka.eos.units.capi.Money;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;

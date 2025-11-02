@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.hatoka.eos.devices.capi.units.Percentage;
-import de.hatoka.eos.devices.capi.units.PercentageJsonConverter;
+import de.hatoka.eos.units.capi.Percentage;
+import de.hatoka.eos.units.capi.PercentageJsonConverter;
 
 public class HourlyEfficiency
 {

@@ -5,8 +5,8 @@ import de.hatoka.eos.devices.capi.business.device.Device;
 import de.hatoka.eos.devices.capi.business.device.DeviceState;
 import de.hatoka.eos.devices.capi.business.forecast.EnergyPriceForecast;
 import de.hatoka.eos.devices.capi.business.simulation.*;
-import de.hatoka.eos.devices.capi.units.Energy;
-import de.hatoka.eos.devices.capi.units.Money;
+import de.hatoka.eos.units.capi.Energy;
+import de.hatoka.eos.units.capi.Money;
 
 public class Grid implements Device
 {

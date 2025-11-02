@@ -1,7 +1,7 @@
 package de.hatoka.eos.devices.capi.business.simulation;
 
-import de.hatoka.eos.devices.capi.units.Energy;
-import de.hatoka.eos.devices.capi.units.Money;
+import de.hatoka.eos.units.capi.Energy;
+import de.hatoka.eos.units.capi.Money;
 
 /**
  * EnergySystem represents the energy flow in a system, including production, charging, discharging, consumption, import, export, and costs. All

@@ -1,6 +1,6 @@
 package de.hatoka.eos.devices.internal.business.statistics;
 
-import de.hatoka.eos.devices.capi.units.Percentage;
+import de.hatoka.eos.units.capi.Percentage;
 import de.hatoka.eos.devices.internal.business.DateTooling;
 import org.junit.jupiter.api.Test;
 

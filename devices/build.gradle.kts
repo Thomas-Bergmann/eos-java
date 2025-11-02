@@ -5,6 +5,10 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":units"))
+    implementation(project(":persistence-api"))
+    implementation(project(":persistence-influx"))
+
     implementation("org.slf4j:slf4j-api")
     implementation("org.apache.commons:commons-csv")
 

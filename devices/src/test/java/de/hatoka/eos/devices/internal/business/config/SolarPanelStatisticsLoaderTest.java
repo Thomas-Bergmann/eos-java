@@ -2,7 +2,7 @@ package de.hatoka.eos.devices.internal.business.config;
 
 import de.hatoka.eos.devices.capi.business.statistics.HourlyEfficiency;
 import de.hatoka.eos.devices.capi.business.statistics.SolarPanelStatisticsConfig;
-import de.hatoka.eos.devices.capi.units.Percentage;
+import de.hatoka.eos.units.capi.Percentage;
 import de.hatoka.eos.devices.internal.business.statistics.SolarPanelStatisticsLoader;
 import org.junit.jupiter.api.Test;
 

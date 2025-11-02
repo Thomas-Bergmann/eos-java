@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.hatoka.eos.devices.capi.units.LocalDateTimeJsonConverter;
-import de.hatoka.eos.devices.capi.units.TimeZoneJsonConverter;
+import de.hatoka.eos.units.capi.LocalDateTimeJsonConverter;
+import de.hatoka.eos.units.capi.TimeZoneJsonConverter;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

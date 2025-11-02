@@ -2,8 +2,8 @@ package de.hatoka.eos.optimization.capi.goals;
 
 import de.hatoka.eos.devices.capi.business.simulation.EnergySystem;
 import de.hatoka.eos.devices.capi.business.simulation.SimulationResult;
-import de.hatoka.eos.devices.capi.units.Energy;
-import de.hatoka.eos.devices.capi.units.Money;
+import de.hatoka.eos.units.capi.Energy;
+import de.hatoka.eos.units.capi.Money;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

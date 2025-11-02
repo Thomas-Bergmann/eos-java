@@ -1,6 +1,6 @@
 package de.hatoka.eos.devices.capi.business.statistics;
 
-import de.hatoka.eos.devices.capi.units.Percentage;
+import de.hatoka.eos.units.capi.Percentage;
 
 import java.time.ZonedDateTime;
 

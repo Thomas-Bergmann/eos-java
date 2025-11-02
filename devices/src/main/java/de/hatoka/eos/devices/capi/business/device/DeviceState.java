@@ -1,7 +1,7 @@
 package de.hatoka.eos.devices.capi.business.device;
 
-import de.hatoka.eos.devices.capi.units.Energy;
-import de.hatoka.eos.devices.capi.units.Percentage;
+import de.hatoka.eos.units.capi.Energy;
+import de.hatoka.eos.units.capi.Percentage;
 
 /**
  * DeviceState represents the state of a device in a simulation context.

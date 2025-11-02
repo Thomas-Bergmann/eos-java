@@ -4,7 +4,7 @@ import de.hatoka.eos.devices.capi.business.config.DeviceConfig;
 import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
 import de.hatoka.eos.devices.capi.business.config.SimulationConfig;
 import de.hatoka.eos.devices.capi.business.device.DeviceType;
-import de.hatoka.eos.devices.capi.units.Money;
+import de.hatoka.eos.units.capi.Money;
 import de.hatoka.eos.devices.internal.business.DateTooling;
 import org.junit.jupiter.api.Test;
 

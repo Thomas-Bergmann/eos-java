@@ -2,8 +2,8 @@ package de.hatoka.eos.devices.capi.business.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import de.hatoka.eos.devices.capi.units.Energy;
-import de.hatoka.eos.devices.capi.units.Money;
+import de.hatoka.eos.units.capi.Energy;
+import de.hatoka.eos.units.capi.Money;
 
 /**
  * The ImportExportChargeConfig defines additional charge or fee for import and export of energy, depending on the energy provider.

@@ -2,7 +2,7 @@ package de.hatoka.eos.devices.capi.business.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
-import de.hatoka.eos.devices.capi.units.Money;
+import de.hatoka.eos.units.capi.Money;
 
 /**
  * The FlatPriceConfig defines the import and export prices, which are static or flat.

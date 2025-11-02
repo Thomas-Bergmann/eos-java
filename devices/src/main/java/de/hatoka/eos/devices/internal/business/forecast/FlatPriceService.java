@@ -2,7 +2,7 @@ package de.hatoka.eos.devices.internal.business.forecast;
 
 import de.hatoka.eos.devices.capi.business.config.FlatPriceConfig;
 import de.hatoka.eos.devices.capi.business.forecast.EnergyPriceForecast;
-import de.hatoka.eos.devices.capi.units.Money;
+import de.hatoka.eos.units.capi.Money;
 
 import java.time.ZonedDateTime;
 

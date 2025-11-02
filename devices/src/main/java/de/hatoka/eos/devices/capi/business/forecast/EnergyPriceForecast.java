@@ -1,6 +1,6 @@
 package de.hatoka.eos.devices.capi.business.forecast;
 
-import de.hatoka.eos.devices.capi.units.Money;
+import de.hatoka.eos.units.capi.Money;
 
 import java.time.ZonedDateTime;
 
