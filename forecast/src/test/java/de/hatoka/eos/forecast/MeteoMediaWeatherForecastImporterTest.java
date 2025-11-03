@@ -2,6 +2,7 @@ package de.hatoka.eos.forecast;
 
 import de.hatoka.eos.persistence.capi.MeteoMediaStation;
 import de.hatoka.eos.persistence.capi.WeatherForcastDAO;
+import de.hatoka.eos.persistence.capi.WeatherForecastKey;
 import de.hatoka.eos.persistence.capi.WeatherForecastPO;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -31,7 +32,7 @@ class MeteoMediaWeatherForecastImporterTest
     {
         // this importer can only import data of today and tomorrow
         ZonedDateTime testDate = importer.importWeatherForecast(MeteoMediaStation.APOLDA);
-        WeatherForecastPO retrieved = weatherDao.get(testDate.plusHours(1));
+        WeatherForecastPO retrieved = weatherDao.get(WeatherForecastKey.valueOf(MeteoMediaStation.APOLDA, testDate.plusHours(1)));
         assertNotNull(retrieved);
         assertNotNull(retrieved.getSunProbability());
         importer.importWeatherForecast(MeteoMediaStation.LEIPZIG_STADTWERKE);
