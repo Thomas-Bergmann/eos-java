@@ -6,8 +6,10 @@ import com.influxdb.client.QueryApi;
 import com.influxdb.client.WriteApiBlocking;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
+import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import de.hatoka.eos.persistence.capi.WeatherForcastDAO;
+import de.hatoka.eos.persistence.capi.WeatherForecastKey;
 import de.hatoka.eos.persistence.capi.WeatherForecastPO;
 import de.hatoka.eos.units.capi.Percentage;
 import jakarta.inject.Inject;
@@ -15,7 +17,6 @@ import jakarta.inject.Singleton;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 /**
  * InfluxDB implementation for writing forecast data.
@@ -24,12 +25,17 @@ import java.util.List;
 public class InfluxWeatherForecastDao implements WeatherForcastDAO
 {
     private static final String WEATHER_MEASUREMENT = "weather_forecast";
-    public static final String FILTER_INSTANT = """
+    private static final String COLUMN_STATION = "station";
+    public static final String GET_QUERY = """
                     from(bucket: "%s")
                       |> range(start: %s, stop: %s)
                       |> filter(fn: (r) => r["_measurement"] == "%s")
+                      |> filter(fn: (r) => r["station"] == "%s")
                       |> filter(fn: (r) => r["_field"] == "%s")
                       |> last()
+                    """;
+    public static final String DELETE_PREDICATE = """
+                    _measurement="%s" AND station="%s"
                     """;
 
     private final WriteApiBlocking writeApi;
@@ -49,13 +55,13 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
     }
 
     @Override
-    public void update(ZonedDateTime time, WeatherForecastPO data)
+    public void update(WeatherForecastKey key, WeatherForecastPO data)
     {
         try
         {
             Point point = Point.measurement(WEATHER_MEASUREMENT)
-                               .time(time.toInstant(), WritePrecision.S)
-                            .addTag(WeatherForecastPO.COLUMN_STATION, data.getStation().name())
+                               .time(key.time().toInstant(), WritePrecision.S)
+                               .addTag(COLUMN_STATION, key.station())
                                .addField(WeatherForecastPO.COLUMN_SUN_PROBABILITY, data.getSunProbability().value());
 
             writeApi.writePoint(point);
@@ -67,20 +73,15 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
     }
 
     @Override
-    public void delete(ZonedDateTime zonedDateTime)
+    public void delete(WeatherForecastKey key)
     {
         try
         {
             // Delete data within a 1-minute window around the specified time
-            deleteApi.delete(
-                zonedDateTime.minusMinutes(1).toOffsetDateTime(),
-                zonedDateTime.plusMinutes(1).toOffsetDateTime(),
-                "_measurement=\"" + WEATHER_MEASUREMENT + "\"",
-                bucketName,
-                influxdbOrg
-            );
+            deleteApi.delete(key.time().minusMinutes(1).toOffsetDateTime(), key.time().plusMinutes(1).toOffsetDateTime(),
+                            DELETE_PREDICATE.formatted(WEATHER_MEASUREMENT, key.station()), bucketName, influxdbOrg);
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             throw new RuntimeException("Can't delete weather forecast from influx", e);
         }
@@ -92,24 +93,36 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
     }
 
     @Override
-    public WeatherForecastPO get(ZonedDateTime zonedDateTime)
+    public WeatherForecastPO get(WeatherForecastKey key)
     {
-        String flux = String.format(FILTER_INSTANT,
-                        bucketName,
-                        formatTimeForFlux(zonedDateTime.minusMinutes(1)),
-                        formatTimeForFlux(zonedDateTime.plusMinutes(1)),
-                        WEATHER_MEASUREMENT, WeatherForecastPO.COLUMN_SUN_PROBABILITY);
-        List<FluxTable> tables = queryApi.query(flux);
-        if (!tables.isEmpty() && !tables.getFirst().getRecords().isEmpty())
+        String flux = String.format(GET_QUERY, bucketName, formatTimeForFlux(key.time().minusMinutes(1)),
+                        formatTimeForFlux(key.time().plusMinutes(1)), WEATHER_MEASUREMENT, key.station(), WeatherForecastPO.COLUMN_SUN_PROBABILITY);
+        for (FluxTable table : queryApi.query(flux))
         {
-            WeatherForecastPO data = new WeatherForecastPO();
-            Object value = tables.getFirst().getRecords().getFirst().getValueByKey("_value");
-            if (value instanceof Number aNumber)
+            for (FluxRecord record : table.getRecords())
             {
-                data.setSunProbability(new Percentage(aNumber.doubleValue()));
+                WeatherForecastPO data = convert(record);
+                if (data != null)
+                {
+                    return data;
+                }
             }
-            return data;
         }
         return null;
+    }
+
+    private WeatherForecastPO convert(FluxRecord record)
+    {
+        WeatherForecastPO data = new WeatherForecastPO();
+        Object value = record.getValueByKey("_value");
+        if (value instanceof Number aNumber)
+        {
+            data.setSunProbability(new Percentage(aNumber.doubleValue()));
+        }
+        else
+        {
+            return null;
+        }
+        return data;
     }
 }

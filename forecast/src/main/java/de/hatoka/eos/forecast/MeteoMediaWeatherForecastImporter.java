@@ -2,6 +2,7 @@ package de.hatoka.eos.forecast;
 
 import de.hatoka.eos.persistence.capi.MeteoMediaStation;
 import de.hatoka.eos.persistence.capi.WeatherForcastDAO;
+import de.hatoka.eos.persistence.capi.WeatherForecastKey;
 import de.hatoka.eos.persistence.capi.WeatherForecastPO;
 import de.hatoka.eos.units.capi.Percentage;
 import jakarta.inject.Inject;
@@ -21,6 +22,7 @@ import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -120,12 +122,11 @@ public class MeteoMediaWeatherForecastImporter
             double sunProbability = Math.min(1.0, sunshineMinutes / 60.0);
 
             WeatherForecastPO forecast = new WeatherForecastPO();
-            forecast.setStation(station);
             forecast.setSunProbability(new Percentage(sunProbability));
 
             try
             {
-                weatherDao.update(dateTime, forecast);
+                weatherDao.update(new WeatherForecastKey(station.name(), dateTime), forecast);
                 logger.debug("Stored weather data for {}: {}% sun probability", dateTime, Math.round(sunProbability * 100));
             }
             catch(Exception e)

@@ -1,5 +1,7 @@
 package de.hatoka.eos.persistence.influx;
 
+import de.hatoka.eos.persistence.capi.MeteoMediaStation;
+import de.hatoka.eos.persistence.capi.WeatherForecastKey;
 import de.hatoka.eos.persistence.capi.WeatherForecastPO;
 import de.hatoka.eos.units.capi.Percentage;
 import io.quarkus.test.junit.QuarkusTest;
@@ -7,8 +9,8 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.ZonedDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,23 +35,34 @@ class InfluxWeatherForecastDaoTest
     @AfterEach
     void tearDown()
     {
-        dao.delete(TEST_TIME);
-        dao.delete(TEST_TIME.plusHours(1));
-        dao.delete(TEST_TIME.minusHours(1));
+        dao.delete(getKey(TEST_TIME));
+        dao.delete(getKey(TEST_TIME.plusHours(1)));
+        dao.delete(getKey(TEST_TIME.minusHours(1)));
+    }
+
+    private static WeatherForecastPO createForecast(Percentage sunProbability)
+    {
+        WeatherForecastPO forecast = new WeatherForecastPO();
+        forecast.setSunProbability(sunProbability);
+        return forecast;
+    }
+
+    private static WeatherForecastKey getKey(ZonedDateTime time)
+    {
+        return WeatherForecastKey.valueOf(MeteoMediaStation.APOLDA, time);
     }
 
     @Test
     void shouldStoreAndRetrieveWeatherForecastData()
     {
         // Given
-        WeatherForecastPO forecast = new WeatherForecastPO();
-        forecast.setSunProbability(TEST_SUN_PROBABILITY);
+        WeatherForecastPO forecast = createForecast(TEST_SUN_PROBABILITY);
 
         // When
-        dao.update(TEST_TIME, forecast);
+        dao.update(getKey(TEST_TIME), forecast);
 
         // Then
-        WeatherForecastPO retrievedForecast = dao.get(TEST_TIME);
+        WeatherForecastPO retrievedForecast = dao.get(getKey(TEST_TIME));
 
         assertNotNull(retrievedForecast, "Retrieved forecast should not be null");
         assertNotNull(retrievedForecast.getSunProbability(), "Sun probability should not be null");
@@ -61,17 +74,15 @@ class InfluxWeatherForecastDaoTest
     void shouldUpdateExistingWeatherForecastData()
     {
         // Given - store initial data
-        WeatherForecastPO initialForecast = new WeatherForecastPO();
-        initialForecast.setSunProbability(TEST_SUN_PROBABILITY);
-        dao.update(TEST_TIME, initialForecast);
+        WeatherForecastPO initialForecast = createForecast(TEST_SUN_PROBABILITY);
+        dao.update(getKey(TEST_TIME), initialForecast);
 
         // When - update with new data
-        WeatherForecastPO updatedForecast = new WeatherForecastPO();
-        updatedForecast.setSunProbability(UPDATED_SUN_PROBABILITY);
-        dao.update(TEST_TIME, updatedForecast);
+        WeatherForecastPO updatedForecast = createForecast(UPDATED_SUN_PROBABILITY);
+        dao.update(getKey(TEST_TIME), updatedForecast);
 
         // Then
-        WeatherForecastPO retrievedForecast = dao.get(TEST_TIME);
+        WeatherForecastPO retrievedForecast = dao.get(getKey(TEST_TIME));
 
         assertNotNull(retrievedForecast, "Retrieved forecast should not be null");
         assertNotNull(retrievedForecast.getSunProbability(), "Sun probability should not be null");
@@ -88,7 +99,7 @@ class InfluxWeatherForecastDaoTest
         // When
 
         // Then
-        assertNull(dao.get(nonExistentTime), "Retrieved forecast should not be null");
+        assertNull(dao.get(getKey(nonExistentTime)), "Retrieved forecast should not be null");
     }
 
     @Test
@@ -99,32 +110,19 @@ class InfluxWeatherForecastDaoTest
         ZonedDateTime time2 = TEST_TIME.plusHours(1);
         ZonedDateTime time3 = TEST_TIME.plusHours(2);
 
-        WeatherForecastPO forecast1 = new WeatherForecastPO();
-        forecast1.setSunProbability(new Percentage(0.5));
-
-        WeatherForecastPO forecast2 = new WeatherForecastPO();
-        forecast2.setSunProbability(new Percentage(0.7));
-
-        WeatherForecastPO forecast3 = new WeatherForecastPO();
-        forecast3.setSunProbability(new Percentage(0.9));
-
         // When
-        dao.update(time1, forecast1);
-        dao.update(time2, forecast2);
-        dao.update(time3, forecast3);
+        dao.update(getKey(time1), createForecast(new Percentage(0.5)));
+        dao.update(getKey(time2), createForecast(new Percentage(0.7)));
+        dao.update(getKey(time3), createForecast(new Percentage(0.9)));
 
         // Then
-        WeatherForecastPO retrieved1 = dao.get(time1);
-        WeatherForecastPO retrieved2 = dao.get(time2);
-        WeatherForecastPO retrieved3 = dao.get(time3);
-
-        assertEquals(0.5, retrieved1.getSunProbability().value(), 0.001);
-        assertEquals(0.7, retrieved2.getSunProbability().value(), 0.001);
-        assertEquals(0.9, retrieved3.getSunProbability().value(), 0.001);
+        assertEquals(0.5, dao.get(getKey(time1)).getSunProbability().value(), 0.001);
+        assertEquals(0.7, dao.get(getKey(time2)).getSunProbability().value(), 0.001);
+        assertEquals(0.9, dao.get(getKey(time3)).getSunProbability().value(), 0.001);
 
         // Clean up additional test data
-        dao.delete(time2);
-        dao.delete(time3);
+        dao.delete(getKey(time2));
+        dao.delete(getKey(time3));
     }
 
     @Test
@@ -132,14 +130,13 @@ class InfluxWeatherForecastDaoTest
     {
         // Given - forecast with precise timestamp
         ZonedDateTime preciseTime = TEST_TIME.truncatedTo(ChronoUnit.SECONDS);
-        WeatherForecastPO forecast = new WeatherForecastPO();
-        forecast.setSunProbability(TEST_SUN_PROBABILITY);
+        WeatherForecastPO forecast = createForecast(TEST_SUN_PROBABILITY);
 
         // When
-        dao.update(preciseTime, forecast);
+        dao.update(getKey(preciseTime), forecast);
 
         // Then - should retrieve data even with slight time variations
-        WeatherForecastPO retrieved = dao.get(preciseTime);
+        WeatherForecastPO retrieved = dao.get(getKey(preciseTime));
 
         assertNotNull(retrieved.getSunProbability());
         assertEquals(TEST_SUN_PROBABILITY.value(), retrieved.getSunProbability().value(), 0.001);
@@ -149,45 +146,39 @@ class InfluxWeatherForecastDaoTest
     void shouldHandleBoundaryPercentageValues()
     {
         // Test with 0% sun probability
-        WeatherForecastPO forecast0 = new WeatherForecastPO();
-        forecast0.setSunProbability(Percentage.ZERO);
-        dao.update(TEST_TIME, forecast0);
+        WeatherForecastPO forecast0 = createForecast(Percentage.ZERO);
+        dao.update(getKey(TEST_TIME), forecast0);
 
         // Test with 100% sun probability
         ZonedDateTime time100 = TEST_TIME.plusMinutes(5);
-        WeatherForecastPO forecast100 = new WeatherForecastPO();
-        forecast100.setSunProbability(Percentage.ONE_HUNDRED);
-        dao.update(time100, forecast100);
+        WeatherForecastPO forecast100 = createForecast(Percentage.ONE_HUNDRED);
+        dao.update(getKey(time100), forecast100);
 
         // Verify boundary values
-        WeatherForecastPO retrieved0 = dao.get(TEST_TIME);
-        WeatherForecastPO retrieved100 = dao.get(time100);
-
-        assertEquals(0.0, retrieved0.getSunProbability().value(), 0.001);
-        assertEquals(1.0, retrieved100.getSunProbability().value(), 0.001);
+        assertEquals(0.0, dao.get(getKey(TEST_TIME)).getSunProbability().value(), 0.001);
+        assertEquals(1.0, dao.get(getKey(time100)).getSunProbability().value(), 0.001);
 
         // Clean up
-        dao.delete(time100);
+        dao.delete(getKey(time100));
     }
 
     @Test
     void shouldDeleteWeatherForecastData()
     {
         // Given - store some data first
-        WeatherForecastPO forecast = new WeatherForecastPO();
-        forecast.setSunProbability(TEST_SUN_PROBABILITY);
-        dao.update(TEST_TIME, forecast);
+        WeatherForecastPO forecast = createForecast(TEST_SUN_PROBABILITY);
+        dao.update(getKey(TEST_TIME), forecast);
 
         // Verify data exists
-        WeatherForecastPO retrievedBeforeDelete = dao.get(TEST_TIME);
+        WeatherForecastPO retrievedBeforeDelete = dao.get(getKey(TEST_TIME));
         assertNotNull(retrievedBeforeDelete.getSunProbability(),
                 "Data should exist before deletion");
 
         // When - delete the data
-        dao.delete(TEST_TIME);
+        dao.delete(getKey(TEST_TIME));
 
         // Then - data should no longer exist
-        assertNull(dao.get(TEST_TIME),"Data should not exist after deletion");
+        assertNull(dao.get(getKey(TEST_TIME)),"Data should not exist after deletion");
     }
 
     @Test
@@ -198,37 +189,21 @@ class InfluxWeatherForecastDaoTest
         ZonedDateTime time2 = TEST_TIME.plusHours(1);
         ZonedDateTime time3 = TEST_TIME.plusHours(2);
 
-        WeatherForecastPO forecast1 = new WeatherForecastPO();
-        forecast1.setSunProbability(new Percentage(0.3));
-
-        WeatherForecastPO forecast2 = new WeatherForecastPO();
-        forecast2.setSunProbability(new Percentage(0.6));
-
-        WeatherForecastPO forecast3 = new WeatherForecastPO();
-        forecast3.setSunProbability(new Percentage(0.9));
-
-        dao.update(time1, forecast1);
-        dao.update(time2, forecast2);
-        dao.update(time3, forecast3);
+        dao.update(getKey(time1), createForecast(new Percentage(0.3)));
+        dao.update(getKey(time2), createForecast(new Percentage(0.6)));
+        dao.update(getKey(time3), createForecast(new Percentage(0.9)));
 
         // When - delete only the middle data point
-        dao.delete(time2);
+        dao.delete(getKey(time2));
 
         // Then - only the deleted data should be gone
-        WeatherForecastPO retrieved1 = dao.get(time1);
-        WeatherForecastPO retrieved2 = dao.get(time2);
-        WeatherForecastPO retrieved3 = dao.get(time3);
-
-        assertNotNull(retrieved1.getSunProbability(), "First data point should still exist");
-        assertNull(retrieved2, "Second data point should be deleted");
-        assertNotNull(retrieved3.getSunProbability(), "Third data point should still exist");
-
-        assertEquals(0.3, retrieved1.getSunProbability().value(), 0.001);
-        assertEquals(0.9, retrieved3.getSunProbability().value(), 0.001);
+        assertEquals(0.3, dao.get(getKey(time1)).getSunProbability().value(), 0.001);
+        assertNull(dao.get(getKey(time2)), "Second data point should be deleted");
+        assertEquals(0.9, dao.get(getKey(time3)).getSunProbability().value(), 0.001);
 
         // Clean up remaining data
-        dao.delete(time1);
-        dao.delete(time3);
+        dao.delete(getKey(time1));
+        dao.delete(getKey(time3));
     }
 
     @Test
@@ -238,8 +213,27 @@ class InfluxWeatherForecastDaoTest
         ZonedDateTime nonExistentTime = TEST_TIME.plusDays(100);
 
         // When/Then - deleting non-existent data should not throw an exception
-        assertDoesNotThrow(() -> dao.delete(nonExistentTime),
+        assertDoesNotThrow(() -> dao.delete(getKey(nonExistentTime)),
                 "Deleting non-existent data should not throw an exception");
+    }
+
+    @Test
+    void shouldDeleteOnlyStation()
+    {
+        // Given - store data at multiple time points
+        WeatherForecastKey leipzigKey = WeatherForecastKey.valueOf(MeteoMediaStation.LEIPZIG_STADTWERKE, TEST_TIME);
+        dao.update(getKey(TEST_TIME), createForecast(new Percentage(0.3)));
+        dao.update(leipzigKey, createForecast(new Percentage(0.6)));
+
+        // When - delete only one station
+        dao.delete(getKey(TEST_TIME));
+
+        // Then - only the deleted data should be gone
+        assertNull(dao.get(getKey(TEST_TIME)), "one data point should be deleted");
+        assertNotNull(dao.get(leipzigKey), "the other data point should not be deleted");
+        assertEquals(0.6, dao.get(leipzigKey).getSunProbability().value(), 0.001);
+
+        dao.delete(leipzigKey);
     }
 }
 
