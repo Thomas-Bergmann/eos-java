@@ -1,9 +1,10 @@
 package de.hatoka.eos.forecast;
 
-import de.hatoka.eos.persistence.capi.MeteoMediaStation;
+import de.hatoka.eos.persistence.capi.WeatherStation;
 import de.hatoka.eos.persistence.capi.WeatherForcastDAO;
 import de.hatoka.eos.persistence.capi.WeatherForecastKey;
 import de.hatoka.eos.persistence.capi.WeatherForecastPO;
+import de.hatoka.eos.persistence.capi.WeatherDataSource;
 import de.hatoka.eos.units.capi.Percentage;
 import jakarta.inject.Inject;
 import org.slf4j.Logger;
@@ -26,6 +27,13 @@ public abstract class AbstractWeatherForecastImporter
     protected WeatherForcastDAO weatherDao;
 
     /**
+     * Gets the source identifier for this importer.
+     * 
+     * @return the source identifier (e.g., WeatherDataSource.METEOMEDIA, WeatherDataSource.OPENMETEO)
+     */
+    protected abstract WeatherDataSource getSource();
+
+    /**
      * Imports weather forecast data for the specified station.
      * 
      * @param station the weather station to import data for
@@ -33,7 +41,7 @@ public abstract class AbstractWeatherForecastImporter
      * @throws IOException if there's an error downloading or processing the data
      * @throws InterruptedException if the operation is interrupted
      */
-    public ZonedDateTime importWeatherForecast(MeteoMediaStation station) throws IOException, InterruptedException
+    public ZonedDateTime importWeatherForecast(WeatherStation station) throws IOException, InterruptedException
     {
         ZonedDateTime startDate = ZonedDateTime.now().toLocalDate().atStartOfDay(ZoneId.of("UTC"));
         logger.info("Starting weather forecast import for station: {}", station.name());
@@ -69,7 +77,7 @@ public abstract class AbstractWeatherForecastImporter
      * @throws IOException if there's an error downloading or processing the data
      * @throws InterruptedException if the operation is interrupted
      */
-    protected abstract Map<ZonedDateTime, Integer> downloadAndProcessWeatherData(MeteoMediaStation station, ZonedDateTime startDate) 
+    protected abstract Map<ZonedDateTime, Integer> downloadAndProcessWeatherData(WeatherStation station, ZonedDateTime startDate) 
             throws IOException, InterruptedException;
 
     /**
@@ -79,7 +87,7 @@ public abstract class AbstractWeatherForecastImporter
      * @param sunshineDurationPerHour map of datetime to sunshine minutes
      * @param station the weather station this data belongs to
      */
-    protected void storeSunshineData(Map<ZonedDateTime, Integer> sunshineDurationPerHour, MeteoMediaStation station)
+    protected void storeSunshineData(Map<ZonedDateTime, Integer> sunshineDurationPerHour, WeatherStation station)
     {
         for (Map.Entry<ZonedDateTime, Integer> entry : sunshineDurationPerHour.entrySet())
         {
@@ -94,7 +102,7 @@ public abstract class AbstractWeatherForecastImporter
 
             try
             {
-                weatherDao.update(new WeatherForecastKey(station.name(), dateTime), forecast);
+                weatherDao.update(new WeatherForecastKey(station.name(), dateTime, getSource()), forecast);
                 logger.debug("Stored weather data for {}: {}% sun probability", dateTime, Math.round(sunProbability * 100));
             }
             catch(Exception e)

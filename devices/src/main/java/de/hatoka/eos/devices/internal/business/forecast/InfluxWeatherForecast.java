@@ -2,10 +2,9 @@ package de.hatoka.eos.devices.internal.business.forecast;
 
 import de.hatoka.eos.devices.capi.business.forecast.WeatherForecast;
 import de.hatoka.eos.persistence.capi.WeatherForecastKey;
+import de.hatoka.eos.persistence.capi.WeatherDataSource;
 import de.hatoka.eos.persistence.influx.InfluxWeatherForecastDao;
 import de.hatoka.eos.units.capi.Percentage;
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 
 import java.time.ZonedDateTime;
 
@@ -25,6 +24,6 @@ public class InfluxWeatherForecast implements WeatherForecast
     @Override
     public Percentage getSunProbability(ZonedDateTime time)
     {
-        return forecastDAO.get(new WeatherForecastKey(station, time)).getSunProbability();
+        return forecastDAO.get(new WeatherForecastKey(station, time, WeatherDataSource.METEOMEDIA)).getSunProbability();
     }
 }

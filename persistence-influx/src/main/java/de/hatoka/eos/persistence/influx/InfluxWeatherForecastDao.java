@@ -26,16 +26,18 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
 {
     private static final String WEATHER_MEASUREMENT = "weather_forecast";
     private static final String COLUMN_STATION = "station";
+    private static final String COLUMN_SOURCE = "source";
     public static final String GET_QUERY = """
                     from(bucket: "%s")
                       |> range(start: %s, stop: %s)
                       |> filter(fn: (r) => r["_measurement"] == "%s")
                       |> filter(fn: (r) => r["station"] == "%s")
+                      |> filter(fn: (r) => r["source"] == "%s")
                       |> filter(fn: (r) => r["_field"] == "%s")
                       |> last()
                     """;
     public static final String DELETE_PREDICATE = """
-                    _measurement="%s" AND station="%s"
+                    _measurement="%s" AND station="%s" AND source="%s"
                     """;
 
     private final WriteApiBlocking writeApi;
@@ -62,6 +64,7 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
             Point point = Point.measurement(WEATHER_MEASUREMENT)
                                .time(key.time().toInstant(), WritePrecision.S)
                                .addTag(COLUMN_STATION, key.station())
+                               .addTag(COLUMN_SOURCE, key.source().getIdentifier())
                                .addField(WeatherForecastPO.COLUMN_SUN_PROBABILITY, data.getSunProbability().value());
 
             writeApi.writePoint(point);
@@ -79,7 +82,7 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
         {
             // Delete data within a 1-minute window around the specified time
             deleteApi.delete(key.time().minusMinutes(1).toOffsetDateTime(), key.time().plusMinutes(1).toOffsetDateTime(),
-                            DELETE_PREDICATE.formatted(WEATHER_MEASUREMENT, key.station()), bucketName, influxdbOrg);
+                            DELETE_PREDICATE.formatted(WEATHER_MEASUREMENT, key.station(), key.source().getIdentifier()), bucketName, influxdbOrg);
         }
         catch(Exception e)
         {
@@ -96,7 +99,7 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
     public WeatherForecastPO get(WeatherForecastKey key)
     {
         String flux = String.format(GET_QUERY, bucketName, formatTimeForFlux(key.time().minusMinutes(1)),
-                        formatTimeForFlux(key.time().plusMinutes(1)), WEATHER_MEASUREMENT, key.station(), WeatherForecastPO.COLUMN_SUN_PROBABILITY);
+                        formatTimeForFlux(key.time().plusMinutes(1)), WEATHER_MEASUREMENT, key.station(), key.source().getIdentifier(), WeatherForecastPO.COLUMN_SUN_PROBABILITY);
         for (FluxTable table : queryApi.query(flux))
         {
             for (FluxRecord record : table.getRecords())

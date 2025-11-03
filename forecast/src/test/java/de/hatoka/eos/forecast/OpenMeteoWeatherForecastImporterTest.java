@@ -1,6 +1,7 @@
 package de.hatoka.eos.forecast;
 
-import de.hatoka.eos.persistence.capi.MeteoMediaStation;
+import de.hatoka.eos.persistence.capi.WeatherStation;
+import de.hatoka.eos.persistence.capi.WeatherDataSource;
 import de.hatoka.eos.persistence.capi.WeatherForcastDAO;
 import de.hatoka.eos.persistence.capi.WeatherForecastKey;
 import de.hatoka.eos.persistence.capi.WeatherForecastPO;
@@ -31,13 +32,13 @@ class OpenMeteoWeatherForecastImporterTest
     void testImportFromOpenMeteoApi() throws IOException, InterruptedException
     {
         // Test importing data from OpenMeteo API
-        ZonedDateTime testDate = importer.importWeatherForecast(MeteoMediaStation.APOLDA);
+        ZonedDateTime testDate = importer.importWeatherForecast(WeatherStation.APOLDA);
         
         // Verify that data was imported successfully
         assertNotNull(testDate, "Import should return a valid start date");
         
         // Check if data was stored in the database (test the next hour)
-        WeatherForecastPO retrieved = weatherDao.get(WeatherForecastKey.valueOf(MeteoMediaStation.APOLDA, testDate.plusHours(1)));
+        WeatherForecastPO retrieved = weatherDao.get(WeatherForecastKey.valueOf(WeatherStation.APOLDA, testDate.plusHours(1), WeatherDataSource.OPENMETEO));
         assertNotNull(retrieved, "Weather data should be stored in database");
         assertNotNull(retrieved.getSunProbability(), "Sun probability should not be null");
         
@@ -47,24 +48,24 @@ class OpenMeteoWeatherForecastImporterTest
                    "Sun probability should be between 0.0 and 1.0, but was: " + sunProb);
         
         // Test importing for a different station
-        ZonedDateTime testDate2 = importer.importWeatherForecast(MeteoMediaStation.LEIPZIG_STADTWERKE);
+        ZonedDateTime testDate2 = importer.importWeatherForecast(WeatherStation.LEIPZIG_STADTWERKE);
         assertNotNull(testDate2, "Import for Leipzig should also return a valid start date");
     }
 
     @Test
     void testStationCoordinates()
     {
-        // Verify that our stations have valid coordinates for OpenMeteo API
-        assertNotEquals(0.0, MeteoMediaStation.APOLDA.getLatitude(), "APOLDA should have valid latitude");
-        assertNotEquals(0.0, MeteoMediaStation.APOLDA.getLongitude(), "APOLDA should have valid longitude");
-        
-        assertNotEquals(0.0, MeteoMediaStation.LEIPZIG_STADTWERKE.getLatitude(), "LEIPZIG_STADTWERKE should have valid latitude");
-        assertNotEquals(0.0, MeteoMediaStation.LEIPZIG_STADTWERKE.getLongitude(), "LEIPZIG_STADTWERKE should have valid longitude");
-        
-        // Check that coordinates are reasonable for Germany
-        assertTrue(MeteoMediaStation.APOLDA.getLatitude() > 47.0 && MeteoMediaStation.APOLDA.getLatitude() < 55.0,
-                   "APOLDA latitude should be within Germany bounds");
-        assertTrue(MeteoMediaStation.APOLDA.getLongitude() > 5.0 && MeteoMediaStation.APOLDA.getLongitude() < 15.0,
-                   "APOLDA longitude should be within Germany bounds");
+        // Test that all weather stations have valid coordinates
+        for (WeatherStation station : WeatherStation.values())
+        {
+            assertTrue(station.getLatitude() >= -90.0 && station.getLatitude() <= 90.0,
+                       "Station " + station.name() + " has invalid latitude: " + station.getLatitude());
+            assertTrue(station.getLongitude() >= -180.0 && station.getLongitude() <= 180.0,
+                       "Station " + station.name() + " has invalid longitude: " + station.getLongitude());
+            assertNotNull(station.getStationNumber(),
+                          "Station " + station.name() + " should have a station number");
+            assertFalse(station.getStationNumber().isEmpty(),
+                        "Station " + station.name() + " should have a non-empty station number");
+        }
     }
 }

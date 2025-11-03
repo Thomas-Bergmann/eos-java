@@ -1,6 +1,7 @@
 package de.hatoka.eos.forecast;
 
-import de.hatoka.eos.persistence.capi.MeteoMediaStation;
+import de.hatoka.eos.persistence.capi.WeatherStation;
+import de.hatoka.eos.persistence.capi.WeatherDataSource;
 import de.hatoka.eos.persistence.capi.WeatherForcastDAO;
 import de.hatoka.eos.persistence.capi.WeatherForecastKey;
 import de.hatoka.eos.persistence.capi.WeatherForecastPO;
@@ -31,10 +32,10 @@ class MeteoMediaWeatherForecastImporterTest
     void testImportFromValidUrl() throws IOException, InterruptedException
     {
         // this importer can only import data of today and tomorrow
-        ZonedDateTime testDate = importer.importWeatherForecast(MeteoMediaStation.APOLDA);
-        WeatherForecastPO retrieved = weatherDao.get(WeatherForecastKey.valueOf(MeteoMediaStation.APOLDA, testDate.plusHours(1)));
+        ZonedDateTime testDate = importer.importWeatherForecast(WeatherStation.APOLDA);
+        WeatherForecastPO retrieved = weatherDao.get(WeatherForecastKey.valueOf(WeatherStation.APOLDA, testDate.plusHours(1), WeatherDataSource.METEOMEDIA));
         assertNotNull(retrieved);
         assertNotNull(retrieved.getSunProbability());
-        importer.importWeatherForecast(MeteoMediaStation.LEIPZIG_STADTWERKE);
+        importer.importWeatherForecast(WeatherStation.LEIPZIG_STADTWERKE);
     }
 }

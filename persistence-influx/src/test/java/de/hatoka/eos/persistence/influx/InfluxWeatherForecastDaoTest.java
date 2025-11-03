@@ -1,6 +1,7 @@
 package de.hatoka.eos.persistence.influx;
 
-import de.hatoka.eos.persistence.capi.MeteoMediaStation;
+import de.hatoka.eos.persistence.capi.WeatherStation;
+import de.hatoka.eos.persistence.capi.WeatherDataSource;
 import de.hatoka.eos.persistence.capi.WeatherForecastKey;
 import de.hatoka.eos.persistence.capi.WeatherForecastPO;
 import de.hatoka.eos.units.capi.Percentage;
@@ -49,7 +50,7 @@ class InfluxWeatherForecastDaoTest
 
     private static WeatherForecastKey getKey(ZonedDateTime time)
     {
-        return WeatherForecastKey.valueOf(MeteoMediaStation.APOLDA, time);
+        return WeatherForecastKey.valueOf(WeatherStation.APOLDA, time, WeatherDataSource.TEST);
     }
 
     @Test
@@ -221,7 +222,7 @@ class InfluxWeatherForecastDaoTest
     void shouldDeleteOnlyStation()
     {
         // Given - store data at multiple time points
-        WeatherForecastKey leipzigKey = WeatherForecastKey.valueOf(MeteoMediaStation.LEIPZIG_STADTWERKE, TEST_TIME);
+        WeatherForecastKey leipzigKey = WeatherForecastKey.valueOf(WeatherStation.LEIPZIG_STADTWERKE, TEST_TIME, WeatherDataSource.TEST);
         dao.update(getKey(TEST_TIME), createForecast(new Percentage(0.3)));
         dao.update(leipzigKey, createForecast(new Percentage(0.6)));
 

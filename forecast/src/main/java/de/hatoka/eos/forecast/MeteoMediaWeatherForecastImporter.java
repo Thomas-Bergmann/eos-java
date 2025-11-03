@@ -1,6 +1,7 @@
 package de.hatoka.eos.forecast;
 
-import de.hatoka.eos.persistence.capi.MeteoMediaStation;
+import de.hatoka.eos.persistence.capi.WeatherStation;
+import de.hatoka.eos.persistence.capi.WeatherDataSource;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
@@ -30,7 +31,13 @@ public class MeteoMediaWeatherForecastImporter extends AbstractWeatherForecastIm
     MeteoMediaWeatherSunshineDurationConverter converter;
 
     @Override
-    protected Map<ZonedDateTime, Integer> downloadAndProcessWeatherData(MeteoMediaStation station, ZonedDateTime startDate) 
+    protected WeatherDataSource getSource()
+    {
+        return WeatherDataSource.METEOMEDIA;
+    }
+
+    @Override
+    protected Map<ZonedDateTime, Integer> downloadAndProcessWeatherData(WeatherStation station, ZonedDateTime startDate) 
             throws IOException, InterruptedException
     {
         // Download the PNG image
