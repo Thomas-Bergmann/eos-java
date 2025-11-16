@@ -3,7 +3,7 @@ plugins {
 }
 
 // Define dependency versions for dependency groups
-val junitVersion = "6.0.0"
+val junitVersion = "6.0.1"
 val junitPlatformVersion = "1.14.1"
 
 dependencies {
