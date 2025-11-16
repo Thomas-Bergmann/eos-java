@@ -1,6 +1,6 @@
 package de.hatoka.eos.optimization.internal.business.config;
 
-import de.hatoka.eos.devices.internal.business.config.ConfigurationLoader;
+import de.hatoka.eos.simulation.internal.business.config.ConfigurationLoader;
 import de.hatoka.eos.optimization.capi.goals.OptimizationGoals;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;

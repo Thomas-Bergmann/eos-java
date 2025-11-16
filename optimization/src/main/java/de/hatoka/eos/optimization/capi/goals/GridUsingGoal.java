@@ -1,7 +1,7 @@
 package de.hatoka.eos.optimization.capi.goals;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.hatoka.eos.devices.capi.business.simulation.SimulationResult;
+import de.hatoka.eos.simulation.capi.business.simulation.SimulationResult;
 import de.hatoka.eos.units.capi.Money;
 import de.hatoka.eos.optimization.capi.business.OptimizationGoal;
 

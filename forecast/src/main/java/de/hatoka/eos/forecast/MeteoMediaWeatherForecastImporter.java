@@ -1,5 +1,7 @@
 package de.hatoka.eos.forecast;
 
+import de.hatoka.eos.persistence.capi.WeatherForecastKey;
+import de.hatoka.eos.persistence.capi.WeatherForecastPO;
 import de.hatoka.eos.persistence.capi.WeatherStation;
 import de.hatoka.eos.persistence.capi.WeatherDataSource;
 import jakarta.inject.Inject;

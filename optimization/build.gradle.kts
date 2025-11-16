@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":devices"))
+    implementation(project(":simulation"))
     implementation(project(":units"))
 
     implementation("org.slf4j:slf4j-api")

@@ -1,8 +1,8 @@
 package de.hatoka.eos.optimization.internal.business;
 
-import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
+import de.hatoka.eos.simulation.capi.business.config.InstallationConfig;
 import de.hatoka.eos.units.capi.Money;
-import de.hatoka.eos.devices.internal.business.config.ConfigurationLoader;
+import de.hatoka.eos.simulation.internal.business.config.ConfigurationLoader;
 import de.hatoka.eos.optimization.capi.business.OptimizationResult;
 import de.hatoka.eos.optimization.capi.business.Optimizer;
 import de.hatoka.eos.optimization.capi.goals.OptimizationGoals;

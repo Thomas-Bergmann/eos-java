@@ -1,6 +1,6 @@
 package de.hatoka.eos.optimization.capi.business;
 
-import de.hatoka.eos.devices.capi.business.simulation.SimulationResult;
+import de.hatoka.eos.simulation.capi.business.simulation.SimulationResult;
 import de.hatoka.eos.units.capi.Money;
 
 /**
