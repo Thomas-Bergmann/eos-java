@@ -3,7 +3,6 @@ package de.hatoka.eos.simulation.internal.business.simulation;
 import de.hatoka.eos.simulation.capi.business.device.Device;
 import de.hatoka.eos.simulation.capi.business.device.DeviceRef;
 import de.hatoka.eos.simulation.capi.business.device.DeviceState;
-import de.hatoka.eos.simulation.capi.business.metrics.ForecastMetricsExporter;
 import de.hatoka.eos.simulation.capi.business.metrics.SimulationMetricsExporter;
 import de.hatoka.eos.simulation.capi.business.simulation.*;
 import org.slf4j.Logger;
@@ -20,15 +19,13 @@ public class Simulation
     private static final Logger LOGGER = LoggerFactory.getLogger(Simulation.class);
     private final SimulationRequest request;
     private final SimulationMetricsExporter simulationMetricsExporter;
-    private final ForecastMetricsExporter forecastMetricsExporter;
 
     private Map<DeviceRef, DeviceState> currentState;
 
-    public Simulation(SimulationRequest request, SimulationMetricsExporter simulationMetricsExporter, ForecastMetricsExporter forecastMetricsExporter)
+    public Simulation(SimulationRequest request, SimulationMetricsExporter simulationMetricsExporter)
     {
         this.request = request;
         this.simulationMetricsExporter = simulationMetricsExporter;
-        this.forecastMetricsExporter = forecastMetricsExporter;
     }
 
     public SimulationResult run()
@@ -71,7 +68,6 @@ public class Simulation
             currentState.put(deviceRef, stepResult.deviceState());
         }
         simulationMetricsExporter.exportMetrics(new SimulationResult(request, step, currentState, updatedSystem.subtract(system)));
-        forecastMetricsExporter.export(step.startDate(), request.services().priceForecast());
         return updatedSystem;
     }
 

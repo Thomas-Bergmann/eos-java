@@ -1,25 +1,26 @@
 package de.hatoka.eos.simulation.internal.business.forecast;
 
+import de.hatoka.eos.persistence.capi.weather.WeatherDataSource;
+import de.hatoka.eos.persistence.capi.weather.WeatherForcastDAO;
+import de.hatoka.eos.persistence.capi.weather.WeatherForecastKey;
 import de.hatoka.eos.simulation.capi.business.forecast.WeatherForecast;
-import de.hatoka.eos.persistence.capi.WeatherForecastKey;
-import de.hatoka.eos.persistence.capi.WeatherDataSource;
-import de.hatoka.eos.persistence.influx.InfluxWeatherForecastDao;
 import de.hatoka.eos.units.capi.Percentage;
+import jakarta.inject.Inject;
 
 import java.time.ZonedDateTime;
 
 /**
  * Weather forecast implementation that reads from InfluxDB via ForecastDAO.
  */
-public class InfluxWeatherForecast implements WeatherForecast
+public class DaoWeatherForecast implements WeatherForecast
 {
     private final String station;
-    private final InfluxWeatherForecastDao forecastDAO;
+    @Inject
+    private WeatherForcastDAO forecastDAO;
 
-    public InfluxWeatherForecast(String station, InfluxWeatherForecastDao forecastDAO)
+    public DaoWeatherForecast(String station)
     {
         this.station = station;
-        this.forecastDAO = forecastDAO;
     }
     @Override
     public Percentage getSunProbability(ZonedDateTime time)

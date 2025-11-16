@@ -1,4 +1,4 @@
-package de.hatoka.eos.persistence.capi;
+package de.hatoka.eos.persistence.capi.weather;
 
 /**
  * Weather stations with their MeteoMedia station numbers and geographic coordinates for OpenMeteo API.

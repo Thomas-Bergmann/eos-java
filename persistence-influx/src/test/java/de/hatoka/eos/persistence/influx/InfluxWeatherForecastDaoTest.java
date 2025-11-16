@@ -1,9 +1,9 @@
 package de.hatoka.eos.persistence.influx;
 
-import de.hatoka.eos.persistence.capi.WeatherStation;
-import de.hatoka.eos.persistence.capi.WeatherDataSource;
-import de.hatoka.eos.persistence.capi.WeatherForecastKey;
-import de.hatoka.eos.persistence.capi.WeatherForecastPO;
+import de.hatoka.eos.persistence.capi.weather.WeatherStation;
+import de.hatoka.eos.persistence.capi.weather.WeatherDataSource;
+import de.hatoka.eos.persistence.capi.weather.WeatherForecastKey;
+import de.hatoka.eos.persistence.capi.weather.WeatherForecastPO;
 import de.hatoka.eos.units.capi.Percentage;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;

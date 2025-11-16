@@ -1,4 +1,4 @@
-package de.hatoka.eos.forecast;
+package de.hatoka.eos.forecast.meteomedia;
 
 import jakarta.inject.Singleton;
 import org.apache.commons.csv.CSVFormat;

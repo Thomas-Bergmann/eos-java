@@ -1,10 +1,10 @@
-package de.hatoka.eos.forecast;
+package de.hatoka.eos.forecast.meteomedia;
 
-import de.hatoka.eos.persistence.capi.WeatherStation;
-import de.hatoka.eos.persistence.capi.WeatherDataSource;
-import de.hatoka.eos.persistence.capi.WeatherForcastDAO;
-import de.hatoka.eos.persistence.capi.WeatherForecastKey;
-import de.hatoka.eos.persistence.capi.WeatherForecastPO;
+import de.hatoka.eos.persistence.capi.weather.WeatherStation;
+import de.hatoka.eos.persistence.capi.weather.WeatherDataSource;
+import de.hatoka.eos.persistence.capi.weather.WeatherForcastDAO;
+import de.hatoka.eos.persistence.capi.weather.WeatherForecastKey;
+import de.hatoka.eos.persistence.capi.weather.WeatherForecastPO;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;

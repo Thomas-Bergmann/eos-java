@@ -1,6 +1,8 @@
 package de.hatoka.eos.forecast;
 
-import de.hatoka.eos.persistence.capi.WeatherStation;
+import de.hatoka.eos.forecast.meteomedia.MeteoMediaWeatherForecastImporter;
+import de.hatoka.eos.forecast.openmeteo.OpenMeteoWeatherForecastImporter;
+import de.hatoka.eos.persistence.capi.weather.WeatherStation;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;

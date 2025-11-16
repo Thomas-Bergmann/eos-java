@@ -1,9 +1,9 @@
-package de.hatoka.eos.forecast;
+package de.hatoka.eos.forecast.openmeteo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.hatoka.eos.forecast.openmeteo.OpenMeteoResponse;
-import de.hatoka.eos.persistence.capi.WeatherStation;
-import de.hatoka.eos.persistence.capi.WeatherDataSource;
+import de.hatoka.eos.forecast.AbstractWeatherForecastImporter;
+import de.hatoka.eos.persistence.capi.weather.WeatherStation;
+import de.hatoka.eos.persistence.capi.weather.WeatherDataSource;
 import jakarta.inject.Singleton;
 
 import java.io.IOException;

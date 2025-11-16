@@ -1,4 +1,4 @@
-package de.hatoka.eos.simulation.internal.business.forecast;
+package de.hatoka.eos.forecast.energycharts;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;

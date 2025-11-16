@@ -1,8 +1,7 @@
-package de.hatoka.eos.simulation.internal.business.metrics;
+package de.hatoka.eos.forecast.energycharts;
 
 import de.hatoka.eos.simulation.capi.business.config.InstallationConfig;
 import de.hatoka.eos.simulation.capi.business.forecast.EnergyPriceForecast;
-import de.hatoka.eos.simulation.capi.business.metrics.ForecastMetricsExporter;
 import de.hatoka.eos.simulation.internal.business.DateTooling;
 import de.hatoka.eos.simulation.internal.business.config.ConfigurationLoader;
 import io.quarkus.test.junit.QuarkusTest;
@@ -22,9 +21,6 @@ public class PriceForecastExporterTest
 
     @Inject
     private ConfigurationLoader configurationLoader;
-
-    @Inject
-    private ForecastMetricsExporter metricsExporter;
 
     @Test
     public void testExportEnergyPrice() throws IOException

@@ -1,4 +1,4 @@
-package de.hatoka.eos.persistence.capi;
+package de.hatoka.eos.persistence.capi.weather;
 
 /**
  * Enumeration of weather data sources.

@@ -1,6 +1,5 @@
 package de.hatoka.eos.simulation.internal.business.simulation;
 
-import de.hatoka.eos.simulation.capi.business.metrics.ForecastMetricsExporter;
 import de.hatoka.eos.simulation.capi.business.metrics.SimulationMetricsExporter;
 import de.hatoka.eos.simulation.capi.business.simulation.SimulationRequest;
 import de.hatoka.eos.simulation.capi.business.simulation.SimulationResult;
@@ -13,12 +12,10 @@ public class SimulatorImpl implements Simulator
 {
     @Inject
     private SimulationMetricsExporter metricsExporter;
-    @Inject
-    private ForecastMetricsExporter forecastMetricsExporter;
 
     @Override
     public SimulationResult simulate(SimulationRequest request)
     {
-        return new Simulation(request, metricsExporter, forecastMetricsExporter).run();
+        return new Simulation(request, metricsExporter).run();
     }
 }

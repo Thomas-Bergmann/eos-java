@@ -1,4 +1,4 @@
-package de.hatoka.eos.forecast;
+package de.hatoka.eos.forecast.meteomedia;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Assertions;

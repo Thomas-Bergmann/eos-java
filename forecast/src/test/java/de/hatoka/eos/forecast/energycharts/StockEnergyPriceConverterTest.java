@@ -1,5 +1,6 @@
-package de.hatoka.eos.simulation.internal.business.forecast;
+package de.hatoka.eos.forecast.energycharts;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -35,7 +36,7 @@ class StockEnergyPriceConverterTest
         LocalDate actualDate = dateExtractorResult.startDate();
         LocalDate expectedDate = LocalDate.of(2025, 8, 11);
         assertEquals(expectedDate, actualDate);
-        assertEquals(6, dateExtractorResult.numberOfDays(), "incomplete week");
+        Assertions.assertEquals(6, dateExtractorResult.numberOfDays(), "incomplete week");
     }
 
     @Test
@@ -119,8 +120,8 @@ class StockEnergyPriceConverterTest
         StockEnergyPriceConverter.PriceRange priceRange = converter.extractPriceRange(svgContent);
 
         // Verify the expected price range
-        assertEquals(-60.0, priceRange.min(), 0.01, "Min price should be -60 EUR/MWh");
-        assertEquals(300.0, priceRange.max(), 0.01, "Max price should be 300 EUR/MWh");
+        Assertions.assertEquals(-60.0, priceRange.min(), 0.01, "Min price should be -60 EUR/MWh");
+        Assertions.assertEquals(300.0, priceRange.max(), 0.01, "Max price should be 300 EUR/MWh");
     }
 
     @Test

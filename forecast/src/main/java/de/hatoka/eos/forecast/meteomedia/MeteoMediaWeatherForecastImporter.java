@@ -1,9 +1,8 @@
-package de.hatoka.eos.forecast;
+package de.hatoka.eos.forecast.meteomedia;
 
-import de.hatoka.eos.persistence.capi.WeatherForecastKey;
-import de.hatoka.eos.persistence.capi.WeatherForecastPO;
-import de.hatoka.eos.persistence.capi.WeatherStation;
-import de.hatoka.eos.persistence.capi.WeatherDataSource;
+import de.hatoka.eos.forecast.AbstractWeatherForecastImporter;
+import de.hatoka.eos.persistence.capi.weather.WeatherStation;
+import de.hatoka.eos.persistence.capi.weather.WeatherDataSource;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
@@ -15,6 +14,7 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -42,8 +42,9 @@ public class MeteoMediaWeatherForecastImporter extends AbstractWeatherForecastIm
     protected Map<ZonedDateTime, Integer> downloadAndProcessWeatherData(WeatherStation station, ZonedDateTime startDate) 
             throws IOException, InterruptedException
     {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
         // Download the PNG image
-        byte[] imageData = downloadImage(URI.create(URI_FORMAT.formatted(station.getStationNumber())));
+        byte[] imageData = downloadImage(URI.create(URI_FORMAT.formatted(dateFormat.format(startDate))));
         logger.debug("Downloaded {} bytes of image data", imageData.length);
 
         // Save to temporary file for processing
