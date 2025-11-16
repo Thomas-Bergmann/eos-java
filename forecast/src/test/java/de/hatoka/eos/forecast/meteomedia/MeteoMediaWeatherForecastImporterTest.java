@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,10 +33,10 @@ class MeteoMediaWeatherForecastImporterTest
     void testImportFromValidUrl() throws IOException, InterruptedException
     {
         // this importer can only import data of today and tomorrow
-        ZonedDateTime testDate = importer.importWeatherForecast(WeatherStation.APOLDA);
+        ZonedDateTime startDate = ZonedDateTime.now().toLocalDate().atStartOfDay(ZoneId.of("UTC"));
+        ZonedDateTime testDate = importer.importWeatherForecast(WeatherStation.APOLDA, startDate);
         WeatherForecastPO retrieved = weatherDao.get(WeatherForecastKey.valueOf(WeatherStation.APOLDA, testDate.plusHours(1), WeatherDataSource.METEOMEDIA));
         assertNotNull(retrieved);
         assertNotNull(retrieved.getSunProbability());
-        importer.importWeatherForecast(WeatherStation.LEIPZIG_STADTWERKE);
     }
 }

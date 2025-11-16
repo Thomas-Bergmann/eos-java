@@ -41,9 +41,8 @@ public abstract class AbstractWeatherForecastImporter
      * @throws IOException if there's an error downloading or processing the data
      * @throws InterruptedException if the operation is interrupted
      */
-    public ZonedDateTime importWeatherForecast(WeatherStation station) throws IOException, InterruptedException
+    public ZonedDateTime importWeatherForecast(WeatherStation station, ZonedDateTime startDate) throws IOException, InterruptedException
     {
-        ZonedDateTime startDate = ZonedDateTime.now().toLocalDate().atStartOfDay(ZoneId.of("UTC"));
         logger.info("Starting weather forecast import for station: {}", station.name());
 
         try

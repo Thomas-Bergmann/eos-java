@@ -6,12 +6,14 @@ import de.hatoka.eos.persistence.capi.weather.WeatherForecastKey;
 import de.hatoka.eos.simulation.capi.business.forecast.WeatherForecast;
 import de.hatoka.eos.units.capi.Percentage;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import java.time.ZonedDateTime;
 
 /**
  * Weather forecast implementation that reads from InfluxDB via ForecastDAO.
  */
+@Singleton
 public class DaoWeatherForecast implements WeatherForecast
 {
     private final String station;

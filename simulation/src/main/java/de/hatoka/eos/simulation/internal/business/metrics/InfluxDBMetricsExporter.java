@@ -12,7 +12,6 @@ import de.hatoka.eos.simulation.capi.business.device.DeviceState;
 import de.hatoka.eos.simulation.capi.business.device.DeviceType;
 import de.hatoka.eos.simulation.capi.business.forecast.EnergyPriceForecast;
 import de.hatoka.eos.simulation.capi.business.forecast.WeatherForecast;
-import de.hatoka.eos.simulation.capi.business.metrics.ForecastMetricsExporter;
 import de.hatoka.eos.simulation.capi.business.metrics.SimulationMetricsExporter;
 import de.hatoka.eos.simulation.capi.business.simulation.SimulationResult;
 import jakarta.annotation.PostConstruct;
@@ -27,7 +26,7 @@ import java.time.ZonedDateTime;
 import java.util.Map;
 
 @Singleton
-public class InfluxDBMetricsExporter implements SimulationMetricsExporter, ForecastMetricsExporter
+public class InfluxDBMetricsExporter implements SimulationMetricsExporter
 {
     private static final Logger LOGGER = LoggerFactory.getLogger(InfluxDBMetricsExporter.class);
     public static final String ENERGY_FLOW = "energy_flow";
@@ -209,22 +208,5 @@ public class InfluxDBMetricsExporter implements SimulationMetricsExporter, Forec
                                  .addField("stored_energy_kwh", state.storedEnergy().amount())
                                  .addField("capacity_kwh", state.maxEnergy().amount())
                                  .time(timestamp, WritePrecision.NS));
-    }
-
-    @Override
-    public void export(ZonedDateTime time, EnergyPriceForecast energyPriceProvider)
-    {
-        writeApi.writePoint(Point.measurement("forecast_price")
-                                 .addField("import_price_eur", energyPriceProvider.getImportPrice(time).amount())
-                                 .addField("export_price_eur", energyPriceProvider.getExportPrice(time).amount())
-                                 .time(time.toInstant(), WritePrecision.NS));
-    }
-
-    @Override
-    public void export(ZonedDateTime time, WeatherForecast weatherService)
-    {
-        writeApi.writePoint(Point.measurement("forecast_weather")
-                                 .addField("sun_probability_percentage", weatherService.getSunProbability(time).value())
-                                 .time(time.toInstant(), WritePrecision.NS));
     }
 }

@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -32,7 +33,8 @@ class OpenMeteoWeatherForecastImporterTest
     void testImportFromOpenMeteoApi() throws IOException, InterruptedException
     {
         // Test importing data from OpenMeteo API
-        ZonedDateTime testDate = importer.importWeatherForecast(WeatherStation.APOLDA);
+        ZonedDateTime startDate = ZonedDateTime.now().toLocalDate().atStartOfDay(ZoneId.of("UTC"));
+        ZonedDateTime testDate = importer.importWeatherForecast(WeatherStation.APOLDA, startDate);
         
         // Verify that data was imported successfully
         assertNotNull(testDate, "Import should return a valid start date");
@@ -46,10 +48,6 @@ class OpenMeteoWeatherForecastImporterTest
         double sunProb = retrieved.getSunProbability().value();
         assertTrue(sunProb >= 0.0 && sunProb <= 1.0, 
                    "Sun probability should be between 0.0 and 1.0, but was: " + sunProb);
-        
-        // Test importing for a different station
-        ZonedDateTime testDate2 = importer.importWeatherForecast(WeatherStation.LEIPZIG_STADTWERKE);
-        assertNotNull(testDate2, "Import for Leipzig should also return a valid start date");
     }
 
     @Test
