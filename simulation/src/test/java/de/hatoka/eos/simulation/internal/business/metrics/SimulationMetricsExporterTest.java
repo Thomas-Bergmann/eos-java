@@ -9,6 +9,7 @@ import de.hatoka.eos.simulation.capi.business.simulation.SimulationRequest;
 import de.hatoka.eos.simulation.capi.business.simulation.SimulationResult;
 import de.hatoka.eos.simulation.capi.business.simulation.Simulator;
 import de.hatoka.eos.simulation.internal.business.config.ConfigurationLoader;
+import de.hatoka.eos.simulation.internal.business.forecast.FlatPriceService;
 import de.hatoka.eos.simulation.internal.business.forecast.FlatWeatherService;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -56,7 +57,7 @@ public class SimulationMetricsExporterTest
 
         SimulationRequest request = new SimulationRequest("today-energy-simulation", startDate, endDate, stepDuration,
                         deviceFactory.createDevices(config.getDevices()), Collections.emptyMap(),
-                        new Forecasts(FlatWeatherService.FULL_FROM_7_to_18, config.getGrid().getEnergyPriceProvider()));
+                        new Forecasts(FlatWeatherService.FULL_FROM_7_to_18, FlatPriceService.GERMAN_RESIDENTIAL));
 
         // Act - Run simulation step by step for 5-minute interval data
         double seconds = endDate.toInstant().getEpochSecond() - startDate.toInstant().getEpochSecond();

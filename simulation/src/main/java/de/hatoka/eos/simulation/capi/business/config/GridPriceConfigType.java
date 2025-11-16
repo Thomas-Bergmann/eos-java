@@ -5,5 +5,5 @@ package de.hatoka.eos.simulation.capi.business.config;
  */
 public enum GridPriceConfigType
 {
-    FLAT, CSV
+    FLAT, DAO
 }

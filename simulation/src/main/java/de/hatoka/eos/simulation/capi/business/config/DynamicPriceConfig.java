@@ -10,9 +10,8 @@ import java.util.List;
  * @param currency currency of stock price
  * @param exportCharge additional charge for exporting energy to the grid
  * @param importCharge additional charge for importing energy from grid
- * @param resource list of CSV resources
  */
-public record CsvPriceConfig(
+public record DynamicPriceConfig(
     @JsonProperty("currency")
     @JsonPropertyDescription("Currency code for CSV price data (e.g., EUR, USD)")
     String currency,
@@ -23,9 +22,5 @@ public record CsvPriceConfig(
 
     @JsonProperty("importCharge")
     @JsonPropertyDescription("Import charge configuration (price per energy unit)")
-    ImportExportChargeConfig importCharge,
-
-    @JsonProperty("resource")
-    @JsonPropertyDescription("List of CSV resource files containing price data")
-    List<String> resource
+    ImportExportChargeConfig importCharge
 ) { }
