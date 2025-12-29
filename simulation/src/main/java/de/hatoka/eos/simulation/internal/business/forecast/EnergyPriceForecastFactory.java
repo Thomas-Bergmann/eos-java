@@ -24,6 +24,7 @@ public class EnergyPriceForecastFactory
         {
             case DAO -> daoEnergyPriceForecast;
             case FLAT -> new FlatPriceService(gridConfig.flatPriceConfig());
+            case CSV -> daoEnergyPriceForecast;
         };
     }
 

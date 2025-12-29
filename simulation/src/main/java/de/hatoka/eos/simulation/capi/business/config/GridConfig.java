@@ -19,7 +19,11 @@ public record GridConfig (
 
     @JsonProperty("flatPriceProvider")
     @JsonPropertyDescription("Flat price provider configuration")
-    FlatPriceConfig flatPriceConfig
+    FlatPriceConfig flatPriceConfig,
+
+    @JsonProperty("csvPriceProvider")
+    @JsonPropertyDescription("CSV price provider configuration")
+    CsvPriceConfig csvPriceConfig
 )
 {
 }
