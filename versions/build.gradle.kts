@@ -20,7 +20,7 @@ dependencies {
         api("com.fasterxml.jackson.core:jackson-annotations:${fasterXMLVersion}")
 
         // time/metrics export
-        api("com.influxdb:influxdb-client-java:6.10.0")
+        api("com.influxdb:influxdb-client-java:7.4.0")
 
     }
 }
