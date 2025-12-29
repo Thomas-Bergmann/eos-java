@@ -12,7 +12,7 @@ dependencies {
 
     constraints {
 
-        api("org.apache.commons:commons-lang3:3.19.0")
+        api("org.apache.commons:commons-lang3:3.20.0")
         api("org.apache.commons:commons-csv:1.14.1")
 
         api("com.fasterxml.jackson.core:jackson-core:${fasterXMLVersion}")
