@@ -101,7 +101,7 @@ public abstract class AbstractWeatherForecastImporter
 
             try
             {
-                weatherDao.update(new WeatherForecastKey(station.name(), dateTime, getSource()), forecast);
+                weatherDao.update(WeatherForecastKey.valueOf(station, dateTime, getSource()), forecast);
                 logger.debug("Stored weather data for {}: {}% sun probability", dateTime, Math.round(sunProbability * 100));
             }
             catch(Exception e)

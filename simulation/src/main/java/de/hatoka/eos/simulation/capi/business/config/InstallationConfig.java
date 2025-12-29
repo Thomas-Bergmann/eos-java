@@ -2,6 +2,7 @@ package de.hatoka.eos.simulation.capi.business.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import de.hatoka.eos.persistence.capi.weather.WeatherStation;
 
 import java.util.List;
 
@@ -18,6 +19,10 @@ public class InstallationConfig
     @JsonProperty("grid")
     @JsonPropertyDescription("Grid connection configuration including import/export pricing")
     private GridConfig grid;
+
+    @JsonProperty("weatherStation")
+    @JsonPropertyDescription("Weather station to use for weather forecasts (APOLDA, LEIPZIG_STADTWERKE)")
+    private WeatherStation weatherStation = WeatherStation.APOLDA; // default value
 
     public List<DeviceConfig> getDevices()
     {
@@ -37,5 +42,15 @@ public class InstallationConfig
     public void setGrid(GridConfig grid)
     {
         this.grid = grid;
+    }
+
+    public WeatherStation getWeatherStation()
+    {
+        return weatherStation;
+    }
+
+    public void setWeatherStation(WeatherStation weatherStation)
+    {
+        this.weatherStation = weatherStation;
     }
 }

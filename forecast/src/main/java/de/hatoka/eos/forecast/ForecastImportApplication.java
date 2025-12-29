@@ -1,7 +1,6 @@
 package de.hatoka.eos.forecast;
 
 import de.hatoka.eos.forecast.energycharts.EnergyChartsImporter;
-import de.hatoka.eos.forecast.meteomedia.MeteoMediaWeatherForecastImporter;
 import de.hatoka.eos.forecast.openmeteo.OpenMeteoWeatherForecastImporter;
 import de.hatoka.eos.persistence.capi.weather.WeatherStation;
 import io.quarkus.runtime.Quarkus;
@@ -18,9 +17,6 @@ import java.time.ZonedDateTime;
 public class ForecastImportApplication implements QuarkusApplication
 {
     private final Logger logger = LoggerFactory.getLogger(ForecastImportApplication.class);
-
-    @Inject
-    MeteoMediaWeatherForecastImporter meteoMediaImporter;
 
     @Inject
     OpenMeteoWeatherForecastImporter openMeteoImporter;
@@ -43,9 +39,6 @@ public class ForecastImportApplication implements QuarkusApplication
             energyChartsImporter.importStockData(startDate);
             // Import from MeteoMedia (can only import data of today and tomorrow)
             logger.debug("Importing from MeteoMedia...");
-            meteoMediaImporter.importWeatherForecast(WeatherStation.APOLDA, startDate);
-            meteoMediaImporter.importWeatherForecast(WeatherStation.LEIPZIG_STADTWERKE, startDate);
-            logger.info("Import from MeteoMedia finished.");
 
             // Import from OpenMeteo (can import up to 3 days)
             logger.debug("Importing from OpenMeteo...");

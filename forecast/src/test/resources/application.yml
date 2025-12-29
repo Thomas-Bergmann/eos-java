@@ -1,8 +1,13 @@
-# Test configuration for InfluxDB using environment variables
+# Test configuration - use in-memory persistence instead of InfluxDB
+quarkus:
+  arc:
+    exclude-types:
+      - de.hatoka.eos.persistence.influx.**
+
 eos:
   influxdb:
-    url: ${INFLUX_URI}
-    token: ${INFLUX_TOKEN}
+    url: ${INFLUX_URI:http://localhost:8086}
+    token: ${INFLUX_TOKEN:test-token}
     org: eos
     bucket: energy_simulation
 

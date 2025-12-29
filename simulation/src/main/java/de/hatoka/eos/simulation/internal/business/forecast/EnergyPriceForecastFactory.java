@@ -13,14 +13,12 @@ public class EnergyPriceForecastFactory
     private EnergyStockDao dao;
 
     @Inject
-    private GridConfig gridConfig;
-
-    @Inject
     private DaoEnergyPriceForecast daoEnergyPriceForecast;
+
     /**
      * @return the configured price forecast
      */
-    public EnergyPriceForecast getEnergyPriceProvider()
+    public EnergyPriceForecast getEnergyPriceProvider(GridConfig gridConfig)
     {
         return switch(gridConfig.type())
         {

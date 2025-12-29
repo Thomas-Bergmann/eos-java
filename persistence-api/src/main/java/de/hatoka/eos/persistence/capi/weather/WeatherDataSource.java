@@ -5,7 +5,6 @@ package de.hatoka.eos.persistence.capi.weather;
  */
 public enum WeatherDataSource
 {
-    METEOMEDIA("meteomedia"),
     OPENMETEO("openmeteo"),
     TEST("test");
 

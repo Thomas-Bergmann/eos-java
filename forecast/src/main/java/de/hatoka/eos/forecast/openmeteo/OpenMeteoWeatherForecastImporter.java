@@ -152,12 +152,12 @@ public class OpenMeteoWeatherForecastImporter extends AbstractWeatherForecastImp
                                 timeString.indexOf("T")).contains("-"))
                 {
                     // Format like "2025-11-05T15:00" - add UTC timezone
-                    dateTime = ZonedDateTime.parse(timeString + "Z", DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+                    dateTime = ZonedDateTime.parse(timeString + "Z", DateTimeFormatter.ISO_ZONED_DATE_TIME);
                 }
                 else
                 {
                     // Format with timezone information
-                    dateTime = ZonedDateTime.parse(timeString, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+                    dateTime = ZonedDateTime.parse(timeString, DateTimeFormatter.ISO_ZONED_DATE_TIME);
                 }
 
                 // Convert sunshine duration from seconds to minutes

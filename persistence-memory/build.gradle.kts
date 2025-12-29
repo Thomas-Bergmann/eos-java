@@ -1,13 +1,15 @@
 plugins {
-    java
+    `java-library`
 }
 
 dependencies {
     implementation(project(":units"))
+    implementation(project(":persistence-api"))
 
-    implementation("com.fasterxml.jackson.core:jackson-annotations")
-    implementation("com.fasterxml.jackson.core:jackson-databind")
+    implementation("org.slf4j:slf4j-api")
+    implementation("jakarta.inject:jakarta.inject-api")
 
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
+

@@ -15,6 +15,8 @@ import de.hatoka.eos.units.capi.Percentage;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -62,8 +64,8 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
         try
         {
             Point point = Point.measurement(WEATHER_MEASUREMENT)
-                               .time(key.time().toInstant(), WritePrecision.S)
-                               .addTag(COLUMN_STATION, key.station())
+                               .time(getInstantOf(key.time()), WritePrecision.S)
+                               .addTag(COLUMN_STATION, key.station().name())
                                .addTag(COLUMN_SOURCE, key.source().getIdentifier())
                                .addField(WeatherForecastPO.COLUMN_SUN_PROBABILITY, data.getSunProbability().value());
 
@@ -75,13 +77,23 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
         }
     }
 
+    Instant getInstantOf(long time)
+    {
+        return Instant.ofEpochMilli(time);
+    }
+
+    ZonedDateTime getZonedOf(long time)
+    {
+        return getInstantOf(time).atZone(ZoneId.of("UTC"));
+    }
+
     @Override
     public void delete(WeatherForecastKey key)
     {
         try
         {
             // Delete data within a 1-minute window around the specified time
-            deleteApi.delete(key.time().minusMinutes(1).toOffsetDateTime(), key.time().plusMinutes(1).toOffsetDateTime(),
+            deleteApi.delete(getZonedOf(key.time()).minusMinutes(1).toOffsetDateTime(), getZonedOf(key.time()).plusMinutes(1).toOffsetDateTime(),
                             DELETE_PREDICATE.formatted(WEATHER_MEASUREMENT, key.station(), key.source().getIdentifier()), bucketName, influxdbOrg);
         }
         catch(Exception e)
@@ -98,8 +110,8 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
     @Override
     public WeatherForecastPO get(WeatherForecastKey key)
     {
-        String flux = String.format(GET_QUERY, bucketName, formatTimeForFlux(key.time().minusMinutes(1)),
-                        formatTimeForFlux(key.time().plusMinutes(1)), WEATHER_MEASUREMENT, key.station(), key.source().getIdentifier(), WeatherForecastPO.COLUMN_SUN_PROBABILITY);
+        String flux = String.format(GET_QUERY, bucketName, formatTimeForFlux(getZonedOf(key.time()).minusMinutes(1)),
+                        formatTimeForFlux(getZonedOf(key.time()).plusMinutes(1)), WEATHER_MEASUREMENT, key.station(), key.source().getIdentifier(), WeatherForecastPO.COLUMN_SUN_PROBABILITY);
         for (FluxTable table : queryApi.query(flux))
         {
             for (FluxRecord record : table.getRecords())

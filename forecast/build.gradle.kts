@@ -16,6 +16,7 @@ dependencies {
     implementation("org.slf4j:slf4j-api")
     implementation("jakarta.inject:jakarta.inject-api")
 
+    testImplementation(project(":persistence-memory"))
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

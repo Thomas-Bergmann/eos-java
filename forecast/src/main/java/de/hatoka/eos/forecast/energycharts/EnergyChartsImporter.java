@@ -27,7 +27,7 @@ import java.util.Map;
 @Singleton
 public class EnergyChartsImporter
 {
-    private static final String URI_FORMAT = "https://energy-charts.info/charts/price_spot_market/data/de/week_15min_%s_%s.json"; // format parameters: year, week
+    private static final String URI_FORMAT = "https://energy-charts.info/charts/price_spot_market/data/de/week_15min_%s_%02d.json"; // format parameters: year, week
     private static final String DAY_AHEAD_AUCTION_NAME_EN = "Day Ahead Auction (DE-LU)";
     private static final Logger logger = LoggerFactory.getLogger(EnergyChartsImporter.class);
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -38,7 +38,7 @@ public class EnergyChartsImporter
     public void importStockData(ZonedDateTime startDate)
                     throws IOException, InterruptedException
     {
-        List<EnergyChartsResponse> responses = downloadData(URI.create(URI_FORMAT.formatted(startDate.getYear(), getWeekOfYear(startDate))));
+        List<EnergyChartsResponse> responses = downloadData(URI.create(URI_FORMAT.formatted(getYearOfWeek(startDate), getWeekOfYear(startDate))));
         EnergyChartsResponse dayAheadAuction = findDayAheadAuction(responses);
         Map<ZonedDateTime, Double> dayAheadPrices = mapDataToTime(startDate, dayAheadAuction.getData());
         String currency = dayAheadAuction.getCurrency();
@@ -78,6 +78,12 @@ public class EnergyChartsImporter
             dateOfPrice = dateOfPrice.plusMinutes(15);
         }
         return result;
+    }
+
+    private Integer getYearOfWeek(ZonedDateTime date)
+    {
+        // Use ISO week-based year to handle weeks that span years correctly
+        return date.get(WeekFields.ISO.weekBasedYear());
     }
 
     private ZonedDateTime getStartOfWeek(ZonedDateTime date)

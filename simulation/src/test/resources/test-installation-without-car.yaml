@@ -31,6 +31,10 @@ devices:
   - type: GRID
     count: 1
 
+# Weather station configuration for forecasts
+# Available stations: APOLDA, LEIPZIG_STADTWERKE
+weatherStation: APOLDA
+
 grid:
   type: "FLAT"
   flatPriceProvider:

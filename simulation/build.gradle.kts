@@ -25,6 +25,7 @@ dependencies {
     // InfluxDB client for Grafana visualization
     implementation("com.influxdb:influxdb-client-java")
 
+    testImplementation(project(":persistence-memory"))
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
