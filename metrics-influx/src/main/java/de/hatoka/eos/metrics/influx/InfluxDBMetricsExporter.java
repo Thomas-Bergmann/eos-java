@@ -94,6 +94,7 @@ public class InfluxDBMetricsExporter implements SimulationMetricsExporter
             // Export energy flow metrics
             writeApi.writePoint(Point.measurement(MEASUREMENT)
                                      .addTag(TAG_SIMULATION, result.request().simulationId())
+                                     .addTag("kind", "flow")
                                      .addField("produced_kwh", result.system().produced().amount())
                                      .addField("consumed_kwh", -result.system().consumed().amount())
                                      .addField("charged_kwh", -result.system().charged().amount())
@@ -103,8 +104,9 @@ public class InfluxDBMetricsExporter implements SimulationMetricsExporter
                                      .time(timestamp, WritePrecision.NS));
 
             // Export cost metrics
-            writeApi.writePoint(Point.measurement("energy_costs")
+            writeApi.writePoint(Point.measurement(MEASUREMENT)
                                      .addTag(TAG_SIMULATION, result.request().simulationId())
+                                     .addTag("kind", "costs")
                                      .addField("grid_import_eur", result.system().importRevenue().amount().doubleValue())
                                      .addField("grid_export_eur", result.system().exportRevenue().amount().doubleValue())
                                      .addField("grid_net_eur", result.system().getEnergyRevenue().amount().doubleValue())
@@ -145,8 +147,9 @@ public class InfluxDBMetricsExporter implements SimulationMetricsExporter
      */
     private void writeBattery(String simulationId, DeviceRef deviceRef, DeviceState state, Instant timestamp)
     {
-        writeApi.writePoint(Point.measurement("battery_storage")
+        writeApi.writePoint(Point.measurement(MEASUREMENT)
                                  .addTag(TAG_SIMULATION, simulationId)
+                                 .addTag("kind", "device")
                                  .addTag("device", deviceRef.id())
                                  .addTag("type", deviceRef.type().name())
                                  .addField("storage_percentage", state.percentage().value()) // Convert to percentage
