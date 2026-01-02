@@ -1,9 +1,9 @@
 package de.hatoka.eos.optimization.internal.business;
 
-import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
-import de.hatoka.eos.devices.capi.business.device.DeviceFactory;
-import de.hatoka.eos.devices.capi.business.simulation.EnergySystem;
-import de.hatoka.eos.devices.capi.business.simulation.SimulationResult;
+import de.hatoka.eos.simulation.capi.business.config.InstallationConfig;
+import de.hatoka.eos.simulation.capi.business.device.DeviceFactory;
+import de.hatoka.eos.simulation.capi.business.simulation.EnergySystem;
+import de.hatoka.eos.simulation.capi.business.simulation.SimulationResult;
 import de.hatoka.eos.optimization.capi.business.OptimizationResult;
 import de.hatoka.eos.optimization.capi.business.Optimizer;
 import de.hatoka.eos.optimization.capi.goals.OptimizationGoals;

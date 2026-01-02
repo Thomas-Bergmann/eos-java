@@ -1,6 +1,6 @@
 package de.hatoka.eos.optimization.internal.business.config;
 
-import de.hatoka.eos.devices.capi.units.Money;
+import de.hatoka.eos.units.capi.Money;
 import de.hatoka.eos.optimization.capi.goals.OptimizationGoals;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;

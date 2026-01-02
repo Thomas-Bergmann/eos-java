@@ -1,11 +1,11 @@
 package de.hatoka.eos.optimization.capi.goals;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.hatoka.eos.devices.capi.business.device.DeviceState;
-import de.hatoka.eos.devices.capi.business.device.DeviceType;
-import de.hatoka.eos.devices.capi.business.simulation.SimulationResult;
-import de.hatoka.eos.devices.capi.units.Money;
-import de.hatoka.eos.devices.capi.units.Percentage;
+import de.hatoka.eos.simulation.capi.business.device.DeviceState;
+import de.hatoka.eos.simulation.capi.business.device.DeviceType;
+import de.hatoka.eos.simulation.capi.business.simulation.SimulationResult;
+import de.hatoka.eos.units.capi.Money;
+import de.hatoka.eos.units.capi.Percentage;
 import de.hatoka.eos.optimization.capi.business.OptimizationGoal;
 
 import java.util.List;

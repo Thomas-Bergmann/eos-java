@@ -1,13 +1,13 @@
 package de.hatoka.eos.optimization.capi.goals;
 
-import de.hatoka.eos.devices.capi.business.device.DeviceRef;
-import de.hatoka.eos.devices.capi.business.device.DeviceState;
-import de.hatoka.eos.devices.capi.business.device.DeviceType;
-import de.hatoka.eos.devices.capi.business.simulation.EnergySystem;
-import de.hatoka.eos.devices.capi.business.simulation.SimulationResult;
-import de.hatoka.eos.devices.capi.units.Energy;
-import de.hatoka.eos.devices.capi.units.Money;
-import de.hatoka.eos.devices.capi.units.Percentage;
+import de.hatoka.eos.simulation.capi.business.device.DeviceRef;
+import de.hatoka.eos.simulation.capi.business.device.DeviceState;
+import de.hatoka.eos.simulation.capi.business.device.DeviceType;
+import de.hatoka.eos.simulation.capi.business.simulation.EnergySystem;
+import de.hatoka.eos.simulation.capi.business.simulation.SimulationResult;
+import de.hatoka.eos.units.capi.Energy;
+import de.hatoka.eos.units.capi.Money;
+import de.hatoka.eos.units.capi.Percentage;
 import de.hatoka.eos.optimization.internal.business.config.OptimizationConfigurationLoader;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;

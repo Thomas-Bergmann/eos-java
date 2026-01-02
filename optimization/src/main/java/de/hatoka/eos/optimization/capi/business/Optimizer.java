@@ -1,6 +1,6 @@
 package de.hatoka.eos.optimization.capi.business;
 
-import de.hatoka.eos.devices.capi.business.config.InstallationConfig;
+import de.hatoka.eos.simulation.capi.business.config.InstallationConfig;
 import de.hatoka.eos.optimization.capi.goals.OptimizationGoals;
 
 /**

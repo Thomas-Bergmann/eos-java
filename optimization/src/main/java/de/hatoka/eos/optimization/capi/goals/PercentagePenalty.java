@@ -1,8 +1,8 @@
 package de.hatoka.eos.optimization.capi.goals;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.hatoka.eos.devices.capi.units.Money;
-import de.hatoka.eos.devices.capi.units.Percentage;
+import de.hatoka.eos.units.capi.Money;
+import de.hatoka.eos.units.capi.Percentage;
 
 /**
  * PercentagePenalty declares the penalty for non reached percentage goals.

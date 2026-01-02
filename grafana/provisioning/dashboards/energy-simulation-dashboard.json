@@ -80,7 +80,7 @@
             "uid": "influxdb"
           },
           "hide": false,
-          "query": "from(bucket: \"energy_simulation\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"energy_costs\")\n  |> filter(fn: (r) => r.simulation == \"today-energy-simulation\")\n  |> filter(fn: (r) => r._field == \"grid_net_eur\")\n  |> cumulativeSum()\n  |> yield(name: \"net\")",
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"energy_flow\")\n  |> filter(fn: (r) => r.simulation == \"today-energy-simulation\")\n  |> filter(fn: (r) => r._field == \"grid_net_eur\")\n  |> cumulativeSum()\n  |> yield(name: \"net\")",
           "refId": "Net"
         }
       ],
@@ -145,7 +145,7 @@
             "uid": "influxdb"
           },
           "hide": false,
-          "query": "from(bucket: \"energy_simulation\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"energy_costs\")\n  |> filter(fn: (r) => r.simulation == \"today-energy-simulation\")\n  |> filter(fn: (r) => r._field == \"grid_import_eur\")\n  |> cumulativeSum()\n  |> yield(name: \"import\")",
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"energy_flow\")\n  |> filter(fn: (r) => r.simulation == \"today-energy-simulation\")\n  |> filter(fn: (r) => r._field == \"grid_import_eur\")\n  |> cumulativeSum()\n  |> yield(name: \"import\")",
           "refId": "Import"
         }
       ],
@@ -210,7 +210,7 @@
             "uid": "influxdb"
           },
           "hide": false,
-          "query": "from(bucket: \"energy_simulation\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"energy_costs\")\n  |> filter(fn: (r) => r.simulation == \"today-energy-simulation\")\n  |> filter(fn: (r) => r._field == \"grid_export_eur\")\n  |> cumulativeSum()\n  |> yield(name: \"export\")",
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"energy_flow\")\n  |> filter(fn: (r) => r.simulation == \"today-energy-simulation\")\n  |> filter(fn: (r) => r._field == \"grid_export_eur\")\n  |> cumulativeSum()\n  |> yield(name: \"export\")",
           "refId": "export"
         }
       ],
@@ -286,7 +286,7 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "orange",
+                  "fixedColor": "red",
                   "mode": "fixed"
                 }
               },
@@ -305,7 +305,7 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "purple",
+                  "fixedColor": "blue",
                   "mode": "fixed"
                 }
               },
@@ -342,7 +342,7 @@
             "type": "influxdb",
             "uid": "influxdb"
           },
-          "query": "from(bucket: \"energy_simulation\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"energy_flow\")\n  |> filter(fn: (r) => r.simulation == \"today-energy-simulation\")\n  |> filter(fn: (r) => r._field == \"imported_kwh\" or r._field == \"exported_kwh\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> filter(fn: (r) => r._field == \"imported_kwh\" or r._field == \"exported_kwh\")\n  |> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
@@ -488,7 +488,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "imported_kwh today-energy-simulation"
+              "options": "imported_kwh"
             },
             "properties": [
               {
@@ -507,7 +507,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "exported_kwh today-energy-simulation"
+              "options": "exported_kwh"
             },
             "properties": [
               {
@@ -550,7 +550,7 @@
             "type": "influxdb",
             "uid": "influxdb"
           },
-          "query": "from(bucket: \"energy_simulation\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"energy_flow\")\n  |> filter(fn: (r) => r.simulation == \"today-energy-simulation\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"energy_flow\")\n  |> filter(fn: (r) => r.simulation == \"today-energy-simulation\")\n  |> filter(fn: (r) => r.kind == \"flow\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
@@ -702,7 +702,7 @@
             "type": "influxdb",
             "uid": "influxdb"
           },
-          "query": "from(bucket: \"energy_simulation\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"forecast_price\")\n    |> filter(fn: (r) => r._field == \"import_price_eur\" or r._field == \"export_price_eur\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"forecast\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"energystock_forecast\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
@@ -816,7 +816,7 @@
             "type": "influxdb",
             "uid": "influxdb"
           },
-          "query": "from(bucket: \"energy_simulation\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"battery_storage\")\n  |> filter(fn: (r) => r.simulation == \"today-energy-simulation\")\n  |> filter(fn: (r) => r.type == \"BATTERY\")\n  |> filter(fn: (r) => r._field == \"stored_energy_kwh\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\", \"device\"])\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"energy_flow\")\n  |> filter(fn: (r) => r.simulation == \"today-energy-simulation\")\n  |> filter(fn: (r) => r._field == \"stored_energy_kwh\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\", \"device\"])\n  |> yield(name: \"mean\")",
           "refId": "Batteries"
         }
       ],
@@ -932,7 +932,7 @@
             "uid": "influxdb"
           },
           "hide": false,
-          "query": "from(bucket: \"energy_simulation\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"battery_storage\")\n  |> filter(fn: (r) => r.simulation == \"today-energy-simulation\")\n  |> filter(fn: (r) => r.type == \"ELECTRIC_CAR\")\n  |> filter(fn: (r) => r._field == \"storage_percentage\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\", \"device\"])\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"energy_flow\")\n  |> filter(fn: (r) => r.simulation == \"today-energy-simulation\")\n  |> filter(fn: (r) => r._field == \"storage_percentage\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\", \"device\"])\n  |> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
@@ -1004,7 +1004,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "grid_import_eur today-energy-simulation"
+              "options": "grid_import_eur"
             },
             "properties": [
               {
@@ -1016,14 +1016,14 @@
               },
               {
                 "id": "displayName",
-                "value": "import"
+                "value": "Grid Import"
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "grid_export_eur today-energy-simulation"
+              "options": "grid_export_eur"
             },
             "properties": [
               {
@@ -1035,7 +1035,7 @@
               },
               {
                 "id": "displayName",
-                "value": "export"
+                "value": "Grid Export"
               }
             ]
           }
@@ -1066,7 +1066,7 @@
             "type": "influxdb",
             "uid": "influxdb"
           },
-          "query": "from(bucket: \"energy_simulation\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"energy_costs\")\n  |> filter(fn: (r) => r.simulation == \"today-energy-simulation\")\n  |> filter(fn: (r) => r._field == \"grid_import_eur\" or r._field == \"grid_export_eur\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"energy_flow\")\n  |> filter(fn: (r) => r.simulation == \"today-energy-simulation\")\n  |> filter(fn: (r) => r._field == \"grid_import_eur\" or r._field == \"grid_export_eur\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n  |> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
@@ -1085,13 +1085,13 @@
     "list": []
   },
   "time": {
-    "from": "now-24h",
-    "to": "now"
+    "from": "now",
+    "to": "now+1d"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Energy System Simulation (EOS)",
   "uid": "eos-simulation",
-  "version": 26,
+  "version": 9,
   "weekStart": ""
 }
