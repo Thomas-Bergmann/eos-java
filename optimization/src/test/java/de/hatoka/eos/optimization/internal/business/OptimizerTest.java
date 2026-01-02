@@ -1,6 +1,8 @@
 package de.hatoka.eos.optimization.internal.business;
 
+import de.hatoka.eos.optimization.capi.business.OptimizationRequest;
 import de.hatoka.eos.simulation.capi.business.config.InstallationConfig;
+import de.hatoka.eos.simulation.capi.business.config.SimulationConfig;
 import de.hatoka.eos.units.capi.Money;
 import de.hatoka.eos.simulation.internal.business.config.ConfigurationLoader;
 import de.hatoka.eos.optimization.capi.business.OptimizationResult;
@@ -12,6 +14,8 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -34,9 +38,11 @@ public class OptimizerTest
     @Test
     public void testDoNothing() throws IOException
     {
-        InstallationConfig config = configurationLoader.loadInstallation("test-installation-for-optimization.yaml");
+        InstallationConfig config = configurationLoader.loadInstallation("test-installation-for-optimization-car-only.yaml");
+        SimulationConfig simulationConfig = configurationLoader.loadSimulation("test-simulation.yaml");
         OptimizationGoals goals = optimizationConfigurationLoader.loadGoals("goal-for-optimization.yaml");
-        OptimizationResult result = optimizer.optimize(config, goals);
+        OptimizationRequest request = OptimizationRequest.valueOf(simulationConfig);
+        OptimizationResult result = optimizer.optimize(config, goals, request);
         // starts at 80% goal is 90% makes 10% difference, 5 EUR
         assertEquals(Money.ofEur(5), result.getPenalty());
     }

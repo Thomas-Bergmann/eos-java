@@ -19,6 +19,21 @@ public class ElectricCar extends Battery implements Device
         super(config);
     }
 
+    /**
+     * Copy constructor for creating clones.
+     */
+    protected ElectricCar(ElectricCar other)
+    {
+        super(other);
+        // Add any ElectricCar-specific fields here if needed in the future
+    }
+
+    @Override
+    protected ElectricCar clone()
+    {
+        return new ElectricCar(this);
+    }
+
     @Override
     protected boolean shouldDischarge(Energy currentEnergy)
     {

@@ -9,5 +9,5 @@ import de.hatoka.eos.optimization.capi.goals.OptimizationGoals;
  */
 public interface Optimizer
 {
-    OptimizationResult optimize(InstallationConfig config, OptimizationGoals goals);
+    OptimizationResult optimize(InstallationConfig config, OptimizationGoals goals, OptimizationRequest optimizationRequest);
 }
