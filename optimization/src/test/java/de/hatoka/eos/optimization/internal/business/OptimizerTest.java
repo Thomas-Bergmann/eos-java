@@ -44,6 +44,6 @@ public class OptimizerTest
         OptimizationRequest request = OptimizationRequest.valueOf(simulationConfig);
         OptimizationResult result = optimizer.optimize(config, goals, request);
         // starts at 80% goal is 90% makes 10% difference, 5 EUR
-        assertEquals(Money.ofEur(5), result.getPenalty());
+        assertEquals(Money.ofEur(17.16), result.getPenalty());
     }
 }

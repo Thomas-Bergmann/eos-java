@@ -96,4 +96,9 @@ public record Money(BigDecimal amount, String currencyMnemonic)
     {
         return new Money(amount.negate(), currencyMnemonic);
     }
+
+    public boolean isLessThan(Money other)
+    {
+        return amount.compareTo(other.amount) < 0;
+    }
 }

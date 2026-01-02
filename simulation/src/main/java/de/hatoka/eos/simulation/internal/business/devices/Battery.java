@@ -178,6 +178,10 @@ public class Battery implements Device, Cloneable
 
     public Device setOverrideForceChargingLimit(Percentage chargeLimit)
     {
+        if (this.overrideChargeLimit == null && chargeLimit == null || this.overrideChargeLimit != null && this.overrideChargeLimit.equals(chargeLimit))
+        {
+            return this;
+        }
         Battery clone = clone();
         clone.overrideChargeLimit = chargeLimit;
         return clone;
