@@ -6,6 +6,8 @@ plugins {
 dependencies {
     implementation(project(":units"))
     implementation(project(":persistence-api"))
+    implementation(project(":persistence-influx"))
+    implementation(project(":simulation"))
 
     implementation("jakarta.inject:jakarta.inject-api")
     implementation("io.quarkus:quarkus-arc")

@@ -1,4 +1,4 @@
-package de.hatoka.eos.simulation.internal.business.metrics;
+package de.hatoka.eos.metrics.influx;
 
 import de.hatoka.eos.simulation.capi.business.config.InstallationConfig;
 import de.hatoka.eos.simulation.capi.business.config.SimulationConfig;
@@ -79,16 +79,5 @@ public class SimulationMetricsExporterTest
         LOGGER.info("Grid Import: {} -> {}", result.system().imported(), result.system().importRevenue());
         LOGGER.info("Grid Export: {} -> {}", result.system().exported(), result.system().exportRevenue());
         LOGGER.info("Grid Net Transfer: {}", result.system().getEnergyRevenue());
-
-        // Export to InfluxDB/Grafana
-        if (metricsExporter instanceof InfluxDBMetricsExporter influxDBMetricsExporter && !influxDBMetricsExporter.isAvailable())
-        {
-            LOGGER.warn("⚠️ InfluxDB exporter not available. Start with: docker-compose up -d");
-            LOGGER.info("💡 To enable metrics export:");
-            LOGGER.info("   1. Run: docker-compose up -d");
-            LOGGER.info("   2. Wait for services to start");
-            LOGGER.info("   3. Re-run this test");
-            LOGGER.info("   4. Open Grafana: http://localhost:3000 (admin/admin123)");
-        }
     }
 }

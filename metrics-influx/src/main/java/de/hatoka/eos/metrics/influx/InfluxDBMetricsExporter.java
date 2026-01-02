@@ -1,95 +1,45 @@
-package de.hatoka.eos.simulation.internal.business.metrics;
+package de.hatoka.eos.metrics.influx;
 
 import com.influxdb.client.DeleteApi;
 import com.influxdb.client.InfluxDBClient;
-import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.DeletePredicateRequest;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
+import de.hatoka.eos.persistence.influx.config.InfluxDBConfig;
 import de.hatoka.eos.simulation.capi.business.device.DeviceRef;
 import de.hatoka.eos.simulation.capi.business.device.DeviceState;
 import de.hatoka.eos.simulation.capi.business.device.DeviceType;
-import de.hatoka.eos.simulation.capi.business.forecast.EnergyPriceForecast;
-import de.hatoka.eos.simulation.capi.business.forecast.WeatherForecast;
 import de.hatoka.eos.simulation.capi.business.metrics.SimulationMetricsExporter;
 import de.hatoka.eos.simulation.capi.business.simulation.SimulationResult;
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.Map;
 
 @Singleton
 public class InfluxDBMetricsExporter implements SimulationMetricsExporter
 {
+    private static final String BUCKET = "metrics";
     private static final Logger LOGGER = LoggerFactory.getLogger(InfluxDBMetricsExporter.class);
-    public static final String ENERGY_FLOW = "energy_flow";
-    public static final String TAG_SIMULATION = "simulation";
+    private static final String MEASUREMENT = "energy_flow";
+    private static final String TAG_SIMULATION = "simulation";
 
-    @ConfigProperty(name = "eos.metrics.influxdb.url", defaultValue = "http://localhost:8086")
-    String influxUrl;
+    private final WriteApi writeApi;
+    private final DeleteApi deleteApi;
+    private final String influxDbOrg;
 
-    @ConfigProperty(name = "eos.metrics.influxdb.token")
-    String influxToken;
-
-    @ConfigProperty(name = "eos.metrics.influxdb.org", defaultValue = "eos")
-    String influxOrg;
-
-    @ConfigProperty(name = "eos.metrics.influxdb.bucket", defaultValue = "energy_simulation")
-    String influxBucket;
-
-    @ConfigProperty(name = "eos.metrics.influxdb.enabled", defaultValue = "false")
-    boolean enabled;
-
-    private InfluxDBClient influxClient;
-    private WriteApi writeApi;
-    private DeleteApi deleteAPI;
-
-    @PostConstruct
-    void initialize()
+    @Inject
+    InfluxDBMetricsExporter(InfluxDBConfig config)
     {
-        if (enabled && influxToken != null)
-        {
-            try
-            {
-                influxClient = InfluxDBClientFactory.create(influxUrl, influxToken.toCharArray(), influxOrg, influxBucket);
-                writeApi = influxClient.makeWriteApi();
-                deleteAPI = influxClient.getDeleteApi();
-                LOGGER.info("InfluxDB metrics exporter initialized: {}", influxUrl);
-            }
-            catch(Exception e)
-            {
-                LOGGER.warn("Failed to initialize InfluxDB client: {}", e.getMessage());
-                enabled = false;
-            }
-        }
-        else
-        {
-            LOGGER.info("InfluxDB metrics exporter disabled (enabled={}, token present={})", enabled, influxToken != null);
-        }
+        InfluxDBClient client = config.getClient(BUCKET);
+        writeApi = client.makeWriteApi();
+        deleteApi = client.getDeleteApi();
+        influxDbOrg = config.getOrg();
     }
-
-    @PreDestroy
-    void cleanup()
-    {
-        if (writeApi != null)
-        {
-            writeApi.flush();
-            writeApi.close();
-            writeApi = null;
-        }
-        if (influxClient != null)
-        {
-            influxClient.close();
-        }
-    }
-
     /**
      * Delete data from former simulation result
      * @param result former/current simulation result (with same simulation-id, from and to date)
@@ -98,12 +48,12 @@ public class InfluxDBMetricsExporter implements SimulationMetricsExporter
     {
         // https://docs.influxdata.com/influxdb/v2/write-data/delete-data/
         // '_measurement="example-measurement" AND exampleTag="exampleTagValue"'
-        String condition = String.format("_measurement=\"%s\" AND %s=\"%s\"", quotePredicate(ENERGY_FLOW), TAG_SIMULATION,
+        String condition = String.format("_measurement=\"%s\" AND %s=\"%s\"", quotePredicate(MEASUREMENT), TAG_SIMULATION,
                         quotePredicate(result.request().simulationId()));
         DeletePredicateRequest predicate = new DeletePredicateRequest()//.predicate(condition)
                                                                        .start(result.step().startDate().toOffsetDateTime())
                                                                        .stop(result.step().endDate().toOffsetDateTime());
-        deleteAPI.delete(predicate, influxBucket, influxOrg);
+        deleteApi.delete(predicate, BUCKET, influxDbOrg);
     }
 
     /**
@@ -117,7 +67,7 @@ public class InfluxDBMetricsExporter implements SimulationMetricsExporter
         for (int i = 0; i < value.length(); i++) {
             switch (value.charAt(i)) {
                 case '\\':
-                case '\"':
+                case '"':
                     sb.append('\\');
                 default:
                     sb.append(value.charAt(i));
@@ -126,28 +76,15 @@ public class InfluxDBMetricsExporter implements SimulationMetricsExporter
         return sb.toString();
     }
 
-    /**
-     * @return true of influx db is available and writeApi could be created
-     */
-    boolean isAvailable()
-    {
-        return enabled && influxClient != null && writeApi != null;
-    }
-
     @Override
     public void exportMetrics(SimulationResult result)
     {
-        if (!isAvailable())
-        {
-            LOGGER.warn("InfluxDB exporter not available, skipping metrics export");
-            return;
-        }
         deleteOldData(result);
         try
         {
             Instant timestamp = result.step().startDate().toInstant();
             // Export energy flow metrics
-            writeApi.writePoint(Point.measurement(ENERGY_FLOW)
+            writeApi.writePoint(Point.measurement(MEASUREMENT)
                                      .addTag(TAG_SIMULATION, result.request().simulationId())
                                      .addField("produced_kwh", result.system().produced().amount())
                                      .addField("consumed_kwh", -result.system().consumed().amount())

@@ -1,4 +1,4 @@
-package de.hatoka.eos.persistence.influx;
+package de.hatoka.eos.persistence.influx.dao;
 
 import de.hatoka.eos.persistence.capi.energystock.EnergyStockKey;
 import de.hatoka.eos.persistence.capi.energystock.EnergyStockPO;

@@ -1,8 +1,0 @@
-# Test configuration for InfluxDB using environment variables
-eos:
-  influxdb:
-    url: ${INFLUX_URI}
-    token: ${INFLUX_TOKEN}
-    org: eos
-    bucket: energy_simulation
-

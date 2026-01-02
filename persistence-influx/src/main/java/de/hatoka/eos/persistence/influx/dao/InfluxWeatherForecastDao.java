@@ -1,4 +1,4 @@
-package de.hatoka.eos.persistence.influx;
+package de.hatoka.eos.persistence.influx.dao;
 
 import com.influxdb.client.DeleteApi;
 import com.influxdb.client.InfluxDBClient;
@@ -8,6 +8,7 @@ import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
+import de.hatoka.eos.persistence.influx.config.InfluxDBConfig;
 import de.hatoka.eos.persistence.capi.weather.WeatherForcastDAO;
 import de.hatoka.eos.persistence.capi.weather.WeatherForecastKey;
 import de.hatoka.eos.persistence.capi.weather.WeatherForecastPO;
@@ -26,10 +27,11 @@ import java.time.format.DateTimeFormatter;
 @Singleton
 public class InfluxWeatherForecastDao implements WeatherForcastDAO
 {
+    private static final String BUCKET = "forecast";
     private static final String WEATHER_MEASUREMENT = "weather_forecast";
     private static final String COLUMN_STATION = "station";
     private static final String COLUMN_SOURCE = "source";
-    public static final String GET_QUERY = """
+    private static final String GET_QUERY = """
                     from(bucket: "%s")
                       |> range(start: %s, stop: %s)
                       |> filter(fn: (r) => r["_measurement"] == "%s")
@@ -38,24 +40,23 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
                       |> filter(fn: (r) => r["_field"] == "%s")
                       |> last()
                     """;
-    public static final String DELETE_PREDICATE = """
+    private static final String DELETE_PREDICATE = """
                     _measurement="%s" AND station="%s" AND source="%s"
                     """;
 
     private final WriteApiBlocking writeApi;
     private final DeleteApi deleteApi;
     private final QueryApi queryApi;
-    private final String bucketName;
     private final String influxdbOrg;
 
     @Inject
-    InfluxWeatherForecastDao(InfluxDBClient influxDBClient, InfluxDBConfig config)
+    InfluxWeatherForecastDao(InfluxDBConfig config)
     {
+        InfluxDBClient influxDBClient = config.getClient(BUCKET);
         writeApi = influxDBClient.getWriteApiBlocking();
         deleteApi = influxDBClient.getDeleteApi();
         queryApi = influxDBClient.getQueryApi();
-        bucketName = config.influxdbBucket;
-        influxdbOrg = config.influxdbOrg;
+        influxdbOrg = config.getOrg();
     }
 
     @Override
@@ -94,7 +95,7 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
         {
             // Delete data within a 1-minute window around the specified time
             deleteApi.delete(getZonedOf(key.time()).minusMinutes(1).toOffsetDateTime(), getZonedOf(key.time()).plusMinutes(1).toOffsetDateTime(),
-                            DELETE_PREDICATE.formatted(WEATHER_MEASUREMENT, key.station(), key.source().getIdentifier()), bucketName, influxdbOrg);
+                            DELETE_PREDICATE.formatted(WEATHER_MEASUREMENT, key.station(), key.source().getIdentifier()), BUCKET, influxdbOrg);
         }
         catch(Exception e)
         {
@@ -110,7 +111,7 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
     @Override
     public WeatherForecastPO get(WeatherForecastKey key)
     {
-        String flux = String.format(GET_QUERY, bucketName, formatTimeForFlux(getZonedOf(key.time()).minusMinutes(1)),
+        String flux = String.format(GET_QUERY, BUCKET, formatTimeForFlux(getZonedOf(key.time()).minusMinutes(1)),
                         formatTimeForFlux(getZonedOf(key.time()).plusMinutes(1)), WEATHER_MEASUREMENT, key.station(), key.source().getIdentifier(), WeatherForecastPO.COLUMN_SUN_PROBABILITY);
         for (FluxTable table : queryApi.query(flux))
         {

@@ -1,8 +1,7 @@
-package de.hatoka.eos.persistence.influx;
+package de.hatoka.eos.persistence.influx.config;
 
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
-import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -13,21 +12,21 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 public class InfluxDBConfig
 {
     @ConfigProperty(name = "eos.influxdb.url", defaultValue = "http://localhost:8086")
-    String influxdbUrl;
+    private String influxUrl;
 
     @ConfigProperty(name = "eos.influxdb.token", defaultValue = "")
-    String influxdbToken;
+    private String influxToken;
 
     @ConfigProperty(name = "eos.influxdb.org", defaultValue = "eos")
-    String influxdbOrg;
+    private String influxOrg;
 
-    @ConfigProperty(name = "eos.influxdb.bucket", defaultValue = "forecast")
-    String influxdbBucket;
-
-    @Produces
-    @Singleton
-    public InfluxDBClient influxDBClient()
+    public InfluxDBClient getClient(String bucket)
     {
-        return InfluxDBClientFactory.create(influxdbUrl, influxdbToken.toCharArray(), influxdbOrg, influxdbBucket);
+        return InfluxDBClientFactory.create(influxUrl, influxToken.toCharArray(), influxOrg, bucket);
+    }
+
+    public String getOrg()
+    {
+        return influxOrg;
     }
 }

@@ -7,7 +7,6 @@ plugins {
 dependencies {
     implementation(project(":units"))
     implementation(project(":persistence-api"))
-    implementation(project(":persistence-influx"))
 
     implementation("org.slf4j:slf4j-api")
     implementation("org.apache.commons:commons-csv")
@@ -22,10 +21,8 @@ dependencies {
 
     implementation("io.quarkus:quarkus-arc")
 
-    // InfluxDB client for Grafana visualization
-    implementation("com.influxdb:influxdb-client-java")
-
     testImplementation(project(":persistence-memory"))
+    testImplementation(project(":metrics-memory"))
     testImplementation("io.quarkus:quarkus-junit5")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

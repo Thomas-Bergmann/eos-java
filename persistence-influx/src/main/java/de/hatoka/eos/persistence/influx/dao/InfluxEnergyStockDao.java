@@ -1,4 +1,4 @@
-package de.hatoka.eos.persistence.influx;
+package de.hatoka.eos.persistence.influx.dao;
 
 import com.influxdb.client.DeleteApi;
 import com.influxdb.client.InfluxDBClient;
@@ -8,12 +8,11 @@ import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
+import de.hatoka.eos.persistence.influx.config.InfluxDBConfig;
 import de.hatoka.eos.persistence.capi.energystock.EnergyStockDao;
 import de.hatoka.eos.persistence.capi.energystock.EnergyStockKey;
 import de.hatoka.eos.persistence.capi.energystock.EnergyStockPO;
-import de.hatoka.eos.persistence.capi.weather.WeatherForecastPO;
 import de.hatoka.eos.units.capi.Money;
-import de.hatoka.eos.units.capi.Percentage;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
@@ -27,32 +26,33 @@ import java.time.format.DateTimeFormatter;
 @Singleton
 public class InfluxEnergyStockDao implements EnergyStockDao
 {
+    private static final String BUCKET = "forecast";
     private static final String MEASUREMENT = "energystock_forecast";
-    public static final String GET_QUERY = """
+    private static final String TAG_CURRENCY = "currency";
+    private static final String GET_QUERY = """
                     from(bucket: "%s")
                       |> range(start: %s, stop: %s)
                       |> filter(fn: (r) => r["_measurement"] == "%s")
                       |> filter(fn: (r) => r["_field"] == "%s")
                       |> last()
                     """;
-    public static final String DELETE_PREDICATE = """
+    private static final String DELETE_PREDICATE = """
                     _measurement="%s"
                     """;
 
     private final WriteApiBlocking writeApi;
     private final DeleteApi deleteApi;
     private final QueryApi queryApi;
-    private final String bucketName;
-    private final String influxdbOrg;
+    private final String influxDbOrg;
 
     @Inject
-    InfluxEnergyStockDao(InfluxDBClient influxDBClient, InfluxDBConfig config)
+    InfluxEnergyStockDao(InfluxDBConfig config)
     {
-        writeApi = influxDBClient.getWriteApiBlocking();
-        deleteApi = influxDBClient.getDeleteApi();
-        queryApi = influxDBClient.getQueryApi();
-        bucketName = config.influxdbBucket;
-        influxdbOrg = config.influxdbOrg;
+        InfluxDBClient client = config.getClient(BUCKET);
+        writeApi = client.getWriteApiBlocking();
+        deleteApi = client.getDeleteApi();
+        queryApi = client.getQueryApi();
+        influxDbOrg = config.getOrg();
     }
 
     @Override
@@ -62,7 +62,7 @@ public class InfluxEnergyStockDao implements EnergyStockDao
         {
             Point point = Point.measurement(MEASUREMENT)
                                .time(key.time().toInstant(), WritePrecision.S)
-                               .addTag("currency", data.getDayAheadPrice().currencyMnemonic())
+                               .addTag(TAG_CURRENCY, data.getDayAheadPrice().currencyMnemonic())
                                .addField(EnergyStockPO.COLUMN_DAY_AHEAD, data.getDayAheadPrice().amount().doubleValue());
 
             writeApi.writePoint(point);
@@ -80,7 +80,7 @@ public class InfluxEnergyStockDao implements EnergyStockDao
         {
             // Delete data within a 1-minute window around the specified time
             deleteApi.delete(key.time().minusMinutes(1).toOffsetDateTime(), key.time().plusMinutes(1).toOffsetDateTime(),
-                            DELETE_PREDICATE.formatted(MEASUREMENT), bucketName, influxdbOrg);
+                            DELETE_PREDICATE.formatted(MEASUREMENT), BUCKET, influxDbOrg);
         }
         catch(Exception e)
         {
@@ -96,7 +96,7 @@ public class InfluxEnergyStockDao implements EnergyStockDao
     @Override
     public EnergyStockPO get(EnergyStockKey key)
     {
-        String flux = String.format(GET_QUERY, bucketName, formatTimeForFlux(key.time().minusMinutes(1)),
+        String flux = String.format(GET_QUERY, BUCKET, formatTimeForFlux(key.time().minusMinutes(1)),
                         formatTimeForFlux(key.time().plusMinutes(1)), MEASUREMENT, EnergyStockPO.COLUMN_DAY_AHEAD);
         for (FluxTable table : queryApi.query(flux))
         {
@@ -116,7 +116,7 @@ public class InfluxEnergyStockDao implements EnergyStockDao
     {
         EnergyStockPO data = new EnergyStockPO();
         Object value = record.getValueByKey("_value");
-        Object currencyValue= record.getValueByKey("currency");
+        Object currencyValue= record.getValueByKey(TAG_CURRENCY);
         if (value instanceof Number aNumber && currencyValue instanceof String currency)
         {
             data.setDayAheadPrice(new Money(BigDecimal.valueOf(aNumber.doubleValue()), currency));
