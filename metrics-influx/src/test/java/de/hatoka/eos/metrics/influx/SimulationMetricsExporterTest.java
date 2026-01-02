@@ -45,7 +45,7 @@ public class SimulationMetricsExporterTest
     public void testExportSimulationMetricsToGrafana() throws IOException
     {
         // Arrange - Load test configuration without electric car for cleaner curves
-        InstallationConfig config = configurationLoader.load("test-installation-for-grafana.yaml");
+        InstallationConfig config = configurationLoader.load("test-installation-for-metrics.yaml");
         SimulationConfig simConfig = configurationLoader.loadSimulation("test-simulation-with-csv-prices.yaml");
 
         // Simulate from today midnight with 5-minute intervals for smooth curves

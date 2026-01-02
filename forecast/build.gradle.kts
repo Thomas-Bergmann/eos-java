@@ -7,7 +7,6 @@ plugins {
 dependencies {
     implementation(project(":units"))
     implementation(project(":persistence-api"))
-    implementation(project(":persistence-influx"))
 
     implementation("com.fasterxml.jackson.core:jackson-annotations")
     implementation("com.fasterxml.jackson.core:jackson-databind")

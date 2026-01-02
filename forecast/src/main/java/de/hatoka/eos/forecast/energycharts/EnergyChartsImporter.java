@@ -43,6 +43,7 @@ public class EnergyChartsImporter
         Map<ZonedDateTime, Double> dayAheadPrices = mapDataToTime(startDate, dayAheadAuction.getData());
         String currency = dayAheadAuction.getCurrency();
         Map<ZonedDateTime, Money> dayAheadPricesAsMoney = dayAheadPrices.entrySet().stream()
+                .filter(e -> e.getValue() != null) // may some prices in the future are still not defined (null)
                 .collect(java.util.stream.Collectors.toMap(
                         Map.Entry::getKey,
                         entry -> new Money(java.math.BigDecimal.valueOf(entry.getValue()), currency)

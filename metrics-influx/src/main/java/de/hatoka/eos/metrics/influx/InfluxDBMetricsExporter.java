@@ -6,6 +6,7 @@ import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.DeletePredicateRequest;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
+import com.influxdb.exceptions.NotFoundException;
 import de.hatoka.eos.persistence.influx.config.InfluxDBConfig;
 import de.hatoka.eos.simulation.capi.business.device.DeviceRef;
 import de.hatoka.eos.simulation.capi.business.device.DeviceState;
@@ -53,7 +54,14 @@ public class InfluxDBMetricsExporter implements SimulationMetricsExporter
         DeletePredicateRequest predicate = new DeletePredicateRequest()//.predicate(condition)
                                                                        .start(result.step().startDate().toOffsetDateTime())
                                                                        .stop(result.step().endDate().toOffsetDateTime());
-        deleteApi.delete(predicate, BUCKET, influxDbOrg);
+        try
+        {
+            deleteApi.delete(predicate, BUCKET, influxDbOrg);
+        }
+        catch(NotFoundException e)
+        {
+            // ignore if old data or bucket not found
+        }
     }
 
     /**

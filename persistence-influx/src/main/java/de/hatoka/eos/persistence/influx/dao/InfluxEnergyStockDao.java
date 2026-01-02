@@ -6,6 +6,7 @@ import com.influxdb.client.QueryApi;
 import com.influxdb.client.WriteApiBlocking;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
+import com.influxdb.exceptions.NotFoundException;
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import de.hatoka.eos.persistence.influx.config.InfluxDBConfig;
@@ -82,9 +83,9 @@ public class InfluxEnergyStockDao implements EnergyStockDao
             deleteApi.delete(key.time().minusMinutes(1).toOffsetDateTime(), key.time().plusMinutes(1).toOffsetDateTime(),
                             DELETE_PREDICATE.formatted(MEASUREMENT), BUCKET, influxDbOrg);
         }
-        catch(Exception e)
+        catch(NotFoundException e)
         {
-            throw new RuntimeException("Can't delete weather forecast from influx", e);
+            // ignore if not exists
         }
     }
 
