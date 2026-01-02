@@ -194,6 +194,11 @@ class InfluxWeatherForecastDaoTest
         dao.update(getKey(time2), createForecast(new Percentage(0.6)));
         dao.update(getKey(time3), createForecast(new Percentage(0.9)));
 
+        // check that values are correct stored
+        assertEquals(0.3, dao.get(getKey(time1)).getSunProbability().value(), 0.001);
+        assertEquals(0.6, dao.get(getKey(time2)).getSunProbability().value(), 0.001);
+        assertEquals(0.9, dao.get(getKey(time3)).getSunProbability().value(), 0.001);
+
         // When - delete only the middle data point
         dao.delete(getKey(time2));
 

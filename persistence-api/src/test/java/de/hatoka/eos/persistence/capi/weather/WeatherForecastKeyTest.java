@@ -160,14 +160,15 @@ class WeatherForecastKeyTest
     void testValueOfFactory()
     {
         // Given
-        ZonedDateTime time = ZonedDateTime.parse("2024-01-01T12:00:00Z");
+        ZonedDateTime time = ZonedDateTime.parse("2024-01-01T12:00:00Z").withZoneSameInstant(ZoneId.of("UTC"));
 
         // When
         WeatherForecastKey key = WeatherForecastKey.valueOf(WeatherStation.APOLDA, time, WeatherDataSource.OPENMETEO);
 
         // Then
         assertEquals(WeatherStation.APOLDA, key.station());
-        assertEquals(time.toEpochSecond(), key.time());
+        assertEquals(time.toInstant().toEpochMilli(), key.time());
+        assertEquals(time, key.getZonedDateTime());
         assertEquals(WeatherDataSource.OPENMETEO, key.source());
     }
 

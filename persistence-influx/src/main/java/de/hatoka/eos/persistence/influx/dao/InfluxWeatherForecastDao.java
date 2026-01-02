@@ -9,16 +9,14 @@ import com.influxdb.client.write.Point;
 import com.influxdb.exceptions.NotFoundException;
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
-import de.hatoka.eos.persistence.influx.config.InfluxDBConfig;
 import de.hatoka.eos.persistence.capi.weather.WeatherForcastDAO;
 import de.hatoka.eos.persistence.capi.weather.WeatherForecastKey;
 import de.hatoka.eos.persistence.capi.weather.WeatherForecastPO;
+import de.hatoka.eos.persistence.influx.config.InfluxDBConfig;
 import de.hatoka.eos.units.capi.Percentage;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -66,7 +64,7 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
         try
         {
             Point point = Point.measurement(WEATHER_MEASUREMENT)
-                               .time(getInstantOf(key.time()), WritePrecision.S)
+                               .time(key.getInstant(), WritePrecision.S)
                                .addTag(COLUMN_STATION, key.station().name())
                                .addTag(COLUMN_SOURCE, key.source().getIdentifier())
                                .addField(WeatherForecastPO.COLUMN_SUN_PROBABILITY, data.getSunProbability().value());
@@ -79,23 +77,13 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
         }
     }
 
-    Instant getInstantOf(long time)
-    {
-        return Instant.ofEpochMilli(time);
-    }
-
-    ZonedDateTime getZonedOf(long time)
-    {
-        return getInstantOf(time).atZone(ZoneId.of("UTC"));
-    }
-
     @Override
     public void delete(WeatherForecastKey key)
     {
         try
         {
             // Delete data within a 1-minute window around the specified time
-            deleteApi.delete(getZonedOf(key.time()).minusMinutes(1).toOffsetDateTime(), getZonedOf(key.time()).plusMinutes(1).toOffsetDateTime(),
+            deleteApi.delete(key.getZonedDateTime().minusMinutes(1).toOffsetDateTime(), key.getZonedDateTime().plusMinutes(1).toOffsetDateTime(),
                             DELETE_PREDICATE.formatted(WEATHER_MEASUREMENT, key.station(), key.source().getIdentifier()), BUCKET, influxdbOrg);
         }
         catch(NotFoundException e)
@@ -112,8 +100,8 @@ public class InfluxWeatherForecastDao implements WeatherForcastDAO
     @Override
     public WeatherForecastPO get(WeatherForecastKey key)
     {
-        String flux = String.format(GET_QUERY, BUCKET, formatTimeForFlux(getZonedOf(key.time()).minusMinutes(1)),
-                        formatTimeForFlux(getZonedOf(key.time()).plusMinutes(1)), WEATHER_MEASUREMENT, key.station(), key.source().getIdentifier(), WeatherForecastPO.COLUMN_SUN_PROBABILITY);
+        String flux = String.format(GET_QUERY, BUCKET, formatTimeForFlux(key.getZonedDateTime().minusMinutes(1)),
+                        formatTimeForFlux(key.getZonedDateTime().plusMinutes(1)), WEATHER_MEASUREMENT, key.station(), key.source().getIdentifier(), WeatherForecastPO.COLUMN_SUN_PROBABILITY);
         for (FluxTable table : queryApi.query(flux))
         {
             for (FluxRecord record : table.getRecords())

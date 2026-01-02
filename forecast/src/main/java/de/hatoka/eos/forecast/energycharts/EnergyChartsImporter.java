@@ -55,7 +55,7 @@ public class EnergyChartsImporter
     {
         for (Map.Entry<ZonedDateTime, Money> dayAheadPrice : dayAheadPrices.entrySet())
         {
-            EnergyStockKey key = new EnergyStockKey(dayAheadPrice.getKey());
+            EnergyStockKey key = EnergyStockKey.valueOf(dayAheadPrice.getKey());
             EnergyStockPO existingData = stockDao.get(key);
             if (existingData == null)
             {

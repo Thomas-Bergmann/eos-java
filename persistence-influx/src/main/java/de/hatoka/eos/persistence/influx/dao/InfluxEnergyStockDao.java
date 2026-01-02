@@ -62,7 +62,7 @@ public class InfluxEnergyStockDao implements EnergyStockDao
         try
         {
             Point point = Point.measurement(MEASUREMENT)
-                               .time(key.time().toInstant(), WritePrecision.S)
+                               .time(key.getInstant(), WritePrecision.S)
                                .addTag(TAG_CURRENCY, data.getDayAheadPrice().currencyMnemonic())
                                .addField(EnergyStockPO.COLUMN_DAY_AHEAD, data.getDayAheadPrice().amount().doubleValue());
 
@@ -80,7 +80,7 @@ public class InfluxEnergyStockDao implements EnergyStockDao
         try
         {
             // Delete data within a 1-minute window around the specified time
-            deleteApi.delete(key.time().minusMinutes(1).toOffsetDateTime(), key.time().plusMinutes(1).toOffsetDateTime(),
+            deleteApi.delete(key.getZonedDateTime().minusMinutes(1).toOffsetDateTime(), key.getZonedDateTime().plusMinutes(1).toOffsetDateTime(),
                             DELETE_PREDICATE.formatted(MEASUREMENT), BUCKET, influxDbOrg);
         }
         catch(NotFoundException e)
@@ -97,8 +97,8 @@ public class InfluxEnergyStockDao implements EnergyStockDao
     @Override
     public EnergyStockPO get(EnergyStockKey key)
     {
-        String flux = String.format(GET_QUERY, BUCKET, formatTimeForFlux(key.time().minusMinutes(1)),
-                        formatTimeForFlux(key.time().plusMinutes(1)), MEASUREMENT, EnergyStockPO.COLUMN_DAY_AHEAD);
+        String flux = String.format(GET_QUERY, BUCKET, formatTimeForFlux(key.getZonedDateTime().minusMinutes(1)),
+                        formatTimeForFlux(key.getZonedDateTime().plusMinutes(1)), MEASUREMENT, EnergyStockPO.COLUMN_DAY_AHEAD);
         for (FluxTable table : queryApi.query(flux))
         {
             for (FluxRecord record : table.getRecords())

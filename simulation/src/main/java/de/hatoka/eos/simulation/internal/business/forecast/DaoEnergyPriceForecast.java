@@ -19,12 +19,12 @@ public class DaoEnergyPriceForecast implements EnergyPriceForecast
     public Money getImportPrice(ZonedDateTime time)
     {
         // config.dynamicPriceConfig().importCharge()
-        return stockDao.get(new EnergyStockKey(time)).getDayAheadPrice();
+        return stockDao.get(EnergyStockKey.valueOf(time)).getDayAheadPrice();
     }
 
     @Override
     public Money getExportPrice(ZonedDateTime time)
     {
-        return stockDao.get(new EnergyStockKey(time)).getDayAheadPrice();
+        return stockDao.get(EnergyStockKey.valueOf(time)).getDayAheadPrice();
     }
 }
