@@ -48,6 +48,11 @@ subprojects {
                 useJUnitPlatform()
                 environment("INFLUX_URI", System.getenv("INFLUX_URI") ?: "http://localhost:8086")
                 environment("INFLUX_TOKEN", System.getenv("INFLUX_TOKEN") ?: "eos-token-invalid")
+                environment("ENPHASE_API_KEY", System.getenv("ENPHASE_API_KEY") ?: "enphase-api-key-invalid")
+                environment("ENPHASE_CLIENT_ID", System.getenv("ENPHASE_CLIENT_ID") ?: "")
+                environment("ENPHASE_CLIENT_SECRET", System.getenv("ENPHASE_CLIENT_SECRET") ?: "")
+                environment("ENPHASE_TOKEN_FILE", System.getenv("ENPHASE_TOKEN_FILE") ?: "./.enphase_token.json")
+                environment("ENPHASE_SYSTEM_ID", System.getenv("ENPHASE_SYSTEM_ID") ?: "12345")
             }
 
             withType<JacocoReport> {

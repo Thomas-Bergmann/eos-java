@@ -2,6 +2,8 @@
 .project
 .classpath
 .envrc
+.enphase_token.json
+
 .settings/**
 .gradle/**
 .vscode/**
