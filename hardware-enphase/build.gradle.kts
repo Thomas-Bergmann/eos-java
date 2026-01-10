@@ -4,6 +4,9 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":units"))
+    implementation(project(":persistence-api"))
+
     implementation("io.quarkus:quarkus-rest-client-jackson")
 
     implementation("com.fasterxml.jackson.core:jackson-annotations")

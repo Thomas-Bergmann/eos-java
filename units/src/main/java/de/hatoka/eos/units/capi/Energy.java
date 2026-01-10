@@ -8,11 +8,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public record Energy(double amount, EnergyUnits unit)
 {
     public static final Energy ZERO = ofKwh(0.0);
-    public static final Energy MAX_VALUE = ofKwh(Double.MAX_VALUE);
 
     public static Energy ofKwh(double kwh)
     {
         return new Energy(kwh, EnergyUnits.K_WH);
+    }
+    public static Energy ofWh(double wh)
+    {
+        return new Energy(wh, EnergyUnits.WH);
     }
 
     public Energy add(Energy augend)
@@ -50,6 +53,14 @@ public record Energy(double amount, EnergyUnits unit)
         return amount == 0.0;
     }
 
+    public Energy convert(EnergyUnits unit)
+    {
+        if (unit == this.unit)
+        {
+            return this;
+        }
+        return new Energy(this.amount * this.unit.getBaseUnit() / unit.getBaseUnit(), unit);
+    }
     @Override
     public String toString()
     {

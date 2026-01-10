@@ -1,12 +1,14 @@
 package de.hatoka.eos.hardware.enphase.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hatoka.eos.hardware.enphase.clients.EnphaseAuthClient;
 import de.hatoka.eos.hardware.enphase.config.EnphaseConfiguration;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.IOException;
+import java.util.Date;
 
 @Singleton
 public class EnphaseAuthentication
@@ -18,13 +20,18 @@ public class EnphaseAuthentication
 
     @Inject
     @RestClient
-    EnphaseTokenClient tokenClient;
+    EnphaseAuthClient tokenClient;
+
+    private Date lastRetrieval = null;
+    private EnphaseToken lastToken = null;
 
     public EnphaseToken getToken() throws IOException
     {
         EnphaseToken oldToken = readFromTokenFile();
         EnphaseToken newToken = refreshToken(oldToken);
         writeTokenFile(newToken);
+        lastRetrieval = new Date();
+        lastToken = newToken;
         return newToken;
     }
 
@@ -60,4 +67,19 @@ public class EnphaseAuthentication
         }
     }
 
+    public String getAuthorization()
+    {
+        if (lastToken == null)
+        {
+            try
+            {
+                lastToken = getToken();
+            }
+            catch(IOException e)
+            {
+                throw new RuntimeException("Can't retrieve new access token.", e);
+            }
+        }
+        return "Bearer " + lastToken.getAccess();
+    }
 }

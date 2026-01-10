@@ -1,0 +1,281 @@
+{
+  "system_id": 5664635,
+  "total_devices": 21,
+  "items": "devices",
+  "devices": {
+    "micros": [
+      {
+        "id": 101348242,
+        "last_report_at": 1768046066,
+        "name": "Microinverter 512348007030",
+        "serial_number": "512348007030",
+        "part_number": "800-01391-r03",
+        "sku": "IQ8HC-72-M-INT",
+        "model": "IQ8HC",
+        "status": "normal",
+        "active": true,
+        "product_name": "IQ8HC"
+      },
+      {
+        "id": 101348251,
+        "last_report_at": 1768045855,
+        "name": "Microinverter 512348012203",
+        "serial_number": "512348012203",
+        "part_number": "800-01391-r03",
+        "sku": "IQ8HC-72-M-INT",
+        "model": "IQ8HC",
+        "status": "normal",
+        "active": true,
+        "product_name": "IQ8HC"
+      },
+      {
+        "id": 101348246,
+        "last_report_at": 1768046489,
+        "name": "Microinverter 512348012332",
+        "serial_number": "512348012332",
+        "part_number": "800-01391-r03",
+        "sku": "IQ8HC-72-M-INT",
+        "model": "IQ8HC",
+        "status": "error",
+        "active": true,
+        "product_name": "IQ8HC"
+      },
+      {
+        "id": 101348240,
+        "last_report_at": 1768046670,
+        "name": "Microinverter 512348012356",
+        "serial_number": "512348012356",
+        "part_number": "800-01391-r03",
+        "sku": "IQ8HC-72-M-INT",
+        "model": "IQ8HC",
+        "status": "error",
+        "active": true,
+        "product_name": "IQ8HC"
+      },
+      {
+        "id": 101348247,
+        "last_report_at": 1768045825,
+        "name": "Microinverter 512348012357",
+        "serial_number": "512348012357",
+        "part_number": "800-01391-r03",
+        "sku": "IQ8HC-72-M-INT",
+        "model": "IQ8HC",
+        "status": "normal",
+        "active": true,
+        "product_name": "IQ8HC"
+      },
+      {
+        "id": 101348243,
+        "last_report_at": 1768046097,
+        "name": "Microinverter 512348012858",
+        "serial_number": "512348012858",
+        "part_number": "800-01391-r03",
+        "sku": "IQ8HC-72-M-INT",
+        "model": "IQ8HC",
+        "status": "normal",
+        "active": true,
+        "product_name": "IQ8HC"
+      },
+      {
+        "id": 101348223,
+        "last_report_at": 1768045795,
+        "name": "Microinverter 512348013122",
+        "serial_number": "512348013122",
+        "part_number": "800-01391-r03",
+        "sku": "IQ8HC-72-M-INT",
+        "model": "IQ8HC",
+        "status": "normal",
+        "active": true,
+        "product_name": "IQ8HC"
+      },
+      {
+        "id": 101348249,
+        "last_report_at": 1768046609,
+        "name": "Microinverter 512348013487",
+        "serial_number": "512348013487",
+        "part_number": "800-01391-r03",
+        "sku": "IQ8HC-72-M-INT",
+        "model": "IQ8HC",
+        "status": "normal",
+        "active": true,
+        "product_name": "IQ8HC"
+      },
+      {
+        "id": 101348241,
+        "last_report_at": 1768046880,
+        "name": "Microinverter 512348014399",
+        "serial_number": "512348014399",
+        "part_number": "800-01391-r03",
+        "sku": "IQ8HC-72-M-INT",
+        "model": "IQ8HC",
+        "status": "normal",
+        "active": true,
+        "product_name": "IQ8HC"
+      },
+      {
+        "id": 101348244,
+        "last_report_at": 1768045856,
+        "name": "Microinverter 512348014439",
+        "serial_number": "512348014439",
+        "part_number": "800-01391-r03",
+        "sku": "IQ8HC-72-M-INT",
+        "model": "IQ8HC",
+        "status": "error",
+        "active": true,
+        "product_name": "IQ8HC"
+      },
+      {
+        "id": 101348250,
+        "last_report_at": 1768046248,
+        "name": "Microinverter 512348014446",
+        "serial_number": "512348014446",
+        "part_number": "800-01391-r03",
+        "sku": "IQ8HC-72-M-INT",
+        "model": "IQ8HC",
+        "status": "normal",
+        "active": true,
+        "product_name": "IQ8HC"
+      },
+      {
+        "id": 101348248,
+        "last_report_at": 1768046127,
+        "name": "Microinverter 512349000257",
+        "serial_number": "512349000257",
+        "part_number": "800-01391-r03",
+        "sku": "IQ8HC-72-M-INT",
+        "model": "IQ8HC",
+        "status": "normal",
+        "active": true,
+        "product_name": "IQ8HC"
+      },
+      {
+        "id": 101348245,
+        "last_report_at": 1768045765,
+        "name": "Microinverter 512349000260",
+        "serial_number": "512349000260",
+        "part_number": "800-01391-r03",
+        "sku": "IQ8HC-72-M-INT",
+        "model": "IQ8HC",
+        "status": "normal",
+        "active": true,
+        "product_name": "IQ8HC"
+      }
+    ],
+    "meters": [
+      {
+        "id": 101347362,
+        "last_report_at": 1768047300,
+        "name": "production",
+        "serial_number": "122335006573EIM1",
+        "part_number": "800-00654-r08",
+        "sku": null,
+        "model": "Envoy-S-Metered-EU",
+        "status": "normal",
+        "active": true,
+        "state": "enabled",
+        "config_type": "Production",
+        "product_name": "Envoy-S-Metered-EU"
+      },
+      {
+        "id": 101347363,
+        "last_report_at": 1768047300,
+        "name": "consumption",
+        "serial_number": "122335006573EIM2",
+        "part_number": "800-00654-r08",
+        "sku": null,
+        "model": "Envoy-S-Metered-EU",
+        "status": "normal",
+        "active": true,
+        "state": "enabled",
+        "config_type": "Net",
+        "product_name": "Envoy-S-Metered-EU"
+      }
+    ],
+    "gateways": [
+      {
+        "id": 203834437,
+        "last_report_at": 1768047517,
+        "name": "Gateway 122335006573",
+        "serial_number": "122335006573",
+        "part_number": "800-00654-r08",
+        "emu_sw_version": "D8.3.5168.250821 (a1cf58)",
+        "sku": "X-IQ-EURO-230-3P-4-1",
+        "model": "Envoy-S-Metered-EU",
+        "status": "normal",
+        "active": true,
+        "cellular_modem": {
+          "imei": "N/A",
+          "part_num": "N/A",
+          "sku": "N/A",
+          "plan_start_date": null,
+          "plan_end_date": null
+        },
+        "product_name": "Envoy-S-Metered-EU"
+      }
+    ],
+    "q_relays": [
+      {
+        "id": 101348228,
+        "last_report_at": 1768042056,
+        "name": "IQ Relay 122328005035",
+        "serial_number": "122328005035",
+        "part_number": "800-00597-r02",
+        "sku": "Q-RELAY-3P-INT",
+        "model": "",
+        "status": "normal",
+        "active": true,
+        "product_name": "IQ Relay"
+      },
+      {
+        "id": 101348226,
+        "last_report_at": 1768042147,
+        "name": "IQ Relay 122335027404",
+        "serial_number": "122335027404",
+        "part_number": "800-00597-r02",
+        "sku": "Q-RELAY-3P-INT",
+        "model": "",
+        "status": "normal",
+        "active": true,
+        "product_name": "IQ Relay"
+      }
+    ],
+    "encharges": [
+      {
+        "id": 101348497,
+        "last_report_at": 1768047214,
+        "name": "IQ Battery 122433012128",
+        "serial_number": "122433012128",
+        "part_number": "830-01760-r50",
+        "sku": "B03-T01-INT00-1-2",
+        "model": "",
+        "status": "normal",
+        "active": true,
+        "product_name": "IQ Battery 3T"
+      },
+      {
+        "id": 101348503,
+        "last_report_at": 1768047364,
+        "name": "IQ Battery 122433016375",
+        "serial_number": "122433016375",
+        "part_number": "830-01760-r50",
+        "sku": "B03-T01-INT00-1-2",
+        "model": "",
+        "status": "normal",
+        "active": true,
+        "product_name": "IQ Battery 3T"
+      },
+      {
+        "id": 101348509,
+        "last_report_at": 1768047428,
+        "name": "IQ Battery 122433016399",
+        "serial_number": "122433016399",
+        "part_number": "830-01760-r50",
+        "sku": "B03-T01-INT00-1-2",
+        "model": "",
+        "status": "normal",
+        "active": true,
+        "product_name": "IQ Battery 3T"
+      }
+    ]
+  }
+}
