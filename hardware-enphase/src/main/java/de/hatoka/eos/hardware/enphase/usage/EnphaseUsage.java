@@ -4,6 +4,8 @@ import de.hatoka.eos.hardware.enphase.auth.EnphaseAuthentication;
 import de.hatoka.eos.hardware.enphase.clients.EnphaseSiteLevelProductionMonitoringClient;
 import de.hatoka.eos.hardware.enphase.config.EnphaseConfiguration;
 import de.hatoka.eos.hardware.enphase.model.ConsumptionResponseRO;
+import de.hatoka.eos.hardware.enphase.model.GridExportResponseRO;
+import de.hatoka.eos.hardware.enphase.model.GridImportResponseRO;
 import de.hatoka.eos.hardware.enphase.model.ProductionResponseRO;
 import de.hatoka.eos.persistence.capi.usage.UsageKey;
 import de.hatoka.eos.persistence.capi.usage.UsagePO;
@@ -42,6 +44,8 @@ public class EnphaseUsage
         Map<UsageKey, UsagePO> result = new HashMap<>();
         readConsumption(from, to, result);
         readProduction(from, to, result);
+        readImport(from, to, result);
+        readExport(from, to, result);
         return result;
     }
 
@@ -65,6 +69,30 @@ public class EnphaseUsage
         for(int e : response.getProduction())
         {
             result.computeIfAbsent(UsageKey.valueOf(thisDate), k -> new UsagePO()).setProduction(Energy.ofWh(e));
+            thisDate = thisDate.plusDays(1);
+        }
+    }
+
+    private void readImport(ZonedDateTime from, ZonedDateTime to, Map<UsageKey, UsagePO> result)
+    {
+        GridImportResponseRO response = restClient.getImport(authentication.getAuthorization(), configuration.getSystemId(),
+                        configuration.getApiKey(), format(from), format(to));
+        ZonedDateTime thisDate = from;
+        for(int e : response.getImport())
+        {
+            result.computeIfAbsent(UsageKey.valueOf(thisDate), k -> new UsagePO()).setGridImport(Energy.ofWh(e));
+            thisDate = thisDate.plusDays(1);
+        }
+    }
+
+    private void readExport(ZonedDateTime from, ZonedDateTime to, Map<UsageKey, UsagePO> result)
+    {
+        GridExportResponseRO response = restClient.getExport(authentication.getAuthorization(), configuration.getSystemId(),
+                        configuration.getApiKey(), format(from), format(to));
+        ZonedDateTime thisDate = from;
+        for(int e : response.getExport())
+        {
+            result.computeIfAbsent(UsageKey.valueOf(thisDate), k -> new UsagePO()).setGridExport(Energy.ofWh(e));
             thisDate = thisDate.plusDays(1);
         }
     }

@@ -6,6 +6,8 @@ public class UsagePO
 {
     private Energy consumption;
     private Energy production;
+    private Energy gridImport;
+    private Energy gridExport;
 
     public Energy getConsumption()
     {
@@ -25,5 +27,25 @@ public class UsagePO
     public void setProduction(Energy production)
     {
         this.production = production;
+    }
+
+    public Energy getGridImport()
+    {
+        return gridImport;
+    }
+
+    public void setGridImport(Energy gridImport)
+    {
+        this.gridImport = gridImport;
+    }
+
+    public Energy getGridExport()
+    {
+        return gridExport;
+    }
+
+    public void setGridExport(Energy gridExport)
+    {
+        this.gridExport = gridExport;
     }
 }
