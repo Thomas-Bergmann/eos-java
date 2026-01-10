@@ -32,6 +32,6 @@ public class OptimizationConfigurationLoaderTest
         assertEquals(0.1, goal.getCarCharging().getPenalty().percentage().value());
         
         assertNotNull(goal.getCarCharging().getPenalty().price());
-        assertEquals(Money.ofEur(5), goal.getCarCharging().getPenalty().price());
+        assertEquals(Money.ofEur(20), goal.getCarCharging().getPenalty().price());
     }
 }
