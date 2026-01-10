@@ -2,5 +2,5 @@ id: "test-simulation"
 simulation:
   timezone: "Europe/Berlin"
   start: "2025/08/04-00:00"
-  end: "2025/08/17-00:00"
+  end: "2025/08/05-00:00"
   stepDuration: "PT15M"

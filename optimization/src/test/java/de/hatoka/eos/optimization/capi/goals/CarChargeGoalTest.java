@@ -39,7 +39,7 @@ public class CarChargeGoalTest
         // Set goal to reach 80% charge using reflection since fields are private
         Money actualPenalty = goals.getPenalty(new SimulationResult(null, null, Map.of(carRef, carState), EnergySystem.INIT));
 
-        // Shortfall: 90% - 60% = 30% -> 3 x 5 EUR = 15 EUR
-        assertEquals(Money.ofEur(15), actualPenalty);
+        // Shortfall: 90% - 60% = 30% -> 3 x 20 EUR = 60 EUR
+        assertEquals(Money.ofEur(60), actualPenalty);
     }
 }

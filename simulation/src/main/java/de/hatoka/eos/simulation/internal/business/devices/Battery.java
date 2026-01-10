@@ -11,13 +11,24 @@ import de.hatoka.eos.units.capi.Percentage;
 
 import java.time.ZonedDateTime;
 
-public class Battery implements Device
+public class Battery implements Device, Cloneable
 {
     final DeviceConfig config;
+    private Percentage overrideChargeLimit = null;
 
     public Battery(DeviceConfig config)
     {
         this.config = config;
+    }
+
+    /**
+     * Copy constructor for creating clones.
+     * Subclasses should call this constructor and copy their own fields.
+     */
+    protected Battery(Battery other)
+    {
+        this.config = other.config;
+        this.overrideChargeLimit = other.overrideChargeLimit;
     }
 
     @Override
@@ -152,6 +163,32 @@ public class Battery implements Device
      */
     protected Percentage getChargingLimit(SimulationStep step)
     {
+        if (overrideChargeLimit != null)
+        {
+            return overrideChargeLimit;
+        }
         return config.getForceChargingLimit();
+    }
+
+    @Override
+    protected Battery clone()
+    {
+        return new Battery(this);
+    }
+
+    public Device setOverrideForceChargingLimit(Percentage chargeLimit)
+    {
+        if (this.overrideChargeLimit == null && chargeLimit == null || this.overrideChargeLimit != null && this.overrideChargeLimit.equals(chargeLimit))
+        {
+            return this;
+        }
+        Battery clone = clone();
+        clone.overrideChargeLimit = chargeLimit;
+        return clone;
+    }
+
+    public Device resetOverrideForceChargingLimit()
+    {
+        return setOverrideForceChargingLimit(null);
     }
 }

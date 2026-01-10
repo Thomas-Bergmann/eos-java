@@ -19,13 +19,17 @@ public class Simulation
     private static final Logger LOGGER = LoggerFactory.getLogger(Simulation.class);
     private final SimulationRequest request;
     private final SimulationMetricsExporter simulationMetricsExporter;
+    private final List<DeviceManipulator> manipulators;
 
     private Map<DeviceRef, DeviceState> currentState;
+    private Map<DeviceRef, Device> currentDevices;
 
-    public Simulation(SimulationRequest request, SimulationMetricsExporter simulationMetricsExporter)
+    public Simulation(SimulationRequest request, SimulationMetricsExporter simulationMetricsExporter, List<DeviceManipulator> manipulators)
     {
         this.request = request;
         this.simulationMetricsExporter = simulationMetricsExporter;
+        this.manipulators = manipulators;
+        this.currentDevices = request.devices();
     }
 
     public SimulationResult run()
@@ -36,6 +40,8 @@ public class Simulation
         EnergySystem system = EnergySystem.INIT;
         while(currentStep.startDate().isBefore(this.request.endDate()))
         {
+            var time = currentStep.startDate();
+            manipulators.forEach(m -> this.currentDevices = m.apply(time, currentDevices));
             system = executeStep(currentStep, system);
             currentStep = currentStep.nextTimeSlot();
         }
@@ -53,7 +59,7 @@ public class Simulation
         EnergySystem updatedSystem = system;
         for (DeviceRef deviceRef : orderedDevices)
         {
-            Device device = request.devices().get(deviceRef);
+            Device device = currentDevices.get(deviceRef);
             DeviceState deviceState = currentState.computeIfAbsent(deviceRef, (d) -> device.getInitialState());
             SimulationStepResult stepResult = device.simulate(step, updatedSystem, deviceState);
             if (!stepResult.deviceState().equals(deviceState))

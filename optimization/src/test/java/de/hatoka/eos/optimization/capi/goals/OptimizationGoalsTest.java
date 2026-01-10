@@ -39,7 +39,7 @@ public class OptimizationGoalsTest
         Money actualPenalty = goals.getPenalty(new SimulationResult(null, null, Map.of(carRef, carState),
                         EnergySystem.INIT.importEnergy(Energy.ofKwh(10.0), Money.ofEur(2.40)).exportEnergy(Energy.ofKwh(10.0), Money.ofEur(1.40))));
 
-        // Shortfall: 90% - 60% = 30% -> 3 x 5 EUR = 15 EUR + 1EUR (for grid difference)
-        assertEquals(Money.ofEur(16), actualPenalty);
+        // Shortfall: 90% - 60% = 30% -> 3 x 20 EUR = 60 EUR + 1EUR (for grid difference)
+        assertEquals(Money.ofEur(61), actualPenalty);
     }
 }

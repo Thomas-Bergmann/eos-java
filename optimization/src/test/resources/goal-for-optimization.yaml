@@ -3,5 +3,5 @@ carCharging:
   penalty:
     percentage: 0.1
     price:
-      amount: 5
+      amount: 20
       currency: "EUR"
