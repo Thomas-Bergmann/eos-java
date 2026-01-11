@@ -1,9 +1,6 @@
 package de.hatoka.eos.hardware.enphase.clients;
 
-import de.hatoka.eos.hardware.enphase.model.ConsumptionResponseRO;
-import de.hatoka.eos.hardware.enphase.model.GridExportResponseRO;
-import de.hatoka.eos.hardware.enphase.model.GridImportResponseRO;
-import de.hatoka.eos.hardware.enphase.model.ProductionResponseRO;
+import de.hatoka.eos.hardware.enphase.model.*;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
@@ -13,25 +10,31 @@ public interface EnphaseSiteLevelProductionMonitoringClient
 {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/api/v4/systems/{system_id}/consumption_lifetime")
-    ConsumptionResponseRO getConsumption(@HeaderParam("Authorization") String authorization, @PathParam("system_id") String systemId,
-                    @QueryParam("key") String apiKey, @QueryParam("start_date") String start, @QueryParam("end_date") String end);
+    @Path("/api/v4/systems/{system_id}/telemetry/battery")
+    TelemetryBatteryResponseRO getBatteryTelemetry(@HeaderParam("Authorization") String authorization, @PathParam("system_id") String systemId,
+                    @QueryParam("key") String apiKey, @QueryParam("start_at") long start, @QueryParam("end_at") long end, @QueryParam("granularity") String granularity);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/api/v4/systems/{system_id}/energy_lifetime")
-    ProductionResponseRO getProduction(@HeaderParam("Authorization") String authorization, @PathParam("system_id") String systemId,
-                    @QueryParam("key") String apiKey, @QueryParam("start_date") String start, @QueryParam("end_date") String end);
+    @Path("/api/v4/systems/{system_id}/telemetry/consumption_meter")
+    TelemetryConsumptionResponseRO getConsumptionTelemetry(@HeaderParam("Authorization") String authorization, @PathParam("system_id") String systemId,
+                    @QueryParam("key") String apiKey, @QueryParam("start_at") long start, @QueryParam("end_at") long end, @QueryParam("granularity") String granularity);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/api/v4/systems/{system_id}/energy_import_lifetime")
-    GridImportResponseRO getImport(@HeaderParam("Authorization") String authorization, @PathParam("system_id") String systemId,
-                    @QueryParam("key") String apiKey, @QueryParam("start_date") String start, @QueryParam("end_date") String end);
+    @Path("/api/v4/systems/{system_id}/energy_import_telemetry")
+    TelemetryImportResponseRO getImportTelemetry(@HeaderParam("Authorization") String authorization, @PathParam("system_id") String systemId,
+                    @QueryParam("key") String apiKey, @QueryParam("start_at") long start, @QueryParam("end_at") long end, @QueryParam("granularity") String granularity);
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/api/v4/systems/{system_id}/energy_export_lifetime")
-    GridExportResponseRO getExport(@HeaderParam("Authorization") String authorization, @PathParam("system_id") String systemId,
-                    @QueryParam("key") String apiKey, @QueryParam("start_date") String start, @QueryParam("end_date") String end);
+    @Path("/api/v4/systems/{system_id}/energy_export_telemetry")
+    TelemetryExportResponseRO getExportTelemetry(@HeaderParam("Authorization") String authorization, @PathParam("system_id") String systemId,
+                    @QueryParam("key") String apiKey, @QueryParam("start_at") long start, @QueryParam("end_at") long end, @QueryParam("granularity") String granularity);
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/api/v4/systems/{system_id}/telemetry/production_meter")
+    TelemetryProductionResponseRO getProductionTelemetry(@HeaderParam("Authorization") String authorization, @PathParam("system_id") String systemId,
+                    @QueryParam("key") String apiKey, @QueryParam("start_at") long start, @QueryParam("end_at") long end, @QueryParam("granularity") String granularity);
 }

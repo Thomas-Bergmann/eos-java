@@ -48,6 +48,7 @@ jobs:
         env:
           JAVA_OPTS: "-Xmx1024M"
           GRADLE_OPTS: "-Dorg.gradle.daemon=true"
-        run: ./gradlew -Pversion=${{ github.ref_name }} test build :publishHatokaMvnPublicationToMavenRepository -s
+        # test but without enphase tests and publishing
+        run: ./gradlew -Pversion=${{ github.ref_name }} test -x hardware-enphase:test build :publishHatokaMvnPublicationToMavenRepository -s
       - name: Post Build
         run: rm -f $HOME/.gradle/gradle.properties

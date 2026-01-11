@@ -1,13 +1,10 @@
 # hardware-enphase
 
-This subproject provides integration for reading current states of batteries from Enphase hardware.
+This subproject provides integration for reading telemetries from Enphase hardware via their http service.
 
-## Structure
-- `build.gradle.kts`: Gradle build configuration
-- `src/main/java`: Main source code
-- `src/test/java`: Test sources
+## Important Classes
+- `EnphaseTelemetry`: collects consumption, production and grid transfer for a specific day in a 15min interval
 
 ## Next Steps
-- Implement hardware communication logic in `EnphaseBatteryReader`
-- Add configuration and integration patterns as needed
+- Transfer the collected telemetry data to the influx db
 

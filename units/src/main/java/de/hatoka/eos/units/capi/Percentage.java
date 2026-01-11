@@ -15,6 +15,16 @@ public record Percentage(double value)
     public static final Percentage ZERO = new Percentage(0.0);
     public static final Percentage ONE_HUNDRED = new Percentage(1.0);
 
+    /**
+     * Creates a percentage object with a number between 0 and 100
+     * @param percentage a number between 0 and 100
+     * @return percentage object
+     */
+    public static Percentage valueOfPercent(double percentage)
+    {
+        return new Percentage(percentage / 100);
+    }
+
     public Percentage
     {
         if (value < 0.0 || value > 1.0)

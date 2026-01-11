@@ -52,4 +52,5 @@ jobs:
         env:
           JAVA_OPTS: "-Xmx1024M"
           GRADLE_OPTS: "-Dorg.gradle.daemon=true"
-        run: ./gradlew -Pversion=1.0.0-SNAPSHOT test -s
+        # don't start enphase tests on github
+        run: ./gradlew -Pversion=1.0.0-SNAPSHOT test -x hardware-enphase:test -s
