@@ -12,6 +12,8 @@ public class EosApplication implements QuarkusApplication
     private SimulationNow simulation;
     @Inject
     private ForecastImport forecast;
+    @Inject
+    private TelemetryImport telemetryImport;
 
     public static void main(String[] args)
     {
@@ -22,7 +24,8 @@ public class EosApplication implements QuarkusApplication
     public int run(String... args) throws Exception
     {
         // forecast.run();
-        simulation.run();
+        // simulation.run();
+        telemetryImport.run();
         return 0;
     }
 }

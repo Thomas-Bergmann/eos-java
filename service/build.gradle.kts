@@ -10,6 +10,7 @@ dependencies {
     implementation(project(":forecast"))
     implementation(project(":simulation"))
     implementation(project(":metrics-influx"))
+    implementation(project(":hardware-enphase"))
 
     implementation("io.quarkus:quarkus-arc")
     implementation("org.slf4j:slf4j-api")

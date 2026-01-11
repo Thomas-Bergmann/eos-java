@@ -35,7 +35,7 @@ public class EnphaseTelemetry
         return time.toInstant().getEpochSecond();
     }
 
-    Map<UsageKey, UsagePO> getDailyUsage(ZonedDateTime day)
+    public Map<UsageKey, UsagePO> getDailyUsage(ZonedDateTime day)
     {
         ZonedDateTime from = day.withHour(0).withMinute(0).withSecond(0).withNano(0);
         ZonedDateTime to = from.plusDays(1);
