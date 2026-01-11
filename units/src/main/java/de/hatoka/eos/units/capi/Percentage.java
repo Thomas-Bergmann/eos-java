@@ -25,6 +25,16 @@ public record Percentage(double value)
         return new Percentage(percentage / 100);
     }
 
+    /**
+     * Creates a percentage object with a number between 0 and 1
+     * @param percentage a number between 0 and 1
+     * @return percentage object
+     */
+    public static Percentage valueOf(double percentage)
+    {
+        return new Percentage(percentage);
+    }
+
     public Percentage
     {
         if (value < 0.0 || value > 1.0)

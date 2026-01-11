@@ -12,8 +12,6 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
